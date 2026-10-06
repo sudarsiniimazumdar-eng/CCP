@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Curiosity Cabinet — Interactive 3D Portfolio</title>
+  <meta name="description" content="An interactive 3D curiosity cabinet presenting a collection of design projects, prototypes, and inquiries." />
+
+  <!-- Google Fonts: Editorial Serif, Antique Cursive & Apothecary Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Alex+Brush&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,600&family=DM+Mono:wght@400;500&family=Pinyon+Script&family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,400;1,600&family=Plus+Jakarta+Sans:wght@400;500;600&display=swap" rel="stylesheet" />
+
+  <!-- Stylesheet -->
+  <link rel="stylesheet" href="./src/styles/main.css" />
+
+  <!-- GSAP Core & Plugins CDN -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+
+  <!-- Native Browser Import Map for Three.js & GSAP -->
+  <script type="importmap">
+  {
+    "imports": {
+      "three": "https://cdn.jsdelivr.net/npm/three@0.169.0/build/three.module.js",
+      "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.169.0/examples/jsm/",
+      "gsap": "https://cdn.jsdelivr.net/npm/gsap@3.12.5/+esm"
+    }
+  }
+  </script>
+</head>
+<body>
+  <div id="app">
+    <!-- 3D WebGL Canvas Layer -->
+    <div id="webgl-container"></div>
+
+    <!-- Atmospheric Vignette & Grain Filter -->
+    <div class="atmosphere-vignette"></div>
+
+    <!-- 3D Raycaster Hover Tooltip -->
+    <div id="hover-tooltip" class="hover-tooltip">
+      <span id="tooltip-number" class="tooltip-number">N° 01</span>
+      <h4 id="tooltip-title" class="tooltip-title">Project Title</h4>
+      <p id="tooltip-category" class="tooltip-category">Category</p>
+    </div>
+
+    <!-- UI Overlay Layer -->
+    <div class="ui-layer">
+      <!-- Top Persistent Navigation -->
+      <header class="site-header">
+        <div class="brand-badge">
+          <h1 class="brand-title">Curiosity Cabinet</h1>
+          <span class="brand-subtitle">Curated Works · Archive</span>
+        </div>
+
+        <nav>
+          <ul class="nav-links">
+            <li><button id="nav-cabinet" class="nav-btn active">Cabinet 3D</button></li>
+            <li><button id="nav-catalogue" class="nav-btn">Catalogue View</button></li>
+            <li><button id="nav-about" class="nav-btn">About</button></li>
+          </ul>
+        </nav>
+      </header>
+
+      <!-- Bottom Center Interaction Cue -->
+      <div id="interaction-hint" class="interaction-hint">
+        <div class="hint-dot"></div>
+        <span>Hover &amp; select bottles or pull drawers</span>
+      </div>
+
+      <!-- Floating Drag-to-Rotate Inspection Cue Badge -->
+      <div id="rotate-cue" class="rotate-cue">
+        <span class="rotate-icon">↺</span>
+        <span>Drag bottle to rotate in 360°</span>
+      </div>
+    </div>
+
+    <!-- Slide-In / Bottom-Sheet Project Preview Drawer -->
+    <aside id="project-drawer" class="project-drawer" aria-hidden="true">
+      <div class="drawer-drag-pill" aria-hidden="true"></div>
+      <div class="drawer-header">
+        <div>
+          <span id="drawer-number" class="drawer-meta-badge">N° 01</span>
+          <p id="drawer-category" class="drawer-category">Industrial Design</p>
+        </div>
+        <button id="drawer-close-btn" class="drawer-close-btn" aria-label="Close Preview">✕</button>
+      </div>
+
+      <div class="drawer-content">
+        <h2 id="drawer-title" class="drawer-title">Project Title</h2>
+        <p id="drawer-tagline" class="drawer-tagline">Project tagline will appear here.</p>
+        <p id="drawer-summary" class="drawer-summary">Project summary placeholder.</p>
+
+        <!-- Stats Grid -->
+        <div id="drawer-stats" class="drawer-stats-grid"></div>
+
+        <!-- Taxonomy Tags -->
+        <div id="drawer-tags" class="drawer-tags"></div>
+      </div>
+
+      <div class="drawer-footer">
+        <button id="drawer-cta-btn" class="cta-button">Read Case Study →</button>
+        <button id="drawer-back-btn" class="back-cabinet-btn">Back to Cabinet</button>
+      </div>
+    </aside>
+
+    <!-- 2D Conventional Catalogue Overlay -->
+    <section id="catalogue-overlay" class="catalogue-overlay" aria-hidden="true">
+      <div class="catalogue-header">
+        <span class="catalogue-subtitle">The Complete Collection</span>
+        <h2 class="catalogue-title">Project Catalogue</h2>
+      </div>
+      <div id="catalogue-grid" class="catalogue-grid"></div>
+    </section>
+
+    <!-- Apothecary Drawer Archive Modal -->
+    <div id="drawer-modal" class="info-modal" aria-hidden="true">
+      <div class="info-card drawer-archive-card">
+        <span id="drawer-modal-label" class="drawer-meta-badge">I. SKETCHES</span>
+        <h2 id="drawer-modal-title" class="info-title">Drawer Archive</h2>
+        <p class="drawer-category">Preserved Physical Artifacts &amp; Documentation</p>
+        <p id="drawer-modal-content" class="info-body">
+          Archived documentation, sketches, and process notes from this chamber.
+        </p>
+        <button id="drawer-modal-close" class="cta-button">Close Drawer</button>
+      </div>
+    </div>
+
+    <!-- About / Info Modal -->
+    <div id="info-modal" class="info-modal" aria-hidden="true">
+      <div class="info-card">
+        <h2 class="info-title">Curiosity Cabinet</h2>
+        <p class="drawer-category">Concept &amp; Philosophy</p>
+        <p class="info-body">
+          A physical manifestation of inquiry and design craft. Each bottle in this cabinet stores a preserved formula: a design intervention, research inquiry, or conceptual experiment.
+          <br /><br />
+          Explore the cabinet by selecting individual flacons, pulling open apothecary drawers, or switching to the 2D catalogue for rapid indexing.
+        </p>
+        <button id="info-modal-close" class="cta-button">Return to Cabinet</button>
+      </div>
+    </div>
+
+    <!-- Atmospheric Loading Screen -->
+    <div id="loading-screen" class="loading-screen">
+      <div class="loader-emblem">
+        <div class="loader-inner-dot"></div>
+      </div>
+      <h2 class="loader-title">Curiosity Cabinet</h2>
+      <p class="loader-status">Illuminating the cabinet...</p>
+    </div>
+  </div>
+
+  <!-- Entry Script -->
+  <script type="module" src="./src/main.js"></script>
+</body>
+</html>
