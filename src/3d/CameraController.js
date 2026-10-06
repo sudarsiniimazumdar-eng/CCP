@@ -4,54 +4,76 @@ import gsapModule from 'gsap';
 const gsap = (typeof window !== 'undefined' && window.gsap) ? window.gsap : (gsapModule?.gsap || gsapModule);
 
 /**
- * GSAP-Powered Camera Controller with Dynamic Responsive Framing
- * Calculates precise optical bounds for desktop, tablets, and tall portrait mobile screens.
+ * Advanced 360° Spherical Orbit & Inspection Camera Controller
+ * Allows free 360° orbital navigation around the curiosity sculpture in Overview Mode,
+ * and seamless cinematic focus transitions during Inspection Mode.
  */
 export class CameraController {
   constructor(camera, domElement) {
     this.camera = camera;
     this.domElement = domElement;
 
-    // Default Overview Camera coordinates
-    this.defaultPos = new THREE.Vector3(0, 0, 8.0);
-    this.defaultTarget = new THREE.Vector3(0, 0, 0);
+    // Spherical coordinates for 360° cabinet orbit
+    this.spherical = {
+      radius: 8.2,
+      theta: 0.15, // Horizontal orbit angle (radians)
+      phi: Math.PI / 2 - 0.05 // Vertical inclination angle
+    };
+    this.targetSpherical = { ...this.spherical };
+    this.orbitVelocity = { theta: 0, phi: 0 };
+    this.targetLookAt = new THREE.Vector3(0, 0.2, 0);
+    this.currentLookAt = new THREE.Vector3(0, 0.2, 0);
 
-    // Current animation targets
-    this.targetPos = this.defaultPos.clone();
-    this.lookAtTarget = this.defaultTarget.clone();
-
-    // Mouse & Gyro parallax offsets
-    this.mouse = { x: 0, y: 0, targetX: 0, targetY: 0 };
+    // Parallax & state
+    this.mouseParallax = { x: 0, y: 0, targetX: 0, targetY: 0 };
     this.isInspecting = false;
+    this.isOrbiting = false;
     this.currentTimeline = null;
 
-    this.initParallaxListeners();
+    this.initListeners();
   }
 
-  initParallaxListeners() {
+  initListeners() {
     window.addEventListener('mousemove', (e) => {
-      if (this.isInspecting) return;
-      this.mouse.targetX = (e.clientX / window.innerWidth - 0.5) * 0.7;
-      this.mouse.targetY = -(e.clientY / window.innerHeight - 0.5) * 0.4;
+      if (this.isInspecting || this.isOrbiting) return;
+      this.mouseParallax.targetX = (e.clientX / window.innerWidth - 0.5) * 0.4;
+      this.mouseParallax.targetY = -(e.clientY / window.innerHeight - 0.5) * 0.25;
     });
 
-    // Mobile device orientation (subtle gyroscope tilt if supported)
+    // Mobile gyroscope
     if (window.DeviceOrientationEvent && typeof window.DeviceOrientationEvent.requestPermission !== 'function') {
       window.addEventListener('deviceorientation', (e) => {
-        if (this.isInspecting || e.gamma === null) return;
-        // Clamp tilt angle
-        const gamma = Math.max(-25, Math.min(25, e.gamma)); // Left/Right
-        const beta = Math.max(10, Math.min(60, e.beta));     // Forward/Back
-        this.mouse.targetX = (gamma / 25) * 0.4;
-        this.mouse.targetY = -((beta - 35) / 25) * 0.25;
+        if (this.isInspecting || this.isOrbiting || e.gamma === null) return;
+        const gamma = Math.max(-25, Math.min(25, e.gamma));
+        const beta = Math.max(15, Math.min(65, e.beta));
+        this.mouseParallax.targetX = (gamma / 25) * 0.3;
+        this.mouseParallax.targetY = -((beta - 40) / 25) * 0.2;
       }, { passive: true });
     }
   }
 
   /**
-   * Smoothly focus camera on a selected 3D bottle object.
-   * Desktop: Offsets camera so bottle sits in left half while preview drawer opens on right.
-   * Mobile: Offsets camera so bottle sits in upper half above the bottom sheet.
+   * Apply drag delta to orbit around the cabinet
+   */
+  addOrbitDelta(deltaX, deltaY) {
+    if (this.isInspecting) return;
+    this.isOrbiting = true;
+
+    // Horizontal 360° spin
+    this.orbitVelocity.theta = -deltaX * 0.006;
+    // Vertical tilt clamped between 0.35 and 1.35 radians
+    this.orbitVelocity.phi = -deltaY * 0.005;
+
+    this.spherical.theta += this.orbitVelocity.theta;
+    this.spherical.phi = Math.max(0.35, Math.min(1.35, this.spherical.phi + this.orbitVelocity.phi));
+  }
+
+  endOrbitDrag() {
+    this.isOrbiting = false;
+  }
+
+  /**
+   * Smoothly focus camera on a selected bottle in 3D space
    */
   focusOnBottle(bottleGroup, isMobile = false) {
     this.isInspecting = true;
@@ -61,28 +83,32 @@ export class CameraController {
     const worldPos = new THREE.Vector3();
     bottleGroup.getWorldPosition(worldPos);
 
+    // Calculate normal vector pointing out from the bottle based on its orientation
+    const normal = new THREE.Vector3(0, 0, 1).applyEuler(bottleGroup.rotation);
+    if (normal.lengthSq() < 0.1) normal.set(0, 0, 1);
+    normal.normalize();
+
     let targetFocus;
     let targetCameraPos;
 
     if (isMobile) {
-      // Focus slightly below center so bottle floats in the upper 40% viewport
-      targetFocus = new THREE.Vector3(worldPos.x, worldPos.y - 0.25, worldPos.z);
-      targetCameraPos = new THREE.Vector3(
-        worldPos.x,
-        worldPos.y + 0.15,
-        worldPos.z + 2.9
-      );
+      targetFocus = new THREE.Vector3(worldPos.x, worldPos.y - 0.2, worldPos.z);
+      targetCameraPos = new THREE.Vector3()
+        .copy(worldPos)
+        .addScaledVector(normal, 2.6)
+        .add(new THREE.Vector3(0, 0.15, 0));
     } else {
-      // Focus centered, offset camera to right
-      targetFocus = new THREE.Vector3(worldPos.x, worldPos.y + 0.65, worldPos.z);
-      targetCameraPos = new THREE.Vector3(
-        worldPos.x + 0.72,
-        worldPos.y + 0.65,
-        worldPos.z + 2.5
-      );
+      targetFocus = new THREE.Vector3(worldPos.x, worldPos.y + 0.5, worldPos.z);
+      // Offset camera to right of line of sight so bottle sits on left
+      const rightVector = new THREE.Vector3(-normal.z, 0, normal.x).normalize();
+      targetCameraPos = new THREE.Vector3()
+        .copy(worldPos)
+        .addScaledVector(normal, 2.4)
+        .addScaledVector(rightVector, 0.65)
+        .add(new THREE.Vector3(0, 0.5, 0));
     }
 
-    this.currentTimeline = gsap.timeline({ defaults: { duration: 1.3, ease: 'power3.inOut' } });
+    this.currentTimeline = gsap.timeline({ defaults: { duration: 1.35, ease: 'power3.inOut' } });
 
     this.currentTimeline.to(this.camera.position, {
       x: targetCameraPos.x,
@@ -90,88 +116,92 @@ export class CameraController {
       z: targetCameraPos.z,
     }, 0);
 
-    this.currentTimeline.to(this.lookAtTarget, {
+    this.currentTimeline.to(this.currentLookAt, {
       x: targetFocus.x,
       y: targetFocus.y,
       z: targetFocus.z,
       onUpdate: () => {
-        this.camera.lookAt(this.lookAtTarget);
+        this.camera.lookAt(this.currentLookAt);
       }
     }, 0);
   }
 
   /**
-   * Reset camera back to Full Cabinet Overview
+   * Reset camera back to 360° Overview Orbit
    */
-  resetToOverview(duration = 1.2) {
+  resetToOverview(duration = 1.25) {
     this.isInspecting = false;
 
     if (this.currentTimeline) this.currentTimeline.kill();
 
+    // Compute target Cartesian coordinates from spherical orbit
+    const targetX = this.spherical.radius * Math.sin(this.spherical.phi) * Math.sin(this.spherical.theta);
+    const targetY = this.spherical.radius * Math.cos(this.spherical.phi);
+    const targetZ = this.spherical.radius * Math.sin(this.spherical.phi) * Math.cos(this.spherical.theta);
+
     this.currentTimeline = gsap.timeline({ defaults: { duration, ease: 'power3.inOut' } });
 
     this.currentTimeline.to(this.camera.position, {
-      x: this.defaultPos.x,
-      y: this.defaultPos.y,
-      z: this.defaultPos.z,
+      x: targetX,
+      y: targetY,
+      z: targetZ,
     }, 0);
 
-    this.currentTimeline.to(this.lookAtTarget, {
-      x: this.defaultTarget.x,
-      y: this.defaultTarget.y,
-      z: this.defaultTarget.z,
+    this.currentTimeline.to(this.currentLookAt, {
+      x: this.targetLookAt.x,
+      y: this.targetLookAt.y,
+      z: this.targetLookAt.z,
       onUpdate: () => {
-        this.camera.lookAt(this.lookAtTarget);
+        this.camera.lookAt(this.currentLookAt);
       }
     }, 0);
   }
 
   /**
-   * Per-frame update for smooth mouse/gyro parallax
+   * Per-frame update for 360° spherical orbit & damping
    */
   update() {
     if (!this.isInspecting) {
-      this.mouse.x += (this.mouse.targetX - this.mouse.x) * 0.05;
-      this.mouse.y += (this.mouse.targetY - this.mouse.y) * 0.05;
+      // Damping on orbit velocity
+      if (!this.isOrbiting) {
+        this.orbitVelocity.theta *= 0.92;
+        this.orbitVelocity.phi *= 0.92;
+        this.spherical.theta += this.orbitVelocity.theta;
+        this.spherical.phi = Math.max(0.35, Math.min(1.35, this.spherical.phi + this.orbitVelocity.phi));
 
-      this.camera.position.x = this.defaultPos.x + this.mouse.x;
-      this.camera.position.y = this.defaultPos.y + this.mouse.y;
-      this.camera.lookAt(this.lookAtTarget);
+        // Smooth parallax
+        this.mouseParallax.x += (this.mouseParallax.targetX - this.mouseParallax.x) * 0.05;
+        this.mouseParallax.y += (this.mouseParallax.targetY - this.mouseParallax.y) * 0.05;
+      }
+
+      // Convert spherical coordinates to Cartesian camera position
+      const sinPhi = Math.sin(this.spherical.phi);
+      const cosPhi = Math.cos(this.spherical.phi);
+      const sinTheta = Math.sin(this.spherical.theta + this.mouseParallax.x);
+      const cosTheta = Math.cos(this.spherical.theta + this.mouseParallax.x);
+
+      this.camera.position.x = this.spherical.radius * sinPhi * sinTheta;
+      this.camera.position.y = this.spherical.radius * cosPhi + this.mouseParallax.y;
+      this.camera.position.z = this.spherical.radius * sinPhi * cosTheta;
+
+      this.camera.lookAt(this.currentLookAt);
     }
   }
 
-  /**
-   * Responsive resize calculation: computes exact bounding distance to guarantee full cabinet visibility
-   */
   onResize(width, height) {
     const aspect = width / height;
     this.camera.aspect = aspect;
 
-    const cabinetWidth = 8.4;
-    const cabinetHeight = 7.6;
-
     if (aspect < 1.0) {
-      // Portrait mobile & narrow tablet
-      this.camera.fov = 62;
-      const fovRad = (this.camera.fov * Math.PI) / 180;
-      
-      const distFromHeight = (cabinetHeight / 2) / Math.tan(fovRad / 2);
-      const distFromWidth = (cabinetWidth / 2) / (Math.tan(fovRad / 2) * aspect);
-      
-      this.defaultPos.z = Math.max(distFromHeight, distFromWidth) * 1.06;
-      this.defaultPos.y = 0.15;
-      this.defaultTarget.set(0, 0.1, 0);
+      // Mobile portrait
+      this.camera.fov = 58;
+      this.spherical.radius = 9.4;
+      this.targetLookAt.set(0, 0.1, 0);
     } else {
-      // Landscape Desktop
+      // Desktop
       this.camera.fov = 50;
-      this.defaultPos.z = 8.0;
-      this.defaultPos.y = 0;
-      this.defaultTarget.set(0, 0, 0);
-    }
-
-    if (!this.isInspecting) {
-      this.camera.position.z = this.defaultPos.z;
-      this.camera.position.y = this.defaultPos.y;
+      this.spherical.radius = 8.2;
+      this.targetLookAt.set(0, 0.2, 0);
     }
 
     this.camera.updateProjectionMatrix();

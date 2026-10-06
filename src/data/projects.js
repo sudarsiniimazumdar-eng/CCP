@@ -1,9 +1,6 @@
 /**
- * Central Portfolio Project Data & 3D Cabinet Placements
- * 
- * Each project contains:
- * - Metadata (title, category, tagline, year, placeholder descriptions)
- * - 3D Cabinet Placement & Appearance (shelf, slot, bottle archetype, color tint, label text)
+ * Central Portfolio Project Data & Organized 3D Shelf Placements
+ * Perfectly aligned with the Victorian Curiosity Cabinet display vitrines
  */
 
 export const PROJECTS_DATA = [
@@ -21,13 +18,12 @@ export const PROJECTS_DATA = [
       { label: 'Duration', value: '8 Weeks' },
       { label: 'Medium', value: 'Physical & Digital' }
     ],
-    // 3D Cabinet Configuration
+    // Middle Shelf Center - Main Tall Arch Decanter
     placement: {
-      shelf: 0, // Top shelf (index 0)
-      slot: -1.8, // X position offset on shelf
-      bottleVariant: 'arch', // Tall arched silhouette
-      liquidColor: '#d6a362', // Warm honey amber
-      capType: 'brass-tall',
+      position: { x: 0, y: -0.35, z: 0.35 },
+      rotation: { x: 0, y: 0, z: 0 },
+      bottleVariant: 'arch', // Tall Victorian decanter
+      liquidColor: '#d6a362', // Honey amber
       labelNumber: 'N° 01'
     }
   },
@@ -45,12 +41,12 @@ export const PROJECTS_DATA = [
       { label: 'Collaboration', value: 'BMVSS Clinic' },
       { label: 'Impact', value: 'High Accessibility' }
     ],
+    // Middle Shelf Left - Herbal Apothecary Flacon with Twine
     placement: {
-      shelf: 0, // Top shelf
-      slot: 0, // Center
-      bottleVariant: 'apothecary', // Cylindrical apothecary glass
-      liquidColor: '#5c7a68', // Muted sage/forest
-      capType: 'cork',
+      position: { x: -0.9, y: -0.35, z: 0.25 },
+      rotation: { x: 0, y: 0.15, z: 0 },
+      bottleVariant: 'apothecary', // Herbal apothecary flacon with twine wrap
+      liquidColor: '#3d5c45', // Muted forest sage
       labelNumber: 'N° 02'
     }
   },
@@ -68,12 +64,12 @@ export const PROJECTS_DATA = [
       { label: 'Metric', value: 'CO2e & Eutrophication' },
       { label: 'Outcome', value: 'Material Roadmap' }
     ],
+    // Upper Shelf Left - Hexagonal Faceted Ruby Elixir
     placement: {
-      shelf: 0, // Top shelf
-      slot: 1.8, // Right
-      bottleVariant: 'faceted', // Geometric faceted luxury bottle
-      liquidColor: '#9b5b52', // Terracotta / dried rose
-      capType: 'brass-faceted',
+      position: { x: -0.65, y: 1.35, z: 0.15 },
+      rotation: { x: 0, y: 0.1, z: 0 },
+      bottleVariant: 'faceted', // Hexagonal potion decanter with brass spire
+      liquidColor: '#963d32', // Deep ruby red elixir
       labelNumber: 'N° 03'
     }
   },
@@ -91,46 +87,45 @@ export const PROJECTS_DATA = [
       { label: 'Outputs', value: 'Blueprint & Playbook' },
       { label: 'Testing', value: 'Live Pilot' }
     ],
+    // Middle Shelf Right - Rectangular Slate Ink Flask
     placement: {
-      shelf: 1, // Middle shelf (index 1)
-      slot: -1.2, // Left
-      bottleVariant: 'flask', // Minimalist square flask
-      liquidColor: '#3d5a80', // Deep ink slate blue
-      capType: 'wood-block',
+      position: { x: 0.9, y: -0.35, z: 0.25 },
+      rotation: { x: 0, y: -0.15, z: 0 },
+      bottleVariant: 'flask', // Rectangular flask with charred wood cap
+      liquidColor: '#2b3d52', // Deep midnight slate ink
       labelNumber: 'N° 04'
     }
   },
   {
     id: 'speculative-artifacts',
     title: 'Future Artefacts & Curiosities',
-    category: 'Speculative Design',
+    category: 'Speculative Design & Worldbuilding',
     year: '2025',
-    tagline: 'Investigating tangible interfaces and nostalgic rituals in post-screen futures.',
-    summary: 'A collection of conceptual sensory devices exploring tactile memory preservation and digital calm.',
-    description: 'Project description placeholder. An ongoing experiment combining archaic physical mechanisms with subtle ambient computation.',
-    tags: ['Speculative', 'Tangible UI', 'Sensory Rituals', 'Prototypes'],
+    tagline: 'Diegetic prototypes excavating rituals, memory storage, and post-digital relics.',
+    summary: 'A taxonomy of fictional memory capsules and acoustic urns designed for an era of decentralized personal archives.',
+    description: 'Project description placeholder. Investigates emotional attachment to ephemeral digital media through tangible alchemical vessels.',
+    tags: ['Speculative', 'Worldbuilding', 'Physical Computing', 'Material Fiction'],
     stats: [
-      { label: 'Phase', value: 'Experimental' },
-      { label: 'Format', value: 'Interactive Props' },
-      { label: 'Theme', value: 'Post-Digital' }
+      { label: 'Artefacts', value: '4 Relic Vessels' },
+      { label: 'Exhibition', value: 'Future Archeology' },
+      { label: 'Theme', value: 'Memory Preservation' }
     ],
+    // Upper Shelf Right - Celestial Sphere Vial with Brass Rings
     placement: {
-      shelf: 1, // Middle shelf
-      slot: 1.2, // Right
-      bottleVariant: 'atomizer', // Spherical vintage bulb bottle
-      liquidColor: '#b08968', // Antique cedar / smoke
-      capType: 'gold-bulb',
+      position: { x: 0.65, y: 1.35, z: 0.15 },
+      rotation: { x: 0, y: -0.1, z: 0 },
+      bottleVariant: 'sphere', // Spherical vial in brass armillary cradle
+      liquidColor: '#6a3875', // Luminous amethyst elixir
       labelNumber: 'N° 05'
     }
   }
 ];
 
 export const SHELF_CONFIG = {
-  shelfCount: 3,
-  shelfWidth: 7.2,
-  shelfDepth: 1.6,
-  shelfSpacing: 2.2, // vertical distance between shelves
-  cabinetHeight: 7.0,
-  cabinetWidth: 7.8,
-  cabinetDepth: 1.8
+  totalShelves: 3,
+  cabinetDimensions: {
+    width: 3.6,
+    height: 6.8,
+    depth: 2.4
+  }
 };

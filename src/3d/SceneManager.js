@@ -1,12 +1,18 @@
 import * as THREE from 'three';
 import { createCabinet } from './Cabinet.js';
+import { createApothecaryRoom } from './RoomEnvironment.js';
 import { createPerfumeBottle } from './BottleFactory.js';
 import { CameraController } from './CameraController.js';
 import { InteractionManager } from './InteractionManager.js';
 import { PROJECTS_DATA } from '../data/projects.js';
 
 /**
- * Master 3D Scene Manager with Drag-to-Rotate, Drawers & Atmospheric Ambient Particles
+ * Master 3D Scene Manager with Atmospheric Victorian Apothecary Room & Cozy Amber Lighting
+ * Directly matches the reference image:
+ * - Full room background with rustic floor, Persian rug, library shelves, stained glass, staircase & mezzanine
+ * - Warm hanging Moroccan/teardrop glass lanterns with glowing illumination
+ * - Cleanly organized bottle displays on open shelves with zero clipping
+ * - 360° interactive orbit & bottle inspection
  */
 export class SceneManager {
   constructor(containerElement, onSelectCallback, onHoverCallback, onDrawerCallback) {
@@ -21,6 +27,7 @@ export class SceneManager {
     this.cameraController = null;
     this.interactionManager = null;
     this.cabinet = null;
+    this.room = null;
     this.bottles = [];
     this.dustParticles = null;
 
@@ -34,18 +41,17 @@ export class SceneManager {
     const width = this.container.clientWidth || window.innerWidth;
     const height = this.container.clientHeight || window.innerHeight;
 
-    // 1. Scene
+    // 1. Cozy Antique Chamber Scene & Atmospheric Warm Fog
     this.scene = new THREE.Scene();
-    this.scene.background = new THREE.Color(0x0c0908);
-    this.scene.fog = new THREE.FogExp2(0x0c0908, 0.035);
+    this.scene.background = new THREE.Color(0x0d0907);
+    this.scene.fog = new THREE.FogExp2(0x0d0907, 0.032);
 
     // 2. Camera
     const isMobile = width < 768;
-    const initialFov = isMobile ? 65 : 50;
-    this.camera = new THREE.PerspectiveCamera(initialFov, width / height, 0.1, 50);
-    this.camera.position.set(0, 0, isMobile ? 9.8 : 7.8);
+    const initialFov = isMobile ? 56 : 48;
+    this.camera = new THREE.PerspectiveCamera(initialFov, width / height, 0.1, 65);
 
-    // 3. WebGL Renderer with graceful fallback
+    // 3. WebGL Renderer
     try {
       this.renderer = new THREE.WebGLRenderer({
         antialias: true,
@@ -60,103 +66,119 @@ export class SceneManager {
     this.renderer.setSize(width, height);
     this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.75));
     this.renderer.toneMapping = THREE.ACESFilmicToneMapping;
-    this.renderer.toneMappingExposure = 1.15;
+    this.renderer.toneMappingExposure = 1.25;
     this.renderer.shadowMap.enabled = true;
     this.renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 
     this.container.appendChild(this.renderer.domElement);
 
-    // 4. Reddish Amber Lighting Setup
-    this.setupLighting();
+    // 4. Victorian Apothecary Room Background (Floor, Persian Rug, Shelves, Stained Glass, Stairs)
+    this.room = createApothecaryRoom();
+    this.scene.add(this.room);
 
-    // 5. Build Asymmetrical Antique Cabinet with Interactive Drawers
+    // 5. Build Organized Victorian Curiosity Cabinet
     this.cabinet = createCabinet();
     this.scene.add(this.cabinet);
 
-    // 6. Camera Controller
+    // 6. Authentic Cozy Victorian Lighting (Matching Reference Photo)
+    this.setupApothecaryLighting();
+
+    // 7. Camera Controller (360° Spherical Orbit)
     this.cameraController = new CameraController(this.camera, this.renderer.domElement);
     this.cameraController.onResize(width, height);
 
-    // 7. Interaction Manager (Raycasting, Drag-to-Rotate, Drawers)
+    // 8. Interaction Manager (360° Drag Orbit + Inspection Spin + Raycasting)
     this.interactionManager = new InteractionManager(
       this.camera,
       this.scene,
       this.renderer.domElement,
+      this.cameraController,
       (project, bottleObj) => this.handleBottleSelected(project, bottleObj),
       (userData, x, y, visible) => this.onHover(userData, x, y, visible),
       (drawerData, isOpen) => this.onDrawer(drawerData, isOpen)
     );
 
-    // Register Cabinet Drawers with Raycaster
+    // Register Drawers with Raycaster
     if (this.cabinet.userData.drawers) {
       this.cabinet.userData.drawers.forEach(dGroup => {
         this.interactionManager.registerInteractiveObject(dGroup);
       });
     }
 
-    // 8. Populate Perfume Bottles
+    // 9. Populate Cleanly Organized Perfume Bottles on Open Shelves
     this.populateBottles();
 
-    // 9. Floating Dust Particles
+    // 10. Golden Floating Dust Particles Drifting in the Warm Light
     this.setupDustParticles();
 
-    // 10. Event Listeners
+    // 11. Event Listeners
     window.addEventListener('resize', () => this.onResize());
 
-    // 11. Start Loop
+    // 12. Start Loop
     this.animate();
   }
 
-  setupLighting() {
-    const ambientLight = new THREE.AmbientLight(0x2d1f18, 0.75);
+  setupApothecaryLighting() {
+    // A. Warm Room Ambient Base (Rich dark umber shadow foundation)
+    const ambientLight = new THREE.AmbientLight(0x382216, 0.9);
     this.scene.add(ambientLight);
 
-    // Main Reddish-Amber Sunlight Shaft
-    const amberShaftLight = new THREE.DirectionalLight(0xff7836, 1.7);
-    amberShaftLight.position.set(-4.5, 5.5, 4.5);
-    amberShaftLight.castShadow = true;
-    amberShaftLight.shadow.mapSize.width = 1024;
-    amberShaftLight.shadow.mapSize.height = 1024;
-    amberShaftLight.shadow.camera.near = 0.5;
-    amberShaftLight.shadow.camera.far = 20;
-    amberShaftLight.shadow.bias = -0.001;
-    this.scene.add(amberShaftLight);
+    // B. Dramatic Reddish-Amber Sunlight Beam (slanted ray from loft window matching lighting.jpg)
+    const sunbeamLight = new THREE.DirectionalLight(0xff9438, 2.3);
+    sunbeamLight.position.set(-5.5, 9.5, 4.0);
+    sunbeamLight.castShadow = true;
+    sunbeamLight.shadow.mapSize.width = 2048;
+    sunbeamLight.shadow.mapSize.height = 2048;
+    sunbeamLight.shadow.camera.near = 0.5;
+    sunbeamLight.shadow.camera.far = 32;
+    sunbeamLight.shadow.bias = -0.0006;
+    this.scene.add(sunbeamLight);
 
-    // Warm Terracotta Rim Light
-    const rimLight = new THREE.DirectionalLight(0xd47a3f, 1.15);
-    rimLight.position.set(5.5, 2.5, 2.5);
-    this.scene.add(rimLight);
+    // C. Soft Warm Front Key Light for Bottles & Glass Refraction
+    const frontKey = new THREE.DirectionalLight(0xffaa48, 1.15);
+    frontKey.position.set(2.0, 3.5, 6.0);
+    this.scene.add(frontKey);
 
-    // Candle point lights inside upper & lower bays
-    const upperCandle = new THREE.PointLight(0xff9843, 1.2, 7.5, 1.8);
-    upperCandle.position.set(-0.5, 1.8, 1.2);
-    this.scene.add(upperCandle);
+    // D. Warm Backlight / Rim for Glass Silhouettes & Wood Contours
+    const backRim = new THREE.DirectionalLight(0xff7722, 1.1);
+    backRim.position.set(-3.5, 3.0, -4.5);
+    this.scene.add(backRim);
 
-    const lowerGlow = new THREE.PointLight(0xe86c2e, 0.9, 6.5, 2.0);
-    lowerGlow.position.set(1.0, -0.6, 1.0);
-    this.scene.add(lowerGlow);
+    // E. Dedicated Shelf Vitrine Point Lights (Gentle warm interior glow on bottles)
+    const midShelfGlow = new THREE.PointLight(0xffa843, 1.2, 4.5, 1.8);
+    midShelfGlow.position.set(0, 0.4, 0.6);
+    this.scene.add(midShelfGlow);
+
+    const upperShelfGlow = new THREE.PointLight(0xff9030, 1.0, 4.0, 1.8);
+    upperShelfGlow.position.set(0, 2.1, 0.4);
+    this.scene.add(upperShelfGlow);
+
+    // F. Stained Glass Window Subtle Jewel Glow on Left Wall
+    const stainedGlassLight = new THREE.PointLight(0x5c7cfa, 0.85, 7.5, 2.0);
+    stainedGlassLight.position.set(-7.5, 0.5, -1.8);
+    this.scene.add(stainedGlassLight);
   }
 
   setupDustParticles() {
-    const particleCount = 120;
+    const particleCount = 160;
     const geometry = new THREE.BufferGeometry();
     const positions = new Float32Array(particleCount * 3);
     const speeds = new Float32Array(particleCount);
 
     for (let i = 0; i < particleCount; i++) {
-      positions[i * 3] = (Math.random() - 0.5) * 8;
-      positions[i * 3 + 1] = (Math.random() - 0.5) * 7;
-      positions[i * 3 + 2] = Math.random() * 3 + 0.2;
-      speeds[i] = Math.random() * 0.2 + 0.1;
+      positions[i * 3] = (Math.random() - 0.5) * 10.0;
+      positions[i * 3 + 1] = (Math.random() - 0.5) * 8.0;
+      positions[i * 3 + 2] = (Math.random() - 0.5) * 10.0;
+      speeds[i] = Math.random() * 0.18 + 0.08;
     }
 
     geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
 
     const material = new THREE.PointsMaterial({
-      color: 0xffb870,
-      size: 0.045,
+      color: 0xffd28a, // Luminous golden motes
+      size: 0.05,
       transparent: true,
-      opacity: 0.55,
+      opacity: 0.7,
       blending: THREE.AdditiveBlending,
       depthWrite: false
     });
@@ -168,13 +190,9 @@ export class SceneManager {
 
   populateBottles() {
     PROJECTS_DATA.forEach(project => {
-      const shelfIndex = project.placement.shelf;
-      const shelfY = this.cabinet.userData.getShelfY(shelfIndex);
-      
-      const bottleGroup = createPerfumeBottle(project, shelfY);
+      const bottleGroup = createPerfumeBottle(project);
       this.scene.add(bottleGroup);
       this.bottles.push(bottleGroup);
-      
       this.interactionManager.registerInteractiveObject(bottleGroup);
     });
   }
@@ -215,29 +233,40 @@ export class SceneManager {
     this.cameraController.update();
     this.interactionManager.update();
 
-    // Drift dust particles gently
+    // Drift golden dust particles
     if (this.dustParticles) {
       const positions = this.dustParticles.geometry.attributes.position.array;
       const speeds = this.dustParticles.userData.speeds;
       const count = positions.length / 3;
 
       for (let i = 0; i < count; i++) {
-        positions[i * 3 + 1] += Math.sin(elapsedTime * 0.5 + i) * 0.002 - speeds[i] * 0.003;
-        positions[i * 3] += Math.cos(elapsedTime * 0.3 + i) * 0.0015;
+        positions[i * 3 + 1] += Math.sin(elapsedTime * 0.35 + i) * 0.0018 - speeds[i] * 0.0025;
+        positions[i * 3] += Math.cos(elapsedTime * 0.25 + i) * 0.0012;
 
-        if (positions[i * 3 + 1] < -3.5) positions[i * 3 + 1] = 3.5;
-        if (positions[i * 3] < -4.0) positions[i * 3] = 4.0;
-        if (positions[i * 3] > 4.0) positions[i * 3] = -4.0;
+        if (positions[i * 3 + 1] < -3.8) positions[i * 3 + 1] = 4.2;
+        if (positions[i * 3] < -5.0) positions[i * 3] = 5.0;
+        if (positions[i * 3] > 5.0) positions[i * 3] = -5.0;
       }
       this.dustParticles.geometry.attributes.position.needsUpdate = true;
     }
 
-    // Subtle resting breathing on bottles when not being dragged/inspected
-    this.bottles.forEach((bottle, i) => {
-      if (bottle !== this.interactionManager.selectedObject && bottle !== this.interactionManager.hoveredObject) {
-        bottle.position.y = bottle.userData.basePosition.y + Math.sin(elapsedTime * 1.5 + i) * 0.006;
-      }
-    });
+    // Dynamic cozy candle flame & lantern light flickering
+    if (this.room && this.room.userData.lanternLights) {
+      this.room.userData.lanternLights.forEach((light, i) => {
+        light.intensity = 1.3 + Math.sin(elapsedTime * 4.0 + i * 1.7) * 0.15 + (Math.random() - 0.5) * 0.05;
+      });
+    }
+
+    const candleLight = this.cabinet.getObjectByName('Candle_Light');
+    if (candleLight) {
+      candleLight.intensity = 0.85 + Math.sin(elapsedTime * 8.0) * 0.12 + (Math.random() - 0.5) * 0.08;
+    }
+
+    const candleFlame = this.cabinet.getObjectByName('Candle_Flame');
+    if (candleFlame) {
+      candleFlame.scale.y = 1.0 + Math.sin(elapsedTime * 9.0) * 0.15;
+      candleFlame.scale.x = 1.0 + Math.cos(elapsedTime * 7.0) * 0.1;
+    }
 
     this.renderer.render(this.scene, this.camera);
   }

@@ -11,12 +11,13 @@
   --color-ink: #19120e;
   --color-ink-muted: #5e4c3d;
   
-  /* Reddish Amber & Tarnished Brass */
-  --color-amber-glow: #e06d28;
-  --color-amber-subtle: rgba(224, 109, 40, 0.25);
-  --color-brass: #b88942;
+  /* Golden Amber & Tarnished Aged Brass (matching lighting.jpg) */
+  --color-amber-glow: #f5a623;
+  --color-amber-subtle: rgba(245, 166, 35, 0.22);
+  --color-amber-bright: #ffc46b;
+  --color-brass: #c89d55;
   --color-brass-dark: #8c672e;
-  --color-border: rgba(184, 137, 66, 0.35);
+  --color-border: rgba(200, 157, 85, 0.35);
   --color-border-subtle: rgba(255, 255, 255, 0.08);
 
   /* Typography */
@@ -86,8 +87,8 @@ html, body {
   pointer-events: none;
   z-index: 2;
   background: 
-    radial-gradient(ellipse at 35% 30%, rgba(224, 109, 40, 0.12) 0%, transparent 60%),
-    radial-gradient(circle at 50% 50%, transparent 40%, rgba(12, 9, 8, 0.75) 88%, rgba(6, 4, 3, 0.98) 100%);
+    radial-gradient(ellipse at 30% 25%, rgba(245, 166, 35, 0.14) 0%, transparent 60%),
+    radial-gradient(circle at 50% 50%, transparent 40%, rgba(12, 9, 8, 0.72) 88%, rgba(6, 4, 3, 0.98) 100%);
 }
 
 /* UI Overlay Layer */

@@ -4,13 +4,18 @@ import gsapModule from 'gsap';
 const gsap = (typeof window !== 'undefined' && window.gsap) ? window.gsap : (gsapModule?.gsap || gsapModule);
 
 /**
- * Advanced 3D Raycasting, Tactile Physics & Drag-to-Rotate Inspection Engine (Touch & Desktop)
+ * Advanced 3D Interaction Engine
+ * Handles:
+ * 1. Overview Mode: 360° Drag-to-Orbit around the entire assemblage cabinet sculpture.
+ * 2. Inspection Mode: 360° Drag-to-Rotate on the active focused bottle.
+ * 3. Raycasting: Hover elevation, tooltips, click selection on bottles & drawers.
  */
 export class InteractionManager {
-  constructor(camera, scene, domElement, onSelectBottle, onHoverObject, onOpenDrawer) {
+  constructor(camera, scene, domElement, cameraController, onSelectBottle, onHoverObject, onOpenDrawer) {
     this.camera = camera;
     this.scene = scene;
     this.domElement = domElement;
+    this.cameraController = cameraController;
     this.onSelectBottle = onSelectBottle;
     this.onHoverObject = onHoverObject;
     this.onOpenDrawer = onOpenDrawer;
@@ -21,15 +26,15 @@ export class InteractionManager {
     
     this.hoveredObject = null;
     this.selectedObject = null;
-    this.openDrawer = null;
     this.isEnabled = true;
 
-    // Drag-to-Rotate & Touch Tap Distinguisher
+    // Pointer Drag Tracking
+    this.isPointerDown = false;
     this.isDragging = false;
-    this.touchStartPos = { x: 0, y: 0 };
-    this.touchStartTime = 0;
+    this.dragStartPos = { x: 0, y: 0 };
+    this.dragStartTime = 0;
     this.previousPointerPos = { x: 0, y: 0 };
-    this.rotationVelocity = { x: 0, y: 0 };
+    this.bottleRotationVelocity = { x: 0, y: 0 };
 
     this.initEvents();
   }
@@ -39,96 +44,117 @@ export class InteractionManager {
   }
 
   initEvents() {
-    // Desktop Mouse Handlers
-    this.domElement.addEventListener('pointermove', (e) => this.onPointerMove(e));
+    // Mouse
     this.domElement.addEventListener('pointerdown', (e) => this.onPointerDown(e));
-    window.addEventListener('pointerup', () => this.onPointerUp());
-    this.domElement.addEventListener('click', (e) => this.onClick(e));
+    this.domElement.addEventListener('pointermove', (e) => this.onPointerMove(e));
+    window.addEventListener('pointerup', (e) => this.onPointerUp(e));
 
-    // Touch Handlers for Mobile
+    // Touch Support
     this.domElement.addEventListener('touchstart', (e) => {
       if (e.touches.length > 0) {
         const touch = e.touches[0];
-        this.touchStartPos = { x: touch.clientX, y: touch.clientY };
-        this.touchStartTime = Date.now();
-        this.pointer.x = (touch.clientX / window.innerWidth) * 2 - 1;
-        this.pointer.y = -(touch.clientY / window.innerHeight) * 2 + 1;
-        this.onPointerDown({ clientX: touch.clientX, clientY: touch.clientY });
+        this.onPointerDown({ clientX: touch.clientX, clientY: touch.clientY, pointerType: 'touch' });
       }
     }, { passive: true });
 
     this.domElement.addEventListener('touchmove', (e) => {
       if (e.touches.length > 0) {
         const touch = e.touches[0];
-        this.pointer.x = (touch.clientX / window.innerWidth) * 2 - 1;
-        this.pointer.y = -(touch.clientY / window.innerHeight) * 2 + 1;
-        this.onPointerMove({ clientX: touch.clientX, clientY: touch.clientY });
+        this.onPointerMove({ clientX: touch.clientX, clientY: touch.clientY, pointerType: 'touch' });
       }
     }, { passive: true });
 
     this.domElement.addEventListener('touchend', (e) => {
-      const touchDuration = Date.now() - this.touchStartTime;
-      const moveDistance = Math.hypot(
-        (e.changedTouches[0]?.clientX || 0) - this.touchStartPos.x,
-        (e.changedTouches[0]?.clientY || 0) - this.touchStartPos.y
-      );
-
-      // If quick tap with minimal movement, trigger selection
-      if (touchDuration < 300 && moveDistance < 15) {
-        this.onClick({ clientX: this.touchStartPos.x, clientY: this.touchStartPos.y });
-      }
-
-      this.onPointerUp();
+      const touch = e.changedTouches[0] || { clientX: this.previousPointerPos.x, clientY: this.previousPointerPos.y };
+      this.onPointerUp({ clientX: touch.clientX, clientY: touch.clientY, pointerType: 'touch' });
     }, { passive: true });
   }
 
   onPointerDown(event) {
     if (!this.isEnabled) return;
 
-    if (this.selectedObject && this.selectedObject.userData.type === 'bottle') {
-      this.isDragging = true;
-      this.previousPointerPos = { x: event.clientX, y: event.clientY };
-      this.domElement.style.cursor = 'grabbing';
-    }
-  }
+    this.isPointerDown = true;
+    this.isDragging = false;
+    this.dragStartPos = { x: event.clientX, y: event.clientY };
+    this.previousPointerPos = { x: event.clientX, y: event.clientY };
+    this.dragStartTime = Date.now();
 
-  onPointerUp() {
-    if (this.isDragging) {
-      this.isDragging = false;
-      if (this.selectedObject) {
-        this.domElement.style.cursor = 'grab';
-      } else {
-        this.domElement.style.cursor = 'default';
-      }
+    this.pointer.x = (event.clientX / window.innerWidth) * 2 - 1;
+    this.pointer.y = -(event.clientY / window.innerHeight) * 2 + 1;
+
+    if (this.selectedObject) {
+      this.domElement.style.cursor = 'grabbing';
     }
   }
 
   onPointerMove(event) {
     if (!this.isEnabled) return;
 
-    // Handle Drag-to-Rotate if inspecting a bottle
-    if (this.isDragging && this.selectedObject && this.selectedObject.userData.type === 'bottle') {
-      const deltaX = event.clientX - this.previousPointerPos.x;
-      const deltaY = event.clientY - this.previousPointerPos.y;
+    const currentPos = { x: event.clientX, y: event.clientY };
+    const deltaX = currentPos.x - this.previousPointerPos.x;
+    const deltaY = currentPos.y - this.previousPointerPos.y;
+    const moveDist = Math.hypot(currentPos.x - this.dragStartPos.x, currentPos.y - this.dragStartPos.y);
 
-      this.previousPointerPos = { x: event.clientX, y: event.clientY };
+    if (this.isPointerDown && moveDist > 6) {
+      this.isDragging = true;
+    }
 
-      // Apply rotational velocity
-      this.rotationVelocity.y = deltaX * 0.009;
-      this.rotationVelocity.x = deltaY * 0.007;
+    if (this.isDragging) {
+      if (this.selectedObject && this.selectedObject.userData.type === 'bottle') {
+        // Mode A: Inspection Mode -> Spin individual bottle in 360°
+        this.bottleRotationVelocity.y = deltaX * 0.009;
+        this.bottleRotationVelocity.x = deltaY * 0.007;
 
-      this.selectedObject.rotation.y += this.rotationVelocity.y;
-      this.selectedObject.rotation.x = Math.max(-0.45, Math.min(0.45, this.selectedObject.rotation.x + this.rotationVelocity.x));
+        this.selectedObject.rotation.y += this.bottleRotationVelocity.y;
+        this.selectedObject.rotation.x = Math.max(-0.45, Math.min(0.45, this.selectedObject.rotation.x + this.bottleRotationVelocity.x));
+      } else {
+        // Mode B: Overview Mode -> 360° Orbit around the entire assemblage cabinet!
+        if (this.cameraController) {
+          this.cameraController.addOrbitDelta(deltaX, deltaY);
+        }
+        this.domElement.style.cursor = 'grabbing';
+      }
+
+      this.previousPointerPos = { x: currentPos.x, y: currentPos.y };
       return;
     }
 
+    this.previousPointerPos = { x: currentPos.x, y: currentPos.y };
     this.pointer.x = (event.clientX / window.innerWidth) * 2 - 1;
     this.pointer.y = -(event.clientY / window.innerHeight) * 2 + 1;
     this.checkHover(event.clientX, event.clientY);
   }
 
+  onPointerUp(event) {
+    if (!this.isPointerDown) return;
+
+    const elapsed = Date.now() - this.dragStartTime;
+    const moveDist = Math.hypot(
+      (event.clientX || this.previousPointerPos.x) - this.dragStartPos.x,
+      (event.clientY || this.previousPointerPos.y) - this.dragStartPos.y
+    );
+
+    this.isPointerDown = false;
+
+    if (this.cameraController) {
+      this.cameraController.endOrbitDrag();
+    }
+
+    // If it was a click/tap (not a long drag), perform raycast selection
+    if (!this.isDragging && elapsed < 350 && moveDist < 12) {
+      this.performRaycastClick();
+    }
+
+    this.isDragging = false;
+    if (this.selectedObject) {
+      this.domElement.style.cursor = 'grab';
+    } else {
+      this.domElement.style.cursor = 'default';
+    }
+  }
+
   checkHover(screenX, screenY) {
-    if (this.selectedObject || this.isDragging) return;
+    if (this.selectedObject || this.isDragging || this.isPointerDown) return;
 
     this.raycaster.setFromCamera(this.pointer, this.camera);
     
@@ -173,15 +199,9 @@ export class InteractionManager {
       gsap.killTweensOf(objectGroup.position);
       gsap.killTweensOf(objectGroup.rotation);
 
+      // Lift bottle off shelf
       gsap.to(objectGroup.position, {
-        y: basePos.y + 0.16,
-        z: basePos.z + 0.12,
-        duration: 0.35,
-        ease: 'power2.out'
-      });
-
-      gsap.to(objectGroup.rotation, {
-        y: 0.25,
+        y: basePos.y + 0.15,
         duration: 0.35,
         ease: 'power2.out'
       });
@@ -210,6 +230,7 @@ export class InteractionManager {
     if (this.selectedObject !== obj) {
       const type = obj.userData.type;
       const basePos = obj.userData.basePosition;
+      const baseRot = obj.userData.baseRotation;
 
       if (type === 'bottle') {
         gsap.killTweensOf(obj.position);
@@ -224,8 +245,9 @@ export class InteractionManager {
         });
 
         gsap.to(obj.rotation, {
-          x: 0,
-          y: 0,
+          x: baseRot.x,
+          y: baseRot.y,
+          z: baseRot.z,
           duration: 0.45,
           ease: 'power2.inOut'
         });
@@ -245,9 +267,7 @@ export class InteractionManager {
     }
   }
 
-  onClick(event) {
-    if (!this.isEnabled || this.isDragging) return;
-    
+  performRaycastClick() {
     this.raycaster.setFromCamera(this.pointer, this.camera);
     const candidateMeshes = [];
     this.interactiveObjects.forEach(group => {
@@ -281,18 +301,9 @@ export class InteractionManager {
     gsap.killTweensOf(bottleGroup.position);
     gsap.killTweensOf(bottleGroup.rotation);
 
-    const isMobile = window.innerWidth < 768;
-
+    // Lift and bring slightly forward for inspection
     gsap.to(bottleGroup.position, {
-      y: isMobile ? basePos.y + 0.12 : basePos.y + 0.22,
-      z: basePos.z + 0.45,
-      duration: 0.9,
-      ease: 'power3.out'
-    });
-
-    gsap.to(bottleGroup.rotation, {
-      x: 0,
-      y: 0.3,
+      y: basePos.y + 0.18,
       duration: 0.9,
       ease: 'power3.out'
     });
@@ -337,6 +348,7 @@ export class InteractionManager {
     if (this.selectedObject) {
       const obj = this.selectedObject;
       const basePos = obj.userData.basePosition;
+      const baseRot = obj.userData.baseRotation;
       
       gsap.killTweensOf(obj.position);
       gsap.killTweensOf(obj.rotation);
@@ -350,8 +362,9 @@ export class InteractionManager {
       });
 
       gsap.to(obj.rotation, {
-        x: 0,
-        y: 0,
+        x: baseRot.x,
+        y: baseRot.y,
+        z: baseRot.z,
         duration: 0.8,
         ease: 'power3.inOut'
       });
@@ -363,12 +376,12 @@ export class InteractionManager {
 
   update() {
     if (!this.isDragging && this.selectedObject && this.selectedObject.userData.type === 'bottle') {
-      this.rotationVelocity.x *= 0.92;
-      this.rotationVelocity.y *= 0.92;
+      this.bottleRotationVelocity.x *= 0.92;
+      this.bottleRotationVelocity.y *= 0.92;
 
-      if (Math.abs(this.rotationVelocity.x) > 0.0001 || Math.abs(this.rotationVelocity.y) > 0.0001) {
-        this.selectedObject.rotation.y += this.rotationVelocity.y;
-        this.selectedObject.rotation.x = Math.max(-0.45, Math.min(0.45, this.selectedObject.rotation.x + this.rotationVelocity.x));
+      if (Math.abs(this.bottleRotationVelocity.x) > 0.0001 || Math.abs(this.bottleRotationVelocity.y) > 0.0001) {
+        this.selectedObject.rotation.y += this.bottleRotationVelocity.y;
+        this.selectedObject.rotation.x = Math.max(-0.45, Math.min(0.45, this.selectedObject.rotation.x + this.bottleRotationVelocity.x));
       }
     }
   }

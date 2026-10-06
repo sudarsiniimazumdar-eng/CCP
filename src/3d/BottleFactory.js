@@ -2,11 +2,6 @@ import * as THREE from 'three';
 
 /**
  * Exact Visual Match: Antique Apothecary & Alchemical Label Generator
- * Replicates the authentic aesthetic from REFERENCES.md (Image 5):
- * - Stained, decaying tea/coffee parchment with distressed weathered edges
- * - Ornate Victorian/Baroque double-line engraved border flourishes
- * - "Union Street Apothecary Tonic" / "Sage" botanical engraving styling
- * - Smudged ink cursive script & high-contrast editorial serif
  */
 function createAlchemicalLabelTexture(project) {
   const canvas = document.createElement('canvas');
@@ -14,12 +9,12 @@ function createAlchemicalLabelTexture(project) {
   canvas.height = 340;
   const ctx = canvas.getContext('2d');
 
-  // 1. Stained, Decaying Parchment Background (Aged Amber Patina)
+  // Stained, Decaying Parchment Background (Aged Amber Patina)
   const bgGrad = ctx.createRadialGradient(256, 170, 30, 256, 170, 260);
   bgGrad.addColorStop(0, '#f5ebdb');
   bgGrad.addColorStop(0.65, '#e5d1b5');
   bgGrad.addColorStop(0.92, '#cbb290');
-  bgGrad.addColorStop(1, '#8e6f49'); // Burned / stained edge
+  bgGrad.addColorStop(1, '#8e6f49');
   ctx.fillStyle = bgGrad;
   ctx.fillRect(0, 0, canvas.width, canvas.height);
 
@@ -32,12 +27,12 @@ function createAlchemicalLabelTexture(project) {
     ctx.fillRect(rx, ry, rw, rw * 0.55);
   }
 
-  // 2. Ornate Engraved Border Frame with Corner Flourishes
+  // Ornate Engraved Border Frame
   ctx.strokeStyle = '#241a12';
   ctx.lineWidth = 5;
   ctx.strokeRect(16, 16, canvas.width - 32, canvas.height - 32);
 
-  ctx.strokeStyle = '#b5843a'; // Antique gold inner filigree rule
+  ctx.strokeStyle = '#b5843a';
   ctx.lineWidth = 1.8;
   ctx.strokeRect(25, 25, canvas.width - 50, canvas.height - 50);
 
@@ -58,7 +53,7 @@ function createAlchemicalLabelTexture(project) {
   drawFiligreeCorner(25, canvas.height - 25, 1, -1);
   drawFiligreeCorner(canvas.width - 25, canvas.height - 25, -1, -1);
 
-  // 3. Apothecary Header: Alchemical Number & Mortar Emblem
+  // Apothecary Header: Alchemical Number
   ctx.fillStyle = '#b5843a';
   ctx.font = 'bold 22px "DM Mono", monospace';
   ctx.textAlign = 'center';
@@ -68,7 +63,7 @@ function createAlchemicalLabelTexture(project) {
   ctx.font = 'italic 23px "Pinyon Script", "Alex Brush", cursive';
   ctx.fillText('Old Field Apothecary · Preserved Elixir', canvas.width / 2, 92);
 
-  // Dividing engraved filigree line with center diamond
+  // Dividing engraved line
   ctx.strokeStyle = '#856644';
   ctx.lineWidth = 1.2;
   ctx.beginPath();
@@ -81,7 +76,7 @@ function createAlchemicalLabelTexture(project) {
   ctx.fillStyle = '#b5843a';
   ctx.fillRect(251, 103, 10, 10);
 
-  // 4. Project Title (Editorial High-Contrast Serif like Bodoni / Canela / Playfair)
+  // Project Title
   ctx.fillStyle = '#160e0a';
   ctx.font = '700 34px "Playfair Display", "Cormorant Garamond", Georgia, serif';
   
@@ -93,7 +88,7 @@ function createAlchemicalLabelTexture(project) {
     ctx.fillText(project.title, canvas.width / 2, 175);
   }
 
-  // 5. Taxonomy, Year & Botanical Seal
+  // Taxonomy & Year
   ctx.fillStyle = '#5c4532';
   ctx.font = '600 17px "DM Mono", monospace';
   ctx.letterSpacing = '2.5px';
@@ -109,21 +104,21 @@ function createAlchemicalLabelTexture(project) {
 }
 
 /**
- * Procedural Witchy Perfume Bottle & Alchemical Decanter Generator
+ * Procedural Perfume Bottle Generator (360° Spatial Placement)
  */
-export function createPerfumeBottle(project, baseShelfY) {
+export function createPerfumeBottle(project) {
   const bottleGroup = new THREE.Group();
   bottleGroup.name = `Bottle_${project.id}`;
 
-  const { bottleVariant, liquidColor, slot } = project.placement;
+  const { bottleVariant, liquidColor, position, rotation } = project.placement;
 
-  // Authentic Atmospheric Materials
+  // Materials
   const glassMaterial = new THREE.MeshPhysicalMaterial({
     color: 0xffffff,
     transmission: 0.9,
     opacity: 1,
     transparent: true,
-    roughness: 0.14, // Dusty antique glass
+    roughness: 0.14,
     ior: 1.52,
     metalness: 0.04,
     clearcoat: 0.8,
@@ -139,7 +134,7 @@ export function createPerfumeBottle(project, baseShelfY) {
   });
 
   const antiqueBrassMaterial = new THREE.MeshStandardMaterial({
-    color: 0xb5843a, // Tarnished antique brass with dark patina
+    color: 0xb5843a,
     roughness: 0.42,
     metalness: 0.82
   });
@@ -170,13 +165,12 @@ export function createPerfumeBottle(project, baseShelfY) {
     side: THREE.DoubleSide
   });
 
-  let bodyMesh, liquidMesh, capMesh, neckMesh, labelMesh, neckCordMesh, decorativeParts = [];
+  let bodyMesh, liquidMesh, capMesh, neckMesh, labelMesh, neckCordMesh;
 
   switch (bottleVariant) {
     case 'apothecary': {
-      // 1. Herbal Medicine Flacon with Tied Twine Cord & Cork (Ref 1 & 4)
-      const radius = 0.44;
-      const height = 0.94;
+      const radius = 0.38;
+      const height = 0.85;
       const bodyGeo = new THREE.CylinderGeometry(radius, radius, height, 32);
       bodyMesh = new THREE.Mesh(bodyGeo, glassMaterial);
       bodyMesh.position.y = height / 2;
@@ -185,32 +179,28 @@ export function createPerfumeBottle(project, baseShelfY) {
       liquidMesh = new THREE.Mesh(liqGeo, liquidMaterial);
       liquidMesh.position.y = (height * 0.76) / 2 + 0.04;
 
-      const neckGeo = new THREE.CylinderGeometry(0.18, 0.22, 0.28, 24);
+      const neckGeo = new THREE.CylinderGeometry(0.16, 0.2, 0.24, 24);
       neckMesh = new THREE.Mesh(neckGeo, glassMaterial);
-      neckMesh.position.y = height + 0.14;
+      neckMesh.position.y = height + 0.12;
 
-      // Bound Twine Neck Wrap
-      const cordGeo = new THREE.TorusGeometry(0.2, 0.038, 12, 24);
+      const cordGeo = new THREE.TorusGeometry(0.18, 0.035, 12, 24);
       neckCordMesh = new THREE.Mesh(cordGeo, twineCordMaterial);
       neckCordMesh.rotation.x = Math.PI / 2;
-      neckCordMesh.position.y = height + 0.13;
+      neckCordMesh.position.y = height + 0.11;
 
-      // Aged Cork Stopper
-      const capGeo = new THREE.CylinderGeometry(0.22, 0.16, 0.34, 24);
+      const capGeo = new THREE.CylinderGeometry(0.2, 0.15, 0.3, 24);
       capMesh = new THREE.Mesh(capGeo, agedCorkMaterial);
-      capMesh.position.y = height + 0.3 + 0.14;
+      capMesh.position.y = height + 0.26 + 0.12;
 
-      // Curved Parchment Wrap Label
-      const labelGeo = new THREE.CylinderGeometry(radius + 0.007, radius + 0.007, 0.54, 32, 1, true, -Math.PI / 2.8, (2 * Math.PI) / 2.8);
+      const labelGeo = new THREE.CylinderGeometry(radius + 0.007, radius + 0.007, 0.48, 32, 1, true, -Math.PI / 2.8, (2 * Math.PI) / 2.8);
       labelMesh = new THREE.Mesh(labelGeo, labelMaterial);
       labelMesh.position.y = height / 2;
       break;
     }
 
     case 'faceted': {
-      // 2. Hexagonal Potion Decanter with Ornate Spire Crown (Ref 1)
-      const radius = 0.46;
-      const height = 1.0;
+      const radius = 0.42;
+      const height = 0.92;
       const bodyGeo = new THREE.CylinderGeometry(radius, radius * 0.82, height, 6);
       bodyMesh = new THREE.Mesh(bodyGeo, glassMaterial);
       bodyMesh.position.y = height / 2;
@@ -219,29 +209,27 @@ export function createPerfumeBottle(project, baseShelfY) {
       liquidMesh = new THREE.Mesh(liqGeo, liquidMaterial);
       liquidMesh.position.y = (height * 0.78) / 2 + 0.04;
 
-      const neckGeo = new THREE.CylinderGeometry(0.2, 0.2, 0.22, 16);
+      const neckGeo = new THREE.CylinderGeometry(0.18, 0.18, 0.2, 16);
       neckMesh = new THREE.Mesh(neckGeo, antiqueBrassMaterial);
-      neckMesh.position.y = height + 0.11;
+      neckMesh.position.y = height + 0.1;
 
-      // Ornate Gothic Brass Spire Stopper
       const capGroup = new THREE.Group();
-      const capBase = new THREE.Mesh(new THREE.CylinderGeometry(0.28, 0.24, 0.2, 8), antiqueBrassMaterial);
-      const capSpire = new THREE.Mesh(new THREE.ConeGeometry(0.2, 0.42, 8), antiqueBrassMaterial);
-      capSpire.position.y = 0.3;
+      const capBase = new THREE.Mesh(new THREE.CylinderGeometry(0.25, 0.22, 0.18, 8), antiqueBrassMaterial);
+      const capSpire = new THREE.Mesh(new THREE.ConeGeometry(0.18, 0.38, 8), antiqueBrassMaterial);
+      capSpire.position.y = 0.26;
       capGroup.add(capBase);
       capGroup.add(capSpire);
-      capGroup.position.y = height + 0.22 + 0.1;
+      capGroup.position.y = height + 0.2 + 0.09;
       capMesh = capGroup;
 
-      const labelGeo = new THREE.PlaneGeometry(0.54, 0.46);
+      const labelGeo = new THREE.PlaneGeometry(0.48, 0.42);
       labelMesh = new THREE.Mesh(labelGeo, labelMaterial);
       labelMesh.position.set(0, height / 2, radius * 0.88 + 0.01);
       break;
     }
 
     case 'flask': {
-      // 3. Thick Rectangular Alchemist Flask with Charred Wood Cap (Ref 4)
-      const w = 0.82, h = 0.94, d = 0.46;
+      const w = 0.76, h = 0.86, d = 0.42;
       const bodyGeo = new THREE.BoxGeometry(w, h, d);
       bodyMesh = new THREE.Mesh(bodyGeo, glassMaterial);
       bodyMesh.position.y = h / 2;
@@ -250,23 +238,22 @@ export function createPerfumeBottle(project, baseShelfY) {
       liquidMesh = new THREE.Mesh(liqGeo, liquidMaterial);
       liquidMesh.position.y = (h * 0.78) / 2 + 0.04;
 
-      const neckGeo = new THREE.CylinderGeometry(0.16, 0.16, 0.2, 20);
+      const neckGeo = new THREE.CylinderGeometry(0.15, 0.15, 0.18, 20);
       neckMesh = new THREE.Mesh(neckGeo, antiqueBrassMaterial);
-      neckMesh.position.y = h + 0.1;
+      neckMesh.position.y = h + 0.09;
 
-      const capGeo = new THREE.BoxGeometry(0.36, 0.36, 0.36);
+      const capGeo = new THREE.BoxGeometry(0.32, 0.32, 0.32);
       capMesh = new THREE.Mesh(capGeo, charredWoodMaterial);
-      capMesh.position.y = h + 0.2 + 0.16;
+      capMesh.position.y = h + 0.18 + 0.14;
 
-      const labelGeo = new THREE.PlaneGeometry(w * 0.8, h * 0.56);
+      const labelGeo = new THREE.PlaneGeometry(w * 0.8, h * 0.54);
       labelMesh = new THREE.Mesh(labelGeo, labelMaterial);
       labelMesh.position.set(0, h / 2, d / 2 + 0.007);
       break;
     }
 
     case 'atomizer': {
-      // 4. Spherical Bulb Atomizer with Brass Nozzle & Tassel Cord (Ref 1)
-      const radius = 0.52;
+      const radius = 0.46;
       const bodyGeo = new THREE.SphereGeometry(radius, 32, 24);
       bodyMesh = new THREE.Mesh(bodyGeo, glassMaterial);
       bodyMesh.position.y = radius + 0.04;
@@ -275,22 +262,21 @@ export function createPerfumeBottle(project, baseShelfY) {
       liquidMesh = new THREE.Mesh(liqGeo, liquidMaterial);
       liquidMesh.position.y = radius + 0.04;
 
-      const neckGeo = new THREE.CylinderGeometry(0.16, 0.16, 0.28, 20);
+      const neckGeo = new THREE.CylinderGeometry(0.15, 0.15, 0.25, 20);
       neckMesh = new THREE.Mesh(neckGeo, antiqueBrassMaterial);
-      neckMesh.position.y = radius * 2 + 0.14;
+      neckMesh.position.y = radius * 2 + 0.12;
 
-      // Vintage Brass Spray Head & Bulb
       const capGroup = new THREE.Group();
-      const sprayHead = new THREE.Mesh(new THREE.CylinderGeometry(0.12, 0.14, 0.22, 16), antiqueBrassMaterial);
+      const sprayHead = new THREE.Mesh(new THREE.CylinderGeometry(0.11, 0.13, 0.2, 16), antiqueBrassMaterial);
       sprayHead.rotation.z = Math.PI / 2;
-      const bulbMesh = new THREE.Mesh(new THREE.SphereGeometry(0.22, 16, 16), charredWoodMaterial);
-      bulbMesh.position.set(0.3, 0, 0);
+      const bulbMesh = new THREE.Mesh(new THREE.SphereGeometry(0.2, 16, 16), charredWoodMaterial);
+      bulbMesh.position.set(0.26, 0, 0);
       capGroup.add(sprayHead);
       capGroup.add(bulbMesh);
-      capGroup.position.y = radius * 2 + 0.28 + 0.1;
+      capGroup.position.y = radius * 2 + 0.25 + 0.09;
       capMesh = capGroup;
 
-      const labelGeo = new THREE.PlaneGeometry(0.52, 0.42);
+      const labelGeo = new THREE.PlaneGeometry(0.46, 0.38);
       labelMesh = new THREE.Mesh(labelGeo, labelMaterial);
       labelMesh.position.set(0, radius + 0.04, radius + 0.008);
       break;
@@ -298,9 +284,8 @@ export function createPerfumeBottle(project, baseShelfY) {
 
     case 'arch':
     default: {
-      // 5. Tall Venetian / Victorian Decanter Flacon (Top Right of Ref 1)
-      const radius = 0.4;
-      const height = 1.15;
+      const radius = 0.36;
+      const height = 1.05;
       const bodyGeo = new THREE.CylinderGeometry(radius, radius * 0.88, height, 32);
       bodyMesh = new THREE.Mesh(bodyGeo, glassMaterial);
       bodyMesh.position.y = height / 2;
@@ -309,22 +294,21 @@ export function createPerfumeBottle(project, baseShelfY) {
       liquidMesh = new THREE.Mesh(liqGeo, liquidMaterial);
       liquidMesh.position.y = (height * 0.82) / 2 + 0.04;
 
-      const neckGeo = new THREE.CylinderGeometry(0.16, 0.22, 0.28, 24);
+      const neckGeo = new THREE.CylinderGeometry(0.15, 0.2, 0.25, 24);
       neckMesh = new THREE.Mesh(neckGeo, antiqueBrassMaterial);
-      neckMesh.position.y = height + 0.14;
+      neckMesh.position.y = height + 0.12;
 
-      // Tall Teardrop Finial Glass / Brass Stopper
       const capGroup = new THREE.Group();
-      const capCol = new THREE.Mesh(new THREE.CylinderGeometry(0.18, 0.22, 0.35, 24), antiqueBrassMaterial);
-      const capFinial = new THREE.Mesh(new THREE.SphereGeometry(0.2, 16, 16), glassMaterial);
-      capFinial.position.y = 0.32;
+      const capCol = new THREE.Mesh(new THREE.CylinderGeometry(0.16, 0.2, 0.32, 24), antiqueBrassMaterial);
+      const capFinial = new THREE.Mesh(new THREE.SphereGeometry(0.18, 16, 16), glassMaterial);
+      capFinial.position.y = 0.28;
       capFinial.scale.set(0.8, 1.4, 0.8);
       capGroup.add(capCol);
       capGroup.add(capFinial);
-      capGroup.position.y = height + 0.28 + 0.16;
+      capGroup.position.y = height + 0.24 + 0.14;
       capMesh = capGroup;
 
-      const labelGeo = new THREE.CylinderGeometry(radius + 0.007, radius + 0.007, 0.6, 32, 1, true, -Math.PI / 2.8, (2 * Math.PI) / 2.8);
+      const labelGeo = new THREE.CylinderGeometry(radius + 0.007, radius + 0.007, 0.54, 32, 1, true, -Math.PI / 2.8, (2 * Math.PI) / 2.8);
       labelMesh = new THREE.Mesh(labelGeo, labelMaterial);
       labelMesh.position.y = height / 2;
       break;
@@ -332,7 +316,7 @@ export function createPerfumeBottle(project, baseShelfY) {
   }
 
   // Base Contact Shadow
-  const shadowGeo = new THREE.CircleGeometry(0.5, 24);
+  const shadowGeo = new THREE.CircleGeometry(0.44, 24);
   const shadowMat = new THREE.MeshBasicMaterial({
     color: 0x050403,
     transparent: true,
@@ -343,7 +327,6 @@ export function createPerfumeBottle(project, baseShelfY) {
   shadowMesh.rotation.x = -Math.PI / 2;
   shadowMesh.position.y = 0.005;
 
-  // Assemble hierarchy
   bottleGroup.add(shadowMesh);
   bottleGroup.add(bodyMesh);
   if (liquidMesh) bottleGroup.add(liquidMesh);
@@ -352,10 +335,14 @@ export function createPerfumeBottle(project, baseShelfY) {
   if (capMesh) bottleGroup.add(capMesh);
   if (labelMesh) bottleGroup.add(labelMesh);
 
-  // Position on Shelf
-  bottleGroup.position.set(slot, baseShelfY, 0.2);
+  // Position & Orientation in Assemblage Tower
+  if (position) {
+    bottleGroup.position.set(position.x, position.y, position.z);
+  }
+  if (rotation) {
+    bottleGroup.rotation.set(rotation.x || 0, rotation.y || 0, rotation.z || 0);
+  }
 
-  // Metadata & interactive state
   bottleGroup.userData = {
     isInteractive: true,
     type: 'bottle',
