@@ -37,7 +37,7 @@
     <div class="atmosphere-vignette"></div>
 
     <!-- 3D Raycaster Hover Tooltip -->
-    <div id="hover-tooltip" class="hover-tooltip">
+    <div id="hover-tooltip" class="hover-tooltip" role="tooltip" aria-hidden="true">
       <span id="tooltip-number" class="tooltip-number">N° 01</span>
       <h4 id="tooltip-title" class="tooltip-title">Project Title</h4>
       <p id="tooltip-category" class="tooltip-category">Category</p>
@@ -47,16 +47,20 @@
     <div class="ui-layer">
       <!-- Top Persistent Navigation -->
       <header class="site-header">
-        <div class="brand-badge">
+        <div class="brand-badge" tabindex="0" role="banner" aria-label="Curiosity Cabinet Portfolio">
           <h1 class="brand-title">Curiosity Cabinet</h1>
           <span class="brand-subtitle">Curated Works · Archive</span>
         </div>
 
-        <nav>
+        <nav aria-label="Primary Navigation">
           <ul class="nav-links">
-            <li><button id="nav-cabinet" class="nav-btn active">Cabinet 3D</button></li>
-            <li><button id="nav-catalogue" class="nav-btn">Catalogue View</button></li>
-            <li><button id="nav-about" class="nav-btn">About</button></li>
+            <li><button id="nav-cabinet" class="nav-btn active" aria-label="View 3D Cabinet">Cabinet 3D</button></li>
+            <li><button id="nav-catalogue" class="nav-btn" aria-label="View Project Catalogue">Catalogue</button></li>
+            <li><button id="nav-skills" class="nav-btn" aria-label="View Skills">Skills</button></li>
+            <li><button id="nav-process" class="nav-btn" aria-label="View Process">Process</button></li>
+            <li><button id="nav-ideas" class="nav-btn" aria-label="View Ideas & Inquiries">Ideas</button></li>
+            <li><button id="nav-about" class="nav-btn" aria-label="View About Section">About</button></li>
+            <li><button id="nav-contact" class="nav-btn" aria-label="View Contact Information">Contact</button></li>
           </ul>
         </nav>
       </header>
@@ -75,7 +79,7 @@
     </div>
 
     <!-- Slide-In / Bottom-Sheet Project Preview Drawer -->
-    <aside id="project-drawer" class="project-drawer" aria-hidden="true">
+    <aside id="project-drawer" class="project-drawer" aria-hidden="true" role="dialog" aria-labelledby="drawer-title">
       <div class="drawer-drag-pill" aria-hidden="true"></div>
       <div class="drawer-header">
         <div>
@@ -98,22 +102,80 @@
       </div>
 
       <div class="drawer-footer">
-        <button id="drawer-cta-btn" class="cta-button">Read Case Study →</button>
+        <button id="drawer-cta-btn" class="cta-button">Read Full Case Study →</button>
         <button id="drawer-back-btn" class="back-cabinet-btn">Back to Cabinet</button>
       </div>
     </aside>
 
+    <!-- Full Project Case Study Modal -->
+    <section id="project-modal" class="full-project-modal" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="modal-project-title">
+      <div class="project-modal-container">
+        <div class="project-modal-header">
+          <div class="project-modal-meta">
+            <span id="modal-project-number" class="drawer-meta-badge">N° 01</span>
+            <span id="modal-project-category" class="drawer-category">Spatial Design</span>
+          </div>
+          <button id="modal-project-close" class="modal-close-btn" aria-label="Close Case Study">✕</button>
+        </div>
+
+        <div class="project-modal-body">
+          <h1 id="modal-project-title" class="project-modal-title">Architect of Nothing</h1>
+          <p id="modal-project-tagline" class="project-modal-tagline">An exploration of empty space, pause, and intentional absence in structural environments.</p>
+
+          <div id="modal-project-stats" class="project-modal-stats-grid"></div>
+
+          <!-- 4-Part Structure: Problem → What I did → What I made → Why it matters -->
+          <div class="case-study-section">
+            <h3 class="case-study-heading">I. The Problem</h3>
+            <p id="modal-project-problem" class="case-study-text"></p>
+          </div>
+
+          <div class="case-study-section">
+            <h3 class="case-study-heading">II. What I Did</h3>
+            <p id="modal-project-did" class="case-study-text"></p>
+          </div>
+
+          <div class="case-study-section">
+            <h3 class="case-study-heading">III. What I Made</h3>
+            <p id="modal-project-made" class="case-study-text"></p>
+          </div>
+
+          <div class="case-study-section">
+            <h3 class="case-study-heading">IV. Why It Matters</h3>
+            <p id="modal-project-matters" class="case-study-text"></p>
+          </div>
+
+          <!-- Tags -->
+          <div class="case-study-section">
+            <h3 class="case-study-heading">Focus &amp; Methodologies</h3>
+            <div id="modal-project-tags" class="drawer-tags"></div>
+          </div>
+        </div>
+
+        <div class="project-modal-footer">
+          <button id="modal-prev-btn" class="nav-arrow-btn">← Previous Project</button>
+          <button id="modal-return-cabinet" class="cta-button">Return to Cabinet 3D</button>
+          <button id="modal-next-btn" class="nav-arrow-btn">Next Project →</button>
+        </div>
+      </div>
+    </section>
+
     <!-- 2D Conventional Catalogue Overlay -->
-    <section id="catalogue-overlay" class="catalogue-overlay" aria-hidden="true">
+    <section id="catalogue-overlay" class="catalogue-overlay" aria-hidden="true" role="region" aria-label="Project Catalogue">
       <div class="catalogue-header">
-        <span class="catalogue-subtitle">The Complete Collection</span>
-        <h2 class="catalogue-title">Project Catalogue</h2>
+        <div class="catalogue-header-top">
+          <div>
+            <span class="catalogue-subtitle">The Complete Collection</span>
+            <h2 class="catalogue-title">Project Catalogue</h2>
+          </div>
+          <button id="catalogue-close-btn" class="modal-close-btn" aria-label="Close Catalogue">✕</button>
+        </div>
       </div>
       <div id="catalogue-grid" class="catalogue-grid"></div>
     </section>
 
     <!-- Apothecary Drawer Archive Modal -->
-    <div id="drawer-modal" class="info-modal" aria-hidden="true">
+    <div id="drawer-modal" class="info-modal" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="drawer-modal-title">
       <div class="info-card drawer-archive-card">
         <span id="drawer-modal-label" class="drawer-meta-badge">I. SKETCHES</span>
         <h2 id="drawer-modal-title" class="info-title">Drawer Archive</h2>
@@ -125,17 +187,78 @@
       </div>
     </div>
 
-    <!-- About / Info Modal -->
-    <div id="info-modal" class="info-modal" aria-hidden="true">
+    <!-- Skills Section Modal -->
+    <div id="skills-modal" class="info-modal" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="skills-title">
+      <div class="info-card section-card">
+        <div class="modal-header-row">
+          <div>
+            <span class="drawer-meta-badge">Craft &amp; Taxonomy</span>
+            <h2 id="skills-title" class="info-title">Skills &amp; Capabilities</h2>
+          </div>
+          <button id="skills-close-btn" class="modal-close-btn" aria-label="Close Skills">✕</button>
+        </div>
+        <div id="skills-content" class="section-modal-body"></div>
+        <button id="skills-return-btn" class="cta-button">Return to Cabinet</button>
+      </div>
+    </div>
+
+    <!-- Process Section Modal -->
+    <div id="process-modal" class="info-modal" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="process-title">
+      <div class="info-card section-card">
+        <div class="modal-header-row">
+          <div>
+            <span class="drawer-meta-badge">Methodology</span>
+            <h2 id="process-title" class="info-title">Design Process</h2>
+          </div>
+          <button id="process-close-btn" class="modal-close-btn" aria-label="Close Process">✕</button>
+        </div>
+        <div id="process-content" class="section-modal-body"></div>
+        <button id="process-return-btn" class="cta-button">Return to Cabinet</button>
+      </div>
+    </div>
+
+    <!-- Ideas Section Modal -->
+    <div id="ideas-modal" class="info-modal" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="ideas-title">
+      <div class="info-card section-card">
+        <div class="modal-header-row">
+          <div>
+            <span class="drawer-meta-badge">Inquiries &amp; Essays</span>
+            <h2 id="ideas-title" class="info-title">Conceptual Ideas</h2>
+          </div>
+          <button id="ideas-close-btn" class="modal-close-btn" aria-label="Close Ideas">✕</button>
+        </div>
+        <div id="ideas-content" class="section-modal-body"></div>
+        <button id="ideas-return-btn" class="cta-button">Return to Cabinet</button>
+      </div>
+    </div>
+
+    <!-- About Section Modal -->
+    <div id="info-modal" class="info-modal" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="about-title">
       <div class="info-card">
-        <h2 class="info-title">Curiosity Cabinet</h2>
-        <p class="drawer-category">Concept &amp; Philosophy</p>
-        <p class="info-body">
-          A physical manifestation of inquiry and design craft. Each bottle in this cabinet stores a preserved formula: a design intervention, research inquiry, or conceptual experiment.
-          <br /><br />
-          Explore the cabinet by selecting individual flacons, pulling open apothecary drawers, or switching to the 2D catalogue for rapid indexing.
-        </p>
-        <button id="info-modal-close" class="cta-button">Return to Cabinet</button>
+        <div class="modal-header-row">
+          <div>
+            <span class="drawer-meta-badge">Ethos &amp; Manifesto</span>
+            <h2 id="about-title" class="info-title">About the Curator</h2>
+          </div>
+          <button id="info-modal-close" class="modal-close-btn" aria-label="Close About">✕</button>
+        </div>
+        <div id="about-content" class="info-body"></div>
+        <button id="about-return-btn" class="cta-button">Return to Cabinet</button>
+      </div>
+    </div>
+
+    <!-- Contact Section Modal -->
+    <div id="contact-modal" class="info-modal" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="contact-title">
+      <div class="info-card">
+        <div class="modal-header-row">
+          <div>
+            <span class="drawer-meta-badge">Dialogue &amp; Commission</span>
+            <h2 id="contact-title" class="info-title">Initiate an Inquiry</h2>
+          </div>
+          <button id="contact-close-btn" class="modal-close-btn" aria-label="Close Contact">✕</button>
+        </div>
+        <div id="contact-content" class="info-body"></div>
+        <button id="contact-return-btn" class="cta-button">Return to Cabinet</button>
       </div>
     </div>
 
@@ -145,7 +268,7 @@
         <div class="loader-inner-dot"></div>
       </div>
       <h2 class="loader-title">Curiosity Cabinet</h2>
-      <p class="loader-status">Illuminating the cabinet...</p>
+      <p class="loader-status">Illuminating the chamber...</p>
     </div>
   </div>
 

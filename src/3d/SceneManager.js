@@ -66,13 +66,13 @@ export class SceneManager {
     this.renderer.setSize(width, height);
     this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.75));
     this.renderer.toneMapping = THREE.ACESFilmicToneMapping;
-    this.renderer.toneMappingExposure = 1.25;
+    this.renderer.toneMappingExposure = 1.08;
     this.renderer.shadowMap.enabled = true;
     this.renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 
     this.container.appendChild(this.renderer.domElement);
 
-    // 4. Victorian Apothecary Room Background (Floor, Persian Rug, Shelves, Stained Glass, Stairs)
+    // 4. Victorian Apothecary Room Background
     this.room = createApothecaryRoom();
     this.scene.add(this.room);
 
@@ -80,7 +80,7 @@ export class SceneManager {
     this.cabinet = createCabinet();
     this.scene.add(this.cabinet);
 
-    // 6. Authentic Cozy Victorian Lighting (Matching Reference Photo)
+    // 6. Balanced Editorial Product Lighting
     this.setupApothecaryLighting();
 
     // 7. Camera Controller (360° Spherical Orbit)
@@ -119,12 +119,12 @@ export class SceneManager {
   }
 
   setupApothecaryLighting() {
-    // A. Warm Room Ambient Base (Rich dark umber shadow foundation)
-    const ambientLight = new THREE.AmbientLight(0x382216, 0.9);
+    // A. Natural Dark Umber Ambient Shadow Base
+    const ambientLight = new THREE.AmbientLight(0x281c15, 0.75);
     this.scene.add(ambientLight);
 
-    // B. Dramatic Reddish-Amber Sunlight Beam (slanted ray from loft window matching lighting.jpg)
-    const sunbeamLight = new THREE.DirectionalLight(0xff9438, 2.3);
+    // B. Warm Directional Sunlight Beam (3500K warm loft ray with soft shadows)
+    const sunbeamLight = new THREE.DirectionalLight(0xf2b574, 1.85);
     sunbeamLight.position.set(-5.5, 9.5, 4.0);
     sunbeamLight.castShadow = true;
     sunbeamLight.shadow.mapSize.width = 2048;
@@ -134,27 +134,27 @@ export class SceneManager {
     sunbeamLight.shadow.bias = -0.0006;
     this.scene.add(sunbeamLight);
 
-    // C. Soft Warm Front Key Light for Bottles & Glass Refraction
-    const frontKey = new THREE.DirectionalLight(0xffaa48, 1.15);
+    // C. Soft Studio Key Light for Glass Specular Reflections & Crisp Label Legibility
+    const frontKey = new THREE.DirectionalLight(0xded6c8, 0.85);
     frontKey.position.set(2.0, 3.5, 6.0);
     this.scene.add(frontKey);
 
     // D. Warm Backlight / Rim for Glass Silhouettes & Wood Contours
-    const backRim = new THREE.DirectionalLight(0xff7722, 1.1);
+    const backRim = new THREE.DirectionalLight(0xd99859, 0.95);
     backRim.position.set(-3.5, 3.0, -4.5);
     this.scene.add(backRim);
 
-    // E. Dedicated Shelf Vitrine Point Lights (Gentle warm interior glow on bottles)
-    const midShelfGlow = new THREE.PointLight(0xffa843, 1.2, 4.5, 1.8);
+    // E. Dedicated Shelf Vitrine Point Lights (Natural soft interior fill)
+    const midShelfGlow = new THREE.PointLight(0xd99e52, 0.75, 4.5, 2.0);
     midShelfGlow.position.set(0, 0.4, 0.6);
     this.scene.add(midShelfGlow);
 
-    const upperShelfGlow = new THREE.PointLight(0xff9030, 1.0, 4.0, 1.8);
+    const upperShelfGlow = new THREE.PointLight(0xd49448, 0.65, 4.0, 2.0);
     upperShelfGlow.position.set(0, 2.1, 0.4);
     this.scene.add(upperShelfGlow);
 
-    // F. Stained Glass Window Subtle Jewel Glow on Left Wall
-    const stainedGlassLight = new THREE.PointLight(0x5c7cfa, 0.85, 7.5, 2.0);
+    // F. Stained Glass Window Subtle Chromatic Fill on Left Wall
+    const stainedGlassLight = new THREE.PointLight(0x526fa1, 0.65, 7.5, 2.2);
     stainedGlassLight.position.set(-7.5, 0.5, -1.8);
     this.scene.add(stainedGlassLight);
   }

@@ -646,23 +646,23 @@ export function createApothecaryRoom() {
   crateMesh2.rotation.y = -0.3;
   roomGroup.add(crateMesh2);
 
-  // 9. HANGING JEWEL-TONED MOROCCAN & TEARDROP LANTERNS (7 Lanterns)
+  // 9. HANGING SMOKY TINTED GLASS LANTERNS (7 Realistic Product Studio Lanterns)
   const lanternPoints = [];
   const lanternConfigs = [
-    { x: -1.8, y: 3.8, z: 1.2, color: 0xff7b25, glassColor: 0xff6b35, scale: 1.0 }, // Fiery Amber
-    { x: 0.9, y: 4.4, z: 0.6, color: 0xff3b30, glassColor: 0xcc2936, scale: 1.15 }, // Ruby Red
-    { x: 2.6, y: 3.5, z: 1.5, color: 0xffaa22, glassColor: 0xf4a261, scale: 0.9 }, // Honey Gold
-    { x: -3.2, y: 4.1, z: -0.8, color: 0x66bb6a, glassColor: 0x588157, scale: 0.95 }, // Emerald Sage
-    { x: 3.8, y: 4.6, z: -1.5, color: 0xff9900, glassColor: 0xe76f51, scale: 1.1 }, // Terracotta
-    { x: -0.6, y: 5.2, z: 2.2, color: 0xba68c8, glassColor: 0x9c27b0, scale: 0.85 }, // Amethyst Purple
-    { x: 1.8, y: 5.0, z: -2.8, color: 0x4fc3f7, glassColor: 0x0288d1, scale: 0.9 }  // Sapphire Blue
+    { x: -1.8, y: 3.8, z: 1.2, color: 0xdf924c, glassColor: 0x9e683b, scale: 1.0 }, // Muted Amber
+    { x: 0.9, y: 4.4, z: 0.6, color: 0xd96b5a, glassColor: 0x8f3c36, scale: 1.15 }, // Muted Garnet
+    { x: 2.6, y: 3.5, z: 1.5, color: 0xe0a855, glassColor: 0xa87d3e, scale: 0.9 }, // Antique Ochre
+    { x: -3.2, y: 4.1, z: -0.8, color: 0x769476, glassColor: 0x486348, scale: 0.95 }, // Smoky Sage
+    { x: 3.8, y: 4.6, z: -1.5, color: 0xd98650, glassColor: 0x9e5836, scale: 1.1 }, // Terracotta
+    { x: -0.6, y: 5.2, z: 2.2, color: 0x9b78a8, glassColor: 0x644b70, scale: 0.85 }, // Smoky Amethyst
+    { x: 1.8, y: 5.0, z: -2.8, color: 0x6e96ab, glassColor: 0x416273, scale: 0.9 }  // Slate Blue
   ];
 
   lanternConfigs.forEach((cfg) => {
     const lanternGroup = createHangingLantern(cfg);
     roomGroup.add(lanternGroup);
 
-    const pLight = new THREE.PointLight(cfg.color, 1.25, 7.0, 1.8);
+    const pLight = new THREE.PointLight(cfg.color, 1.1, 6.5, 2.0);
     pLight.position.set(cfg.x, cfg.y, cfg.z);
     pLight.name = `Lantern_Light_${cfg.x}`;
     roomGroup.add(pLight);
@@ -680,7 +680,6 @@ function createLibraryLadder(woodMat, brassMat) {
   const group = new THREE.Group();
   const height = 5.2;
 
-  // Rails
   const leftRail = new THREE.Mesh(new THREE.BoxGeometry(0.08, height, 0.12), woodMat);
   leftRail.position.set(-0.35, height / 2, 0);
   group.add(leftRail);
@@ -689,7 +688,6 @@ function createLibraryLadder(woodMat, brassMat) {
   rightRail.position.set(0.35, height / 2, 0);
   group.add(rightRail);
 
-  // Rungs
   for (let y = 0.35; y < height - 0.2; y += 0.38) {
     const rung = new THREE.Mesh(new THREE.CylinderGeometry(0.02, 0.02, 0.65, 12), woodMat);
     rung.rotation.z = Math.PI / 2;
@@ -697,7 +695,6 @@ function createLibraryLadder(woodMat, brassMat) {
     group.add(rung);
   }
 
-  // Brass Wheels at base
   [-0.35, 0.35].forEach(wx => {
     const wheel = new THREE.Mesh(new THREE.CylinderGeometry(0.08, 0.08, 0.04, 16), brassMat);
     wheel.rotation.z = Math.PI / 2;
@@ -714,7 +711,6 @@ function createLibraryLadder(woodMat, brassMat) {
 function createBalanceScale(brassMat) {
   const group = new THREE.Group();
 
-  // Base & Center Pillar
   const base = new THREE.Mesh(new THREE.CylinderGeometry(0.16, 0.18, 0.04, 16), brassMat);
   group.add(base);
 
@@ -722,13 +718,11 @@ function createBalanceScale(brassMat) {
   pillar.position.y = 0.28;
   group.add(pillar);
 
-  // Crossbar Beam
   const beam = new THREE.Mesh(new THREE.CylinderGeometry(0.012, 0.012, 0.65, 8), brassMat);
   beam.rotation.z = Math.PI / 2;
   beam.position.y = 0.54;
   group.add(beam);
 
-  // Hanging Pans
   [-0.28, 0.28].forEach((px, i) => {
     const panGroup = new THREE.Group();
     panGroup.position.set(px, 0.35 + (i === 0 ? -0.04 : 0.04), 0);
@@ -757,8 +751,8 @@ function createBackgroundShelves(group, { shelfWoodMat, x, y, z, w, h }) {
   const numRows = 5;
   const rowHeight = h / numRows;
 
-  const bookColors = [0x5c1d1d, 0x1d3c2a, 0x24334a, 0x4a3622, 0x3d1c3a, 0x6e5229];
-  const jarColors = [0x99ddff, 0xffcc66, 0x88cc88, 0xff8866];
+  const bookColors = [0x421d1d, 0x1a2e22, 0x1f2b38, 0x3b2a1a, 0x301a2e, 0x4a3a22];
+  const jarColors = [0x7898a8, 0xbda47e, 0x6e8870, 0xab725f];
 
   for (let r = 0; r < numRows; r++) {
     const shelfLedge = new THREE.Mesh(new THREE.BoxGeometry(w - 0.1, 0.08, 0.55), shelfWoodMat);
@@ -773,7 +767,7 @@ function createBackgroundShelves(group, { shelfWoodMat, x, y, z, w, h }) {
         const bookCol = bookColors[Math.floor(Math.random() * bookColors.length)];
         const bookMesh = new THREE.Mesh(
           new THREE.BoxGeometry(bookW, bookH, 0.35),
-          new THREE.MeshStandardMaterial({ color: bookCol, roughness: 0.8 })
+          new THREE.MeshStandardMaterial({ color: bookCol, roughness: 0.85, metalness: 0.02 })
         );
         bookMesh.position.set(currentX, y + r * rowHeight + bookH / 2 + 0.08, z + 0.05);
         group.add(bookMesh);
@@ -783,8 +777,8 @@ function createBackgroundShelves(group, { shelfWoodMat, x, y, z, w, h }) {
         const jarHeight = rowHeight * 0.5;
         const jarCol = jarColors[Math.floor(Math.random() * jarColors.length)];
         const jarMesh = new THREE.Mesh(
-          new THREE.CylinderGeometry(jarRadius, jarRadius, jarHeight, 12),
-          new THREE.MeshStandardMaterial({ color: jarCol, roughness: 0.2, transparent: true, opacity: 0.85 })
+          new THREE.CylinderGeometry(jarRadius, jarRadius, jarHeight, 16),
+          new THREE.MeshPhysicalMaterial({ color: jarCol, roughness: 0.15, transmission: 0.7, transparent: true, opacity: 0.88 })
         );
         jarMesh.position.set(currentX, y + r * rowHeight + jarHeight / 2 + 0.08, z + 0.05);
         group.add(jarMesh);
@@ -827,19 +821,20 @@ function createHangingLantern({ x, y, z, glassColor, scale = 1.0 }) {
   lantern.position.set(x, y, z);
   lantern.scale.setScalar(scale);
 
-  const brassMat = new THREE.MeshStandardMaterial({ color: 0xc8963e, roughness: 0.35, metalness: 0.85 });
-  const glowingGlassMat = new THREE.MeshStandardMaterial({
+  const brassMat = new THREE.MeshStandardMaterial({ color: 0x9e8052, roughness: 0.44, metalness: 0.82 });
+  const glowingGlassMat = new THREE.MeshPhysicalMaterial({
     color: glassColor,
     emissive: glassColor,
-    emissiveIntensity: 0.85,
-    roughness: 0.15,
-    metalness: 0.1,
+    emissiveIntensity: 0.55,
+    roughness: 0.12,
+    transmission: 0.75,
+    ior: 1.5,
     transparent: true,
     opacity: 0.92
   });
 
   const chainLength = 7.8 - y;
-  const chain = new THREE.Mesh(new THREE.CylinderGeometry(0.015, 0.015, chainLength, 8), brassMat);
+  const chain = new THREE.Mesh(new THREE.CylinderGeometry(0.012, 0.012, chainLength, 8), brassMat);
   chain.position.y = chainLength / 2 + 0.3;
   lantern.add(chain);
 

@@ -1,8 +1,9 @@
-import { PROJECTS_DATA } from '../data/projects.js';
+import { PROJECTS_DATA, PORTFOLIO_SECTIONS } from '../data/projects.js';
 
 /**
- * 2D DOM UI Layer Controller
- * Manages tactile slide-in preview drawers, conventional 2D catalogue, drawer archive sheets, and 3D tooltips.
+ * 2D DOM UI Layer Controller (Phase 2)
+ * Manages preview drawer, full project case study modal, catalogue overlay,
+ * section modals (Skills, Process, Ideas, About, Contact), and accessibility controls.
  */
 export class UIManager {
   constructor({ onResetCabinet, onSelectProjectFrom2D }) {
@@ -21,6 +22,28 @@ export class UIManager {
     this.drawerCloseBtn = document.getElementById('drawer-close-btn');
     this.drawerBackBtn = document.getElementById('drawer-back-btn');
     this.drawerCtaBtn = document.getElementById('drawer-cta-btn');
+
+    // Full Case Study Modal Elements
+    this.projectModal = document.getElementById('project-modal');
+    this.modalProjectNumber = document.getElementById('modal-project-number');
+    this.modalProjectCategory = document.getElementById('modal-project-category');
+    this.modalProjectTitle = document.getElementById('modal-project-title');
+    this.modalProjectTagline = document.getElementById('modal-project-tagline');
+    this.modalProjectStats = document.getElementById('modal-project-stats');
+    this.modalProjectProblem = document.getElementById('modal-project-problem');
+    this.modalProjectDid = document.getElementById('modal-project-did');
+    this.modalProjectMade = document.getElementById('modal-project-made');
+    this.modalProjectMatters = document.getElementById('modal-project-matters');
+    this.modalProjectDesc = document.getElementById('modal-project-desc');
+    this.modalProjectChallenge = document.getElementById('modal-project-challenge');
+    this.modalProjectProcess = document.getElementById('modal-project-process');
+    this.modalProjectInsights = document.getElementById('modal-project-insights');
+    this.modalProjectOutcomes = document.getElementById('modal-project-outcomes');
+    this.modalProjectTags = document.getElementById('modal-project-tags');
+    this.modalProjectClose = document.getElementById('modal-project-close');
+    this.modalReturnCabinet = document.getElementById('modal-return-cabinet');
+    this.modalPrevBtn = document.getElementById('modal-prev-btn');
+    this.modalNextBtn = document.getElementById('modal-next-btn');
 
     // 3D Hover Tooltip
     this.tooltipEl = document.getElementById('hover-tooltip');
@@ -41,20 +64,47 @@ export class UIManager {
     // 2D Catalogue Overlay
     this.catalogueOverlay = document.getElementById('catalogue-overlay');
     this.catalogueGrid = document.getElementById('catalogue-grid');
+    this.catalogueCloseBtn = document.getElementById('catalogue-close-btn');
 
-    // Info Modal
+    // Section Modals
+    this.skillsModal = document.getElementById('skills-modal');
+    this.skillsContent = document.getElementById('skills-content');
+    this.skillsCloseBtn = document.getElementById('skills-close-btn');
+    this.skillsReturnBtn = document.getElementById('skills-return-btn');
+
+    this.processModal = document.getElementById('process-modal');
+    this.processContent = document.getElementById('process-content');
+    this.processCloseBtn = document.getElementById('process-close-btn');
+    this.processReturnBtn = document.getElementById('process-return-btn');
+
+    this.ideasModal = document.getElementById('ideas-modal');
+    this.ideasContent = document.getElementById('ideas-content');
+    this.ideasCloseBtn = document.getElementById('ideas-close-btn');
+    this.ideasReturnBtn = document.getElementById('ideas-return-btn');
+
     this.infoModal = document.getElementById('info-modal');
+    this.aboutContent = document.getElementById('about-content');
     this.infoModalClose = document.getElementById('info-modal-close');
+    this.aboutReturnBtn = document.getElementById('about-return-btn');
 
-    // Nav Buttons
+    this.contactModal = document.getElementById('contact-modal');
+    this.contactContent = document.getElementById('contact-content');
+    this.contactCloseBtn = document.getElementById('contact-close-btn');
+    this.contactReturnBtn = document.getElementById('contact-return-btn');
+
+    // Navigation Buttons
     this.navCabinetBtn = document.getElementById('nav-cabinet');
     this.navCatalogueBtn = document.getElementById('nav-catalogue');
+    this.navSkillsBtn = document.getElementById('nav-skills');
+    this.navProcessBtn = document.getElementById('nav-process');
+    this.navIdeasBtn = document.getElementById('nav-ideas');
     this.navAboutBtn = document.getElementById('nav-about');
+    this.navContactBtn = document.getElementById('nav-contact');
 
     this.interactionHint = document.getElementById('interaction-hint');
     this.loadingScreen = document.getElementById('loading-screen');
 
-    this.currentActiveProjectId = null;
+    this.currentActiveProject = null;
 
     this.init();
   }
@@ -62,54 +112,133 @@ export class UIManager {
   init() {
     this.setupListeners();
     this.renderCatalogueGrid();
+    this.populateSectionContents();
   }
 
   setupListeners() {
+    // Project Preview Drawer Controls
     this.drawerCloseBtn?.addEventListener('click', () => this.closePreviewDrawer());
     this.drawerBackBtn?.addEventListener('click', () => this.closePreviewDrawer());
 
+    // Click "Read Full Case Study →" opens the full modal
     this.drawerCtaBtn?.addEventListener('click', () => {
-      alert(`[Apothecary Archive]\nFull preserved case study for "${this.drawerTitleEl.innerText}" will be loaded in Phase 3.`);
+      if (this.currentActiveProject) {
+        this.openProjectModal(this.currentActiveProject);
+      }
     });
 
-    this.drawerModalCloseBtn?.addEventListener('click', () => {
-      this.closeDrawerModal();
-    });
-
-    this.navCabinetBtn?.addEventListener('click', () => {
-      this.closeCatalogueOverlay();
+    // Full Case Study Modal Controls
+    this.modalProjectClose?.addEventListener('click', () => this.closeProjectModal());
+    this.modalReturnCabinet?.addEventListener('click', () => {
+      this.closeProjectModal();
       this.closePreviewDrawer();
-      this.closeDrawerModal();
+    });
+
+    this.modalPrevBtn?.addEventListener('click', () => this.navigateAdjacentProject(-1));
+    this.modalNextBtn?.addEventListener('click', () => this.navigateAdjacentProject(1));
+
+    // Drawer Modal Controls
+    this.drawerModalCloseBtn?.addEventListener('click', () => this.closeDrawerModal());
+
+    // Navigation Buttons
+    this.navCabinetBtn?.addEventListener('click', () => {
+      this.closeAllModals();
+      this.closePreviewDrawer();
       this.setActiveNav('cabinet');
     });
 
     this.navCatalogueBtn?.addEventListener('click', () => {
+      this.closeAllModals();
       this.openCatalogueOverlay();
       this.setActiveNav('catalogue');
     });
 
+    this.catalogueCloseBtn?.addEventListener('click', () => {
+      this.closeCatalogueOverlay();
+      this.setActiveNav('cabinet');
+    });
+
+    this.navSkillsBtn?.addEventListener('click', () => {
+      this.closeAllModals();
+      this.openModal(this.skillsModal);
+      this.setActiveNav('skills');
+    });
+
+    this.navProcessBtn?.addEventListener('click', () => {
+      this.closeAllModals();
+      this.openModal(this.processModal);
+      this.setActiveNav('process');
+    });
+
+    this.navIdeasBtn?.addEventListener('click', () => {
+      this.closeAllModals();
+      this.openModal(this.ideasModal);
+      this.setActiveNav('ideas');
+    });
+
     this.navAboutBtn?.addEventListener('click', () => {
-      this.openInfoModal();
+      this.closeAllModals();
+      this.openModal(this.infoModal);
+      this.setActiveNav('about');
     });
 
-    this.infoModalClose?.addEventListener('click', () => {
-      this.closeInfoModal();
+    this.navContactBtn?.addEventListener('click', () => {
+      this.closeAllModals();
+      this.openModal(this.contactModal);
+      this.setActiveNav('contact');
     });
 
-    this.infoModal?.addEventListener('click', (e) => {
-      if (e.target === this.infoModal) this.closeInfoModal();
+    // Section Modal Return / Close buttons
+    [
+      { btn: this.skillsCloseBtn, modal: this.skillsModal },
+      { btn: this.skillsReturnBtn, modal: this.skillsModal },
+      { btn: this.processCloseBtn, modal: this.processModal },
+      { btn: this.processReturnBtn, modal: this.processModal },
+      { btn: this.ideasCloseBtn, modal: this.ideasModal },
+      { btn: this.ideasReturnBtn, modal: this.ideasModal },
+      { btn: this.infoModalClose, modal: this.infoModal },
+      { btn: this.aboutReturnBtn, modal: this.infoModal },
+      { btn: this.contactCloseBtn, modal: this.contactModal },
+      { btn: this.contactReturnBtn, modal: this.contactModal }
+    ].forEach(({ btn, modal }) => {
+      btn?.addEventListener('click', () => {
+        this.closeModal(modal);
+        this.setActiveNav('cabinet');
+      });
     });
 
-    this.drawerModalEl?.addEventListener('click', (e) => {
-      if (e.target === this.drawerModalEl) this.closeDrawerModal();
+    // Backdrop Click handlers
+    [this.infoModal, this.skillsModal, this.processModal, this.ideasModal, this.contactModal, this.drawerModalEl].forEach(modal => {
+      modal?.addEventListener('click', (e) => {
+        if (e.target === modal) {
+          this.closeModal(modal);
+          this.setActiveNav('cabinet');
+        }
+      });
     });
 
+    // Global ESC Key Handler
     window.addEventListener('keydown', (e) => {
       if (e.key === 'Escape') {
-        if (this.drawerModalEl?.classList.contains('open')) {
+        if (this.projectModal?.classList.contains('open')) {
+          this.closeProjectModal();
+        } else if (this.drawerModalEl?.classList.contains('open')) {
           this.closeDrawerModal();
+        } else if (this.skillsModal?.classList.contains('open')) {
+          this.closeModal(this.skillsModal);
+          this.setActiveNav('cabinet');
+        } else if (this.processModal?.classList.contains('open')) {
+          this.closeModal(this.processModal);
+          this.setActiveNav('cabinet');
+        } else if (this.ideasModal?.classList.contains('open')) {
+          this.closeModal(this.ideasModal);
+          this.setActiveNav('cabinet');
         } else if (this.infoModal?.classList.contains('open')) {
-          this.closeInfoModal();
+          this.closeModal(this.infoModal);
+          this.setActiveNav('cabinet');
+        } else if (this.contactModal?.classList.contains('open')) {
+          this.closeModal(this.contactModal);
+          this.setActiveNav('cabinet');
         } else if (this.catalogueOverlay?.classList.contains('open')) {
           this.closeCatalogueOverlay();
           this.setActiveNav('cabinet');
@@ -123,6 +252,124 @@ export class UIManager {
   setActiveNav(viewName) {
     this.navCabinetBtn?.classList.toggle('active', viewName === 'cabinet');
     this.navCatalogueBtn?.classList.toggle('active', viewName === 'catalogue');
+    this.navSkillsBtn?.classList.toggle('active', viewName === 'skills');
+    this.navProcessBtn?.classList.toggle('active', viewName === 'process');
+    this.navIdeasBtn?.classList.toggle('active', viewName === 'ideas');
+    this.navAboutBtn?.classList.toggle('active', viewName === 'about');
+    this.navContactBtn?.classList.toggle('active', viewName === 'contact');
+  }
+
+  openModal(modalEl) {
+    if (!modalEl) return;
+    modalEl.classList.add('open');
+    modalEl.setAttribute('aria-hidden', 'false');
+  }
+
+  closeModal(modalEl) {
+    if (!modalEl) return;
+    modalEl.classList.remove('open');
+    modalEl.setAttribute('aria-hidden', 'true');
+  }
+
+  closeAllModals() {
+    [
+      this.projectModal,
+      this.catalogueOverlay,
+      this.drawerModalEl,
+      this.skillsModal,
+      this.processModal,
+      this.ideasModal,
+      this.infoModal,
+      this.contactModal
+    ].forEach(m => this.closeModal(m));
+  }
+
+  populateSectionContents() {
+    // Skills
+    if (this.skillsContent) {
+      const skills = PORTFOLIO_SECTIONS.skills;
+      this.skillsContent.innerHTML = `
+        <p class="section-intro">${skills.subtitle}</p>
+        <div class="skills-grid">
+          ${skills.categories.map(cat => `
+            <div class="skills-category-card">
+              <h4 class="category-heading">${cat.name}</h4>
+              <ul class="skills-list">
+                ${cat.items.map(item => `<li>✦ ${item}</li>`).join('')}
+              </ul>
+            </div>
+          `).join('')}
+        </div>
+      `;
+    }
+
+    // Process
+    if (this.processContent) {
+      const process = PORTFOLIO_SECTIONS.process;
+      this.processContent.innerHTML = `
+        <p class="section-intro">${process.subtitle}</p>
+        <div class="process-steps">
+          ${process.steps.map(step => `
+            <div class="process-step-card">
+              <span class="step-num">${step.num}</span>
+              <div>
+                <h4 class="step-name">${step.name}</h4>
+                <p class="step-desc">${step.desc}</p>
+              </div>
+            </div>
+          `).join('')}
+        </div>
+      `;
+    }
+
+    // Ideas
+    if (this.ideasContent) {
+      const ideas = PORTFOLIO_SECTIONS.ideas;
+      this.ideasContent.innerHTML = `
+        <p class="section-intro">${ideas.subtitle}</p>
+        <div class="ideas-list">
+          ${ideas.essays.map(essay => `
+            <article class="idea-card">
+              <span class="idea-date">${essay.date}</span>
+              <h4 class="idea-title">${essay.title}</h4>
+              <p class="idea-excerpt">${essay.excerpt}</p>
+            </article>
+          `).join('')}
+        </div>
+      `;
+    }
+
+    // About
+    if (this.aboutContent) {
+      const about = PORTFOLIO_SECTIONS.about;
+      this.aboutContent.innerHTML = `
+        <p class="section-intro">${about.subtitle}</p>
+        <p class="info-body-text">${about.bio}</p>
+        <div class="manifesto-box">
+          <span class="manifesto-label">Curator Manifesto</span>
+          <p class="manifesto-text">"${about.manifesto}"</p>
+        </div>
+      `;
+    }
+
+    // Contact
+    if (this.contactContent) {
+      const contact = PORTFOLIO_SECTIONS.contact;
+      this.contactContent.innerHTML = `
+        <p class="section-intro">${contact.subtitle}</p>
+        <div class="contact-card-box">
+          <p class="contact-location">🏛️ ${contact.location}</p>
+          <div class="contact-links-list">
+            ${contact.channels.map(ch => `
+              <a href="${ch.href}" target="_blank" rel="noopener noreferrer" class="contact-link-row">
+                <span class="ch-label">${ch.label}</span>
+                <span class="ch-val">${ch.value} →</span>
+              </a>
+            `).join('')}
+          </div>
+        </div>
+      `;
+    }
   }
 
   renderCatalogueGrid() {
@@ -140,7 +387,7 @@ export class UIManager {
         </div>
         <p class="card-summary">${project.summary}</p>
         <div class="card-action">
-          <span>Inspect Elixir in Cabinet</span>
+          <span>Inspect in 3D Cabinet</span>
           <span>→</span>
         </div>
       `;
@@ -157,78 +404,58 @@ export class UIManager {
     });
   }
 
-  /**
-   * Hover Tooltip Updates
-   */
-  updateTooltip(userData, screenX, screenY, visible) {
-    if (!this.tooltipEl) return;
+  openCatalogueOverlay() {
+    this.catalogueOverlay?.classList.add('open');
+    this.catalogueOverlay?.setAttribute('aria-hidden', 'false');
+  }
 
-    if (!visible || !userData) {
-      this.tooltipEl.classList.remove('visible');
-      return;
-    }
-
-    if (userData.type === 'bottle') {
-      const project = userData.projectData;
-      this.tooltipNumberEl.innerText = project.placement.labelNumber || 'N° 01';
-      this.tooltipTitleEl.innerText = project.title;
-      this.tooltipCategoryEl.innerText = project.category;
-    } else if (userData.type === 'drawer') {
-      const dData = userData.drawerData;
-      this.tooltipNumberEl.innerText = dData.label;
-      this.tooltipTitleEl.innerText = dData.title;
-      this.tooltipCategoryEl.innerText = 'Pull to inspect drawer archive';
-    }
-
-    const clampedX = Math.min(Math.max(screenX, 120), window.innerWidth - 120);
-    const clampedY = Math.max(screenY, 80);
-
-    this.tooltipEl.style.left = `${clampedX}px`;
-    this.tooltipEl.style.top = `${clampedY}px`;
-    this.tooltipEl.classList.add('visible');
+  closeCatalogueOverlay() {
+    this.catalogueOverlay?.classList.remove('open');
+    this.catalogueOverlay?.setAttribute('aria-hidden', 'true');
   }
 
   /**
-   * Open Bottle Preview Drawer & Enable Rotate Cue
+   * Project Preview Drawer
    */
   openProjectPreview(project) {
-    this.currentActiveProjectId = project.id;
+    this.openPreviewDrawer(project);
+  }
 
-    this.drawerNumberEl.innerText = project.placement.labelNumber;
-    this.drawerTitleEl.innerText = project.title;
-    this.drawerCategoryEl.innerText = `${project.category} · ${project.year}`;
-    this.drawerTaglineEl.innerText = project.tagline;
-    this.drawerSummaryEl.innerText = project.summary;
+  openPreviewDrawer(project) {
+    this.currentActiveProject = project;
 
-    this.drawerTagsEl.innerHTML = '';
-    project.tags?.forEach(tag => {
-      const span = document.createElement('span');
-      span.className = 'tag-badge';
-      span.innerText = tag;
-      this.drawerTagsEl.appendChild(span);
-    });
+    if (this.drawerNumberEl) this.drawerNumberEl.innerText = project.placement.labelNumber || 'N° 01';
+    if (this.drawerTitleEl) this.drawerTitleEl.innerText = project.title;
+    if (this.drawerCategoryEl) this.drawerCategoryEl.innerText = `${project.category} · ${project.year}`;
+    if (this.drawerTaglineEl) this.drawerTaglineEl.innerText = project.tagline;
+    if (this.drawerSummaryEl) this.drawerSummaryEl.innerText = project.summary;
 
-    this.drawerStatsEl.innerHTML = '';
-    project.stats?.forEach(stat => {
-      const statDiv = document.createElement('div');
-      statDiv.className = 'stat-item';
-      statDiv.innerHTML = `
-        <span class="stat-label">${stat.label}</span>
-        <span class="stat-value">${stat.value}</span>
-      `;
-      this.drawerStatsEl.appendChild(statDiv);
-    });
+    if (this.drawerStatsEl && project.stats) {
+      this.drawerStatsEl.innerHTML = project.stats.map(s => `
+        <div class="drawer-stat-item">
+          <span class="stat-label">${s.label}</span>
+          <span class="stat-value">${s.value}</span>
+        </div>
+      `).join('');
+    }
 
-    this.interactionHint?.classList.add('hidden');
-    this.rotateCueEl?.classList.add('visible');
+    if (this.drawerTagsEl && project.tags) {
+      this.drawerTagsEl.innerHTML = project.tags.map(t => `<span class="drawer-tag">${t}</span>`).join('');
+    }
+
     this.drawerEl?.classList.add('open');
+    this.drawerEl?.setAttribute('aria-hidden', 'false');
+
+    if (this.rotateCueEl) this.rotateCueEl.classList.add('visible');
+    if (this.interactionHint) this.interactionHint.style.opacity = '0';
   }
 
   closePreviewDrawer() {
     this.drawerEl?.classList.remove('open');
-    this.rotateCueEl?.classList.remove('visible');
-    this.currentActiveProjectId = null;
-    this.interactionHint?.classList.remove('hidden');
+    this.drawerEl?.setAttribute('aria-hidden', 'true');
+
+    if (this.rotateCueEl) this.rotateCueEl.classList.remove('visible');
+    if (this.interactionHint) this.interactionHint.style.opacity = '1';
 
     if (this.onResetCabinet) {
       this.onResetCabinet();
@@ -236,58 +463,134 @@ export class UIManager {
   }
 
   /**
-   * Handle Drawer Open / Close
+   * Full Case Study Modal
    */
-  openDrawerModal(drawerData, isOpen) {
-    if (!isOpen) {
-      this.closeDrawerModal();
+  openProjectModal(project) {
+    this.currentActiveProject = project;
+
+    if (this.modalProjectNumber) this.modalProjectNumber.innerText = project.placement.labelNumber || 'N° 01';
+    if (this.modalProjectCategory) this.modalProjectCategory.innerText = `${project.category} · ${project.year}`;
+    if (this.modalProjectTitle) this.modalProjectTitle.innerText = project.title;
+    if (this.modalProjectTagline) this.modalProjectTagline.innerText = project.tagline;
+
+    if (this.modalProjectStats && project.stats) {
+      this.modalProjectStats.innerHTML = project.stats.map(s => `
+        <div class="project-modal-stat-item">
+          <span class="stat-label">${s.label}</span>
+          <span class="stat-value">${s.value}</span>
+        </div>
+      `).join('');
+    }
+
+    if (this.modalProjectProblem) this.modalProjectProblem.innerText = project.problem || project.challenge || '';
+    if (this.modalProjectDid) this.modalProjectDid.innerText = project.whatIDid || project.process || '';
+    if (this.modalProjectMade) this.modalProjectMade.innerText = project.whatIMade || project.description || '';
+    if (this.modalProjectMatters) this.modalProjectMatters.innerText = project.whyItMatters || project.outcomes || '';
+    if (this.modalProjectDesc) this.modalProjectDesc.innerText = project.description || '';
+    if (this.modalProjectChallenge) this.modalProjectChallenge.innerText = project.challenge || '';
+    if (this.modalProjectProcess) this.modalProjectProcess.innerText = project.process || '';
+    if (this.modalProjectInsights) this.modalProjectInsights.innerText = project.insights || '';
+    if (this.modalProjectOutcomes) this.modalProjectOutcomes.innerText = project.outcomes || '';
+
+    if (this.modalProjectTags && project.tags) {
+      this.modalProjectTags.innerHTML = project.tags.map(t => `<span class="drawer-tag">${t}</span>`).join('');
+    }
+
+    this.projectModal?.classList.add('open');
+    this.projectModal?.setAttribute('aria-hidden', 'false');
+  }
+
+  closeProjectModal() {
+    this.projectModal?.classList.remove('open');
+    this.projectModal?.setAttribute('aria-hidden', 'true');
+  }
+
+  navigateAdjacentProject(direction) {
+    if (!this.currentActiveProject) return;
+    const currentIndex = PROJECTS_DATA.findIndex(p => p.id === this.currentActiveProject.id);
+    let nextIndex = currentIndex + direction;
+    if (nextIndex < 0) nextIndex = PROJECTS_DATA.length - 1;
+    if (nextIndex >= PROJECTS_DATA.length) nextIndex = 0;
+
+    const nextProject = PROJECTS_DATA[nextIndex];
+    this.openProjectModal(nextProject);
+
+    // Also update 3D camera focus to this project
+    if (this.onSelectProjectFrom2D) {
+      this.onSelectProjectFrom2D(nextProject.id);
+    }
+  }
+
+  /**
+   * 3D Hover Tooltip
+   */
+  updateTooltip(userData, clientX, clientY, visible) {
+    if (!this.tooltipEl) return;
+
+    if (!visible || !userData) {
+      this.tooltipEl.classList.remove('visible');
+      this.tooltipEl.setAttribute('aria-hidden', 'true');
       return;
     }
+
+    if (userData.type === 'bottle' && userData.project) {
+      const p = userData.project;
+      if (this.tooltipNumberEl) this.tooltipNumberEl.innerText = p.placement.labelNumber || 'N° 01';
+      if (this.tooltipTitleEl) this.tooltipTitleEl.innerText = p.title;
+      if (this.tooltipCategoryEl) this.tooltipCategoryEl.innerText = `${p.category} · ${p.year}`;
+      this.tooltipEl.classList.add('visible');
+      this.tooltipEl.setAttribute('aria-hidden', 'false');
+    } else if (userData.type === 'drawer' && userData.drawerData) {
+      const d = userData.drawerData;
+      if (this.tooltipNumberEl) this.tooltipNumberEl.innerText = d.label;
+      if (this.tooltipTitleEl) this.tooltipTitleEl.innerText = d.title;
+      if (this.tooltipCategoryEl) this.tooltipCategoryEl.innerText = 'Apothecary Archive';
+      this.tooltipEl.classList.add('visible');
+      this.tooltipEl.setAttribute('aria-hidden', 'false');
+    } else {
+      this.tooltipEl.classList.remove('visible');
+      this.tooltipEl.setAttribute('aria-hidden', 'true');
+      return;
+    }
+
+    const padding = 18;
+    let posX = clientX + padding;
+    let posY = clientY + padding;
+
+    if (posX + 240 > window.innerWidth) posX = clientX - 240;
+    if (posY + 120 > window.innerHeight) posY = clientY - 120;
+
+    this.tooltipEl.style.left = `${posX}px`;
+    this.tooltipEl.style.top = `${posY}px`;
+  }
+
+  /**
+   * Apothecary Drawer Archive Modal
+   */
+  openDrawerModal(drawerData) {
+    if (!this.drawerModalEl || !drawerData) return;
 
     if (this.drawerModalLabelEl) this.drawerModalLabelEl.innerText = drawerData.label;
     if (this.drawerModalTitleEl) this.drawerModalTitleEl.innerText = drawerData.title;
     if (this.drawerModalContentEl) this.drawerModalContentEl.innerText = drawerData.content;
 
-    this.drawerModalEl?.classList.add('open');
-    this.interactionHint?.classList.add('hidden');
+    this.drawerModalEl.classList.add('open');
+    this.drawerModalEl.setAttribute('aria-hidden', 'false');
   }
 
   closeDrawerModal() {
     this.drawerModalEl?.classList.remove('open');
-    if (!this.drawerEl?.classList.contains('open')) {
-      this.interactionHint?.classList.remove('hidden');
-    }
+    this.drawerModalEl?.setAttribute('aria-hidden', 'true');
     if (this.onResetCabinet) {
       this.onResetCabinet();
     }
   }
 
-  openCatalogueOverlay() {
-    this.catalogueOverlay?.classList.add('open');
-    this.interactionHint?.classList.add('hidden');
-  }
-
-  closeCatalogueOverlay() {
-    this.catalogueOverlay?.classList.remove('open');
-    if (!this.drawerEl?.classList.contains('open')) {
-      this.interactionHint?.classList.remove('hidden');
-    }
-  }
-
-  openInfoModal() {
-    this.infoModal?.classList.add('open');
-  }
-
-  closeInfoModal() {
-    this.infoModal?.classList.remove('open');
-  }
-
   hideLoadingScreen() {
-    if (this.loadingScreen) {
-      this.loadingScreen.classList.add('fade-out');
-      setTimeout(() => {
-        if (this.loadingScreen) this.loadingScreen.style.display = 'none';
-      }, 750);
-    }
+    if (!this.loadingScreen) return;
+    this.loadingScreen.classList.add('fade-out');
+    setTimeout(() => {
+      this.loadingScreen.style.display = 'none';
+    }, 700);
   }
 }

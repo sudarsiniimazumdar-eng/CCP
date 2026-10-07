@@ -18,80 +18,84 @@ export function createCabinet() {
   // --- Authentic Materials ---
   const darkWalnutMaterial = new THREE.MeshStandardMaterial({
     map: materialTex,
-    color: 0x2e1c12, // Deep aged dark walnut
-    roughness: 0.76,
-    metalness: 0.08
+    color: 0x221711, // Smoked antique dark walnut
+    roughness: 0.82,
+    metalness: 0.03
   });
 
   const antiqueCarvedWoodMaterial = new THREE.MeshStandardMaterial({
     map: materialTex,
-    color: 0x3d2417, // Hand-carved warm aged mahogany
-    roughness: 0.65,
-    metalness: 0.06
+    color: 0x301d14, // Hand-waxed warm aged mahogany
+    roughness: 0.72,
+    metalness: 0.04
   });
 
   const velvetLinerMaterial = new THREE.MeshStandardMaterial({
-    color: 0x142018, // Deep emerald velvet
-    roughness: 0.95,
-    metalness: 0.02
+    color: 0x121b15, // Deep muted forest velvet
+    roughness: 0.96,
+    metalness: 0.01
   });
 
   const innerCavityMaterial = new THREE.MeshStandardMaterial({
-    color: 0x120a07,
-    roughness: 0.94,
-    metalness: 0.02
+    color: 0x0e0806,
+    roughness: 0.96,
+    metalness: 0.01
   });
 
   const tarnishedBrassMaterial = new THREE.MeshStandardMaterial({
-    color: 0xc8963e,
-    roughness: 0.35,
-    metalness: 0.88
+    color: 0x9e8052, // Muted tactile aged brass
+    roughness: 0.44,
+    metalness: 0.82
   });
 
   const ironHardwareMaterial = new THREE.MeshStandardMaterial({
-    color: 0x383532,
-    roughness: 0.6,
-    metalness: 0.78
+    color: 0x2d2b29,
+    roughness: 0.68,
+    metalness: 0.72
   });
 
   const casterRubberMaterial = new THREE.MeshStandardMaterial({
-    color: 0x1b1c1e,
-    roughness: 0.85,
-    metalness: 0.08
+    color: 0x18191a,
+    roughness: 0.88,
+    metalness: 0.05
   });
 
   const clocheGlassMaterial = new THREE.MeshPhysicalMaterial({
     color: 0xffffff,
-    transmission: 0.92,
+    transmission: 0.95,
     opacity: 1,
     transparent: true,
-    roughness: 0.08,
-    ior: 1.52,
-    metalness: 0.05
+    roughness: 0.05,
+    ior: 1.515,
+    thickness: 0.35,
+    clearcoat: 0.9,
+    clearcoatRoughness: 0.04
   });
 
-  const crystalSpecimenMaterial = new THREE.MeshStandardMaterial({
-    color: 0x9c27b0,
-    emissive: 0x3a0a45,
-    emissiveIntensity: 0.5,
-    roughness: 0.15,
-    metalness: 0.15
+  const crystalSpecimenMaterial = new THREE.MeshPhysicalMaterial({
+    color: 0x5e3d6b,
+    transmission: 0.65,
+    roughness: 0.18,
+    ior: 1.54,
+    thickness: 0.6,
+    transparent: true,
+    opacity: 0.92
   });
 
   const grimoirePageMaterial = new THREE.MeshStandardMaterial({
     map: typographyTex,
-    roughness: 0.85,
+    roughness: 0.82,
     metalness: 0.0
   });
 
-  const leatherRedMaterial = new THREE.MeshStandardMaterial({ color: 0x4a1815, roughness: 0.7, metalness: 0.1 });
-  const leatherGreenMaterial = new THREE.MeshStandardMaterial({ color: 0x182c1f, roughness: 0.75, metalness: 0.1 });
-  const leatherBrownMaterial = new THREE.MeshStandardMaterial({ color: 0x3b2416, roughness: 0.8, metalness: 0.1 });
-  const skullBoneMaterial = new THREE.MeshStandardMaterial({ color: 0xd9cebd, roughness: 0.8, metalness: 0.05 });
-  const waxCandleMaterial = new THREE.MeshStandardMaterial({ color: 0xded2be, roughness: 0.5, metalness: 0.05, transparent: true, opacity: 0.92 });
-  const flameMaterial = new THREE.MeshBasicMaterial({ color: 0xffaa33 });
-  const driedHerbMaterial = new THREE.MeshStandardMaterial({ color: 0x556042, roughness: 0.95, metalness: 0.0 });
-  const twineCordMaterial = new THREE.MeshStandardMaterial({ color: 0x8c785d, roughness: 0.9, metalness: 0.0 });
+  const leatherRedMaterial = new THREE.MeshStandardMaterial({ color: 0x3a1917, roughness: 0.76, metalness: 0.06 });
+  const leatherGreenMaterial = new THREE.MeshStandardMaterial({ color: 0x17241b, roughness: 0.78, metalness: 0.06 });
+  const leatherBrownMaterial = new THREE.MeshStandardMaterial({ color: 0x2d1c12, roughness: 0.82, metalness: 0.06 });
+  const skullBoneMaterial = new THREE.MeshStandardMaterial({ color: 0xd2c7b5, roughness: 0.82, metalness: 0.02 });
+  const waxCandleMaterial = new THREE.MeshPhysicalMaterial({ color: 0xdfd8cb, roughness: 0.52, transmission: 0.25, transparent: true, opacity: 0.96 });
+  const flameMaterial = new THREE.MeshBasicMaterial({ color: 0xf5a442 });
+  const driedHerbMaterial = new THREE.MeshStandardMaterial({ color: 0x48523c, roughness: 0.95, metalness: 0.0 });
+  const twineCordMaterial = new THREE.MeshStandardMaterial({ color: 0x827360, roughness: 0.92, metalness: 0.0 });
 
   // 1. BASE: Timber Dolly Cart with Heavy Chamfered Beams
   const cartWidth = 3.6;
