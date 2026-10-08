@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
+  <title>Architect of Nothing — Critical Interactive Game System · Case Study</title>
+  <meta name="description" content="Case study on Architect of Nothing: A deconstructed physical game console powered by ESP32 that explores system conformity, protocol theory, and human agency." />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🕹️</text></svg>" />
+
+  <!-- Google Fonts: Editorial Serif, Clean Sans & Specimen Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,400;1,600&family=DM+Mono:wght@400;500&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
+
+  <link rel="stylesheet" href="../src/styles/case-study.css" />
+</head>
+<body>
+
+  <!-- Sticky Editorial Navigation Bar -->
+  <nav class="cs-header-nav" aria-label="Case Study Navigation">
+    <div class="cs-header-container">
+      <a href="../index.html" class="cs-back-btn" title="Return to Curiosity Cabinet">
+        ← Back to Curiosity Cabinet
+      </a>
+      <div class="cs-header-meta">
+        <span class="cs-header-badge">CASE STUDY N° 04</span>
+        <span>MAIN PROJECT · CRITICAL PHYSICAL COMPUTING</span>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Report Header / Hero -->
+  <header class="cs-hero">
+    <div class="cs-hero-pre">
+      <span class="cs-num">SPECIMEN N° 04</span>
+      <span>·</span>
+      <span>Critical Design / Physical Computing</span>
+    </div>
+    <h1 class="cs-title">Architect of Nothing</h1>
+    <p class="cs-subtitle">
+      A functional deconstructed physical game console that quietly measures, manipulates, and questions human agency through branching narrative dilemmas and embedded protocol mechanics.
+    </p>
+
+    <!-- Metadata Grid -->
+    <div class="cs-meta-grid">
+      <div class="cs-meta-item">
+        <span class="cs-meta-label">Role</span>
+        <span class="cs-meta-value">Individual Creator (Concept, Hardware, Firmware, Narrative)</span>
+      </div>
+      <div class="cs-meta-item">
+        <span class="cs-meta-label">Academic Context</span>
+        <span class="cs-meta-value">MA Experience Design Year 2 (Academic Submission)</span>
+      </div>
+      <div class="cs-meta-item">
+        <span class="cs-meta-label">Hardware Stack</span>
+        <span class="cs-meta-value">ESP32, 1.8" ST7735 SPI TFT, Tactile Buttons, Toggle Switches, LiPo Battery, 3D Printing (PLA), C++ Code</span>
+      </div>
+      <div class="cs-meta-item">
+        <span class="cs-meta-label">Theoretical Grounding</span>
+        <span class="cs-meta-value">Protocol Theory (Galloway), Critical Making (Ratto), Luddite Labor History</span>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Editorial Content -->
+  <main class="cs-main-content">
+
+    <!-- HERO IMAGE PLACEHOLDER -->
+    <figure class="cs-media-figure wide">
+      <div class="cs-placeholder hero">
+        <span class="cs-placeholder-tag">HERO PHOTOGRAPH · FINAL FRAMED ARTEFACT</span>
+        <h3 class="cs-placeholder-title">Title Presentation / Framed Deconstructed Artefact</h3>
+        <p class="cs-placeholder-instruction">
+          <strong>Replace with:</strong> Photograph from Page 21 of the documentation. High-resolution view of the deconstructed blue 3D-printed module, ESP32 board, active SPI TFT screen, and battery mounted inside an ornate picture frame with hand-inscribed parchment cards.
+        </p>
+        <div class="cs-placeholder-specs">
+          <span>Target Ratio: 16:9</span>
+          <span>Source: head (2) (1).pdf (p. 21)</span>
+          <span>Status: Pending User High-Res File</span>
+        </div>
+      </div>
+      <figcaption class="cs-caption">
+        <strong>Figure 1.0:</strong> The finished Architect of Nothing installation: an open, deconstructed console exposing the physical and computational machinery of behavioral protocol.
+      </figcaption>
+    </figure>
+
+    <!-- SECTION 01: PHILOSOPHICAL FOUNDATIONS -->
+    <section class="cs-section">
+      <div class="cs-section-header">
+        <span class="cs-section-num">01</span>
+        <h2 class="cs-section-title">Philosophical Foundations: Luddism, Protocols &amp; Agency</h2>
+      </div>
+
+      <p>
+        Modern digital platforms frequently claim to expand human autonomy by presenting users with endless choices, feeds, and customizable settings. Yet beneath this veneer of empowerment, software protocols quietly constrain and govern human behavior through invisible incentives, biometric tracking, and algorithmic conditioning.
+      </p>
+
+      <p>
+        <strong>Architect of Nothing</strong> began as an academic and critical inquiry into this hidden architecture of control. The project drew theoretical foundations from three seminal bodies of scholarship:
+      </p>
+
+      <ul>
+        <li><strong>Protocol Theory (Alexander Galloway):</strong> Galloway posits that in decentralized network architectures, control is not exerted through centralized force, but through protocols—standardized rules that govern how information, interactions, and participants may connect. Protocols disguise authority as technical necessity.</li>
+        <li><strong>Critical Making (Matt Ratto):</strong> The methodological practice of using physical electronics and material prototyping not merely to solve functional problems, but as an active mode of philosophical critique and reflective inquiry.</li>
+        <li><strong>The Luddite Movement (E.P. Thompson):</strong> Often misunderstood as primitive anti-technology panic, historical Luddism was an intentional political resistance against machinery that systematically stripped artisans of their labor autonomy, dignity, and economic self-determination.</li>
+      </ul>
+
+      <div class="cs-callout">
+        <div class="cs-callout-header">Core Research Question</div>
+        <p>
+          How do modern socio-technical systems subtly manipulate individual autonomy and enforce psychological conformity under the guise of choice, efficiency, and progress?
+        </p>
+      </div>
+    </section>
+
+    <!-- SECTION 02: CONCEPT & GAME MECHANICS -->
+    <section class="cs-section">
+      <div class="cs-section-header">
+        <span class="cs-section-num">02</span>
+        <h2 class="cs-section-title">Narrative Game Logic &amp; Psychological Conditioning</h2>
+      </div>
+
+      <p>
+        To translate abstract protocol theory into an experiential reality, the project took the form of a physical handheld game console. Rather than an interactive essay or digital app, players are physically confronted with a dedicated device running an original branching narrative.
+      </p>
+
+      <p>
+        Players navigate a sequence of realistic workplace, social, and institutional moral dilemmas rendered on a miniature 1.8-inch TFT display:
+      </p>
+
+      <ul>
+        <li><em>"Colleague requests credit for unearned work. Choice: [PRAISE THEIR HUSTLE] vs. [FLAG DISCREPANCY]."</em></li>
+        <li><em>"Executive deadline approaching. Choice: [LIE ABOUT PROGRESS] vs. [ADMIT SYSTEM FAILURE]."</em></li>
+      </ul>
+
+      <p>
+        Unknown to the player at the start, the console's internal software logic quietly tracks implicit psychological metrics: compliance vs. defiance, risk tolerance, and deference to institutional authority. The game's narrative branches do not reward conventional morality; instead, the system gradually increases bureaucratic pressure, rewarding conformity and subtly penalizing individualist rebellion.
+      </p>
+
+      <!-- PROCESS IMAGE PLACEHOLDER -->
+      <figure class="cs-media-figure">
+        <div class="cs-placeholder process">
+          <span class="cs-placeholder-tag">IDEATION · FORM SKETCHES</span>
+          <h3 class="cs-placeholder-title">Form &amp; Aesthetic Ideation Sketches</h3>
+          <p class="cs-placeholder-instruction">
+            <strong>Replace with:</strong> Hand sketches from Page 29 of documentation exploring cyberdeck form factors, tactile mouth interfaces, and industrial button cluster placements.
+          </p>
+          <div class="cs-placeholder-specs">
+            <span>Format: Conceptual Sketches</span>
+            <span>Source: head (2) (1).pdf (p. 29)</span>
+          </div>
+        </div>
+        <figcaption class="cs-caption">
+          <strong>Figure 2.0:</strong> Early conceptual sketches exploring physical cyberdeck aesthetics, exposed industrial switches, and handheld ergonomics.
+        </figcaption>
+      </figure>
+    </section>
+
+    <!-- SECTION 03: HARDWARE & SOFTWARE DEVELOPMENT -->
+    <section class="cs-section">
+      <div class="cs-section-header">
+        <span class="cs-section-num">03</span>
+        <h2 class="cs-section-title">Physical Computing &amp; Embedded C++ Engineering</h2>
+      </div>
+
+      <p>
+        Building the physical artifact required overcoming significant embedded hardware and software engineering constraints:
+      </p>
+
+      <div class="cs-table-wrapper">
+        <table class="cs-spec-table">
+          <thead>
+            <tr>
+              <th>Subsystem</th>
+              <th>Hardware Component</th>
+              <th>Technical Challenge</th>
+              <th>Engineered Resolution</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Microcontroller</strong></td>
+              <td>ESP32 NodeMCU</td>
+              <td>GPIO pin contention between SPI bus and input triggers</td>
+              <td>Mapped dedicated hardware SPI pins (MOSI, SCK, CS, DC, RESET) separate from button interrupts</td>
+            </tr>
+            <tr>
+              <td><strong>Display</strong></td>
+              <td>1.8" ST7735 SPI TFT (128×160)</td>
+              <td>Text clipping; narrative choices exceeded line boundaries</td>
+              <td>Authored custom word-wrapping and line-scrolling algorithm in C++</td>
+            </tr>
+            <tr>
+              <td><strong>Audio Feedback</strong></td>
+              <td>Piezo Buzzer</td>
+              <td>Standard delay() sound routines blocked button reading</td>
+              <td>Wrote non-blocking state-machine frequency toggles using millis()</td>
+            </tr>
+            <tr>
+              <td><strong>Power Management</strong></td>
+              <td>Rechargeable 3.7V LiPo + TP4056</td>
+              <td>Brownouts and resets when transitioning from USB to battery</td>
+              <td>Integrated decoupling electrolytic capacitors across power rails</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- TWO-COLUMN HARDWARE PLACEHOLDER GRID -->
+      <div class="cs-placeholder-grid">
+        <div class="cs-placeholder process">
+          <span class="cs-placeholder-tag">PROTOTYPING · CIRCUIT BREADBOARD</span>
+          <h3 class="cs-placeholder-title">Breadboard Prototype &amp; Wiring Harness</h3>
+          <p class="cs-placeholder-instruction">
+            <strong>Replace with:</strong> Breadboard photography from Page 33 showing ESP32 wiring, jumper connections, and circuit validation.
+          </p>
+          <div class="cs-placeholder-specs">
+            <span>Source: head (2) (1).pdf (p. 33)</span>
+          </div>
+        </div>
+        <div class="cs-placeholder process">
+          <span class="cs-placeholder-tag">INTERFACE · TFT SCREEN LOGIC</span>
+          <h3 class="cs-placeholder-title">Live 1.8" TFT Screen Dilemma Display</h3>
+          <p class="cs-placeholder-instruction">
+            <strong>Replace with:</strong> Macro screen photograph from Page 36 showing live choice prompts ("PRAISE THEIR HUSTLE", "LIE ABOUT PROGRESS").
+          </p>
+          <div class="cs-placeholder-specs">
+            <span>Source: head (2) (1).pdf (p. 36)</span>
+          </div>
+        </div>
+      </div>
+      <figcaption class="cs-caption">
+        <strong>Figure 3.0:</strong> Hardware development trajectory: breadboard circuit verification and live pixel-level dilemma rendering.
+      </figcaption>
+    </section>
+
+    <!-- SECTION 04: THE FABRICATION FAILURE & PIVOT -->
+    <section class="cs-section">
+      <div class="cs-section-header">
+        <span class="cs-section-num">04</span>
+        <h2 class="cs-section-title">The Honest Failure: Enclosure Clearance &amp; Deconstruction</h2>
+      </div>
+
+      <p>
+        The original vision (Iteration 1) was an enclosed, handheld 3D-printed cyberdeck console. Complete CAD models were designed, sliced, and printed in blue PLA. However, physical assembly brought a catastrophic fabrication failure.
+      </p>
+
+      <div class="cs-callout pivot">
+        <div class="cs-callout-header">Fabrication Failure &amp; Creative Pivot</div>
+        <p>
+          <strong>Why the Enclosed Case Failed:</strong> During final soldering and packing, the internal volume tolerance proved too tight. The thick gauge of jumper cables, battery pack dimensions, and tactile switch stems exceeded the cavity depth. Closing the printed clamshell caused wire pinches, broken solder joints, and battery bulging. With only days remaining before the academic public exhibition, there was no time to redesign and execute a 24-hour reprint.
+        </p>
+      </div>
+
+      <p>
+        Rather than conceding defeat, the failure was transformed into a defining conceptual pivot: <em>Deconstruction</em>.
+      </p>
+
+      <p>
+        The electronics were liberated from the hidden shell and mounted in an open, framed layout against archival matboard. The blue 3D-printed module, ESP32 board, exposed wiring harness, and battery were displayed inside a picture frame accompanied by handwritten parchment instructions. By exposing the raw electronic guts, the artifact literally laid bare the <strong>"machinery of control"</strong>, turning a physical fabrication setback into a profound artistic asset.
+      </p>
+
+      <!-- PROCESS IMAGE PLACEHOLDER -->
+      <figure class="cs-media-figure">
+        <div class="cs-placeholder process">
+          <span class="cs-placeholder-tag">ITERATION · ASSEMBLY FAILURE</span>
+          <h3 class="cs-placeholder-title">Soldering &amp; 3D Print Clearance Assembly</h3>
+          <p class="cs-placeholder-instruction">
+            <strong>Replace with:</strong> Assembly photos from Page 39 showing hand-soldering and the physical difficulty of fitting components into the blue 3D-printed enclosure.
+          </p>
+          <div class="cs-placeholder-specs">
+            <span>Source: head (2) (1).pdf (p. 39)</span>
+          </div>
+        </div>
+        <figcaption class="cs-caption">
+          <strong>Figure 4.0:</strong> Physical documentation of the enclosure clearance failure that precipitated the deconstructed framed redesign.
+        </figcaption>
+      </figure>
+    </section>
+
+    <!-- SECTION 05: PLAYTESTING & CONTEXT GAP -->
+    <section class="cs-section">
+      <div class="cs-section-header">
+        <span class="cs-section-num">05</span>
+        <h2 class="cs-section-title">Exhibition Playtesting &amp; The Context Gap</h2>
+      </div>
+
+      <p>
+        The finished installation was exhibited publicly at the MA gallery showcase, where dozens of visitors engaged in live playtesting.
+      </p>
+
+      <!-- TWO-COLUMN TESTING PLACEHOLDER GRID -->
+      <div class="cs-placeholder-grid">
+        <div class="cs-placeholder process">
+          <span class="cs-placeholder-tag">EXHIBITION · LIVE PLAYTESTING</span>
+          <h3 class="cs-placeholder-title">Gallery Visitors Interacting with Device</h3>
+          <p class="cs-placeholder-instruction">
+            <strong>Replace with:</strong> Gallery exhibition photos from Page 42 showing visitors holding the controls and reading dilemmas.
+          </p>
+          <div class="cs-placeholder-specs">
+            <span>Source: head (2) (1).pdf (p. 42)</span>
+          </div>
+        </div>
+        <div class="cs-placeholder process">
+          <span class="cs-placeholder-tag">EVIDENCE · INSTRUCTION CARDS</span>
+          <h3 class="cs-placeholder-title">Parchment Instructions &amp; Visitor Engagement</h3>
+          <p class="cs-placeholder-instruction">
+            <strong>Replace with:</strong> Detailed close-up photo from Page 46 showing the hand-drawn parchment instruction cards and player observation.
+          </p>
+          <div class="cs-placeholder-specs">
+            <span>Source: head (2) (1).pdf (p. 46)</span>
+          </div>
+        </div>
+      </div>
+      <figcaption class="cs-caption">
+        <strong>Figure 5.0:</strong> Public playtesting at the graduate design exhibition.
+      </figcaption>
+
+      <h3>The Critical Evaluation Finding</h3>
+      <p>
+        Observational testing yielded a profound, unexpected insight regarding critical experience design:
+      </p>
+
+      <blockquote class="cs-quote">
+        "Critical ideas do not automatically translate into critical experiences; internal game mechanics alone cannot carry the full conceptual context without intentional framing and visual language."
+        <span class="cs-quote-source">— Empirical Playtesting Observation</span>
+      </blockquote>
+
+      <p>
+        While visitors effortlessly understood the physical buttons and enjoyed the branching narrative, many interpreted it simply as a fun retro handheld game. Without reading the surrounding curatorial parchment, they missed the deeper critique of Alexander Galloway's protocol theory. Designing a system of control revealed the immense gulf between the designer’s internal theoretical intent and the user’s unprompted perception.
+      </p>
+    </section>
+
+    <!-- SECTION 06: LIMITATIONS & GAPS -->
+    <section class="cs-section">
+      <div class="cs-section-header">
+        <span class="cs-section-num">06</span>
+        <h2 class="cs-section-title">Limitations &amp; Documented Gaps</h2>
+      </div>
+
+      <div class="cs-callout gap">
+        <div class="cs-callout-header">Documented Information Gaps</div>
+        <ul>
+          <li><strong>Handheld Enclosure:</strong> [PHYSICAL CASING UNENCLOSED] The artifact remains mounted in its framed deconstructed state rather than a fully enclosed injection-molded or handheld casing.</li>
+          <li><strong>Branching Tree Script:</strong> [FULL NARRATIVE TREE SCRIPT NOT INCLUDED] The complete multi-branch text matrix and psychological scoring weights programmed into the firmware are only partially transcribed in the academic PDF.</li>
+          <li><strong>Exact Project Timeline:</strong> [DURATION NOT DOCUMENTED] Formally recorded as Year 2 MA studio work.</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- SECTION 07: RETROSPECTIVE & PM TAKEAWAYS -->
+    <section class="cs-section">
+      <div class="cs-section-header">
+        <span class="cs-section-num">07</span>
+        <h2 class="cs-section-title">Retrospective &amp; Product Management Signals</h2>
+      </div>
+
+      <p>
+        Architect of Nothing serves as an unmistakable demonstration of engineering grit, intellectual maturity, and adaptive execution:
+      </p>
+
+      <ul>
+        <li><strong>Full-Stack Physical Computing:</strong> Authored custom embedded C++ code, designed circuits, managed power delivery, and built hardware from scratch.</li>
+        <li><strong>Adaptive Problem Solving Under Pressure:</strong> Successfully salvaged a severe fabrication failure hours before an exhibition, turning a defect into the installation's core aesthetic signature.</li>
+        <li><strong>Ethical Responsibility in System Architecture:</strong> Shifted from passively critiquing systems to taking direct moral responsibility as the architect who designs the conditions of user choice.</li>
+      </ul>
+    </section>
+
+  </main>
+
+  <!-- Editorial Footer with Adjacent Navigation -->
+  <footer class="cs-footer">
+    <div class="cs-footer-container">
+      <div class="cs-footer-nav">
+        <a href="focus-dial.html" class="cs-adjacent-link">
+          <span class="cs-adjacent-dir">← Previous Case Study</span>
+          <span class="cs-adjacent-title">The Focus Dial (Tangible Interaction)</span>
+        </a>
+        <a href="momentum-buddy.html" class="cs-adjacent-link right">
+          <span class="cs-adjacent-dir">Supporting Projects →</span>
+          <span class="cs-adjacent-title">Momentum Buddy (Mobile UX)</span>
+        </a>
+      </div>
+      <div class="cs-footer-bottom">
+        <span>Curiosity Cabinet Portfolio · Case Study Report</span>
+        <a href="../index.html" class="cs-return-top">Return to Portfolio Overview</a>
+      </div>
+    </div>
+  </footer>
+
+</body>
+</html>

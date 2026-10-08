@@ -1,0 +1,709 @@
+/* ==========================================================================
+   Editorial Design Report & Case Study Stylesheet
+   Curiosity Cabinet Portfolio · Academic Report & Research Documentation
+   ========================================================================== */
+
+:root {
+  --cs-bg: #ffffff;
+  --cs-bg-subtle: #f9f9fb;
+  --cs-bg-card: #f4f4f7;
+  --cs-text-primary: #121316;
+  --cs-text-secondary: #4a4d55;
+  --cs-text-muted: #737782;
+  --cs-border: #e2e4e9;
+  --cs-border-dark: #121316;
+  --cs-accent-amber: #9a6b28;
+  --cs-accent-ink: #1f2937;
+  --cs-accent-red: #a83232;
+  --cs-accent-teal: #1d646b;
+  
+  --font-serif: "Cormorant Garamond", "Playfair Display", Georgia, serif;
+  --font-sans: "Plus Jakarta Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --font-mono: "DM Mono", monospace;
+
+  --max-content-width: 920px;
+  --max-wide-width: 1200px;
+}
+
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  font-size: 16px;
+  scroll-behavior: smooth;
+  background-color: var(--cs-bg);
+  color: var(--cs-text-primary);
+}
+
+body {
+  font-family: var(--font-sans);
+  font-size: 1.0625rem;
+  line-height: 1.75;
+  color: var(--cs-text-primary);
+  background-color: var(--cs-bg);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* ==========================================================================
+   Top Header Navigation
+   ========================================================================== */
+.cs-header-nav {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: rgba(255, 255, 255, 0.94);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--cs-border);
+  padding: 0.9rem 2rem;
+}
+
+.cs-header-container {
+  max-width: var(--max-wide-width);
+  margin: 0 auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+.cs-back-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-family: var(--font-mono);
+  font-size: 0.82rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--cs-text-primary);
+  text-decoration: none;
+  padding: 0.45rem 0.9rem;
+  border: 1px solid var(--cs-border);
+  border-radius: 4px;
+  background: var(--cs-bg);
+  transition: all 0.2s ease;
+}
+
+.cs-back-btn:hover {
+  background: var(--cs-text-primary);
+  color: #ffffff;
+  border-color: var(--cs-text-primary);
+}
+
+.cs-header-meta {
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  color: var(--cs-text-muted);
+}
+
+.cs-header-badge {
+  padding: 0.2rem 0.55rem;
+  background: var(--cs-bg-card);
+  border: 1px solid var(--cs-border);
+  border-radius: 3px;
+  color: var(--cs-text-secondary);
+  font-weight: 500;
+}
+
+/* ==========================================================================
+   Article Hero & Meta Layout
+   ========================================================================== */
+.cs-hero {
+  max-width: var(--max-wide-width);
+  margin: 0 auto;
+  padding: 4.5rem 2rem 3rem 2rem;
+  border-bottom: 1px solid var(--cs-border);
+}
+
+.cs-hero-pre {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+  color: var(--cs-accent-amber);
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  margin-bottom: 1.25rem;
+}
+
+.cs-hero-pre .cs-num {
+  font-weight: 700;
+  color: var(--cs-text-primary);
+}
+
+.cs-title {
+  font-family: var(--font-serif);
+  font-size: clamp(2.5rem, 5.5vw, 4.25rem);
+  font-weight: 600;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+  color: var(--cs-text-primary);
+  margin-bottom: 1.5rem;
+}
+
+.cs-subtitle {
+  font-size: clamp(1.2rem, 2vw, 1.45rem);
+  line-height: 1.5;
+  color: var(--cs-text-secondary);
+  font-weight: 400;
+  max-width: 860px;
+  margin-bottom: 2.75rem;
+}
+
+/* Metadata Strip Grid */
+.cs-meta-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1.5rem;
+  padding-top: 2rem;
+  border-top: 1px solid var(--cs-border);
+}
+
+.cs-meta-item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+.cs-meta-label {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--cs-text-muted);
+}
+
+.cs-meta-value {
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: var(--cs-text-primary);
+}
+
+/* ==========================================================================
+   Content Layout & Typography
+   ========================================================================== */
+.cs-main-content {
+  max-width: var(--max-content-width);
+  margin: 0 auto;
+  padding: 4rem 2rem 6rem 2rem;
+}
+
+.cs-section {
+  margin-bottom: 4.5rem;
+  position: relative;
+}
+
+.cs-section-header {
+  margin-bottom: 2rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid var(--cs-border);
+  display: flex;
+  align-items: baseline;
+  gap: 1rem;
+}
+
+.cs-section-num {
+  font-family: var(--font-mono);
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: var(--cs-accent-amber);
+  letter-spacing: 0.08em;
+}
+
+.cs-section-title {
+  font-family: var(--font-serif);
+  font-size: 1.95rem;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  color: var(--cs-text-primary);
+}
+
+.cs-section h3 {
+  font-size: 1.35rem;
+  font-weight: 600;
+  color: var(--cs-text-primary);
+  margin: 2.25rem 0 1rem 0;
+  letter-spacing: -0.01em;
+}
+
+.cs-section h4 {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: var(--cs-text-secondary);
+  margin: 1.75rem 0 0.75rem 0;
+}
+
+.cs-section p {
+  margin-bottom: 1.5rem;
+  color: var(--cs-text-secondary);
+}
+
+.cs-section ul, .cs-section ol {
+  margin: 1.25rem 0 1.75rem 1.5rem;
+  color: var(--cs-text-secondary);
+}
+
+.cs-section li {
+  margin-bottom: 0.65rem;
+  padding-left: 0.35rem;
+}
+
+.cs-section strong {
+  color: var(--cs-text-primary);
+  font-weight: 600;
+}
+
+/* ==========================================================================
+   Callout Boxes (Insight, Pivot/Failure, Gap/Limitation)
+   ========================================================================== */
+.cs-callout {
+  padding: 1.75rem 2rem;
+  margin: 2.25rem 0;
+  border-radius: 4px;
+  background: var(--cs-bg-subtle);
+  border-left: 4px solid var(--cs-text-primary);
+}
+
+.cs-callout-header {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-weight: 600;
+  margin-bottom: 0.75rem;
+}
+
+.cs-callout p:last-child {
+  margin-bottom: 0;
+}
+
+.cs-callout.insight {
+  border-left-color: var(--cs-accent-amber);
+  background: #fdfaf5;
+}
+.cs-callout.insight .cs-callout-header {
+  color: var(--cs-accent-amber);
+}
+
+.cs-callout.pivot {
+  border-left-color: var(--cs-accent-red);
+  background: #fff8f8;
+}
+.cs-callout.pivot .cs-callout-header {
+  color: var(--cs-accent-red);
+}
+
+.cs-callout.gap {
+  border-left-color: var(--cs-text-muted);
+  background: var(--cs-bg-card);
+}
+.cs-callout.gap .cs-callout-header {
+  color: var(--cs-text-muted);
+}
+
+/* Quote */
+.cs-quote {
+  font-family: var(--font-serif);
+  font-size: 1.55rem;
+  font-style: italic;
+  line-height: 1.45;
+  color: var(--cs-text-primary);
+  border-left: 3px solid var(--cs-border-dark);
+  padding: 0.5rem 0 0.5rem 1.75rem;
+  margin: 2.5rem 0;
+}
+
+.cs-quote-source {
+  display: block;
+  font-family: var(--font-mono);
+  font-size: 0.82rem;
+  font-style: normal;
+  color: var(--cs-text-muted);
+  margin-top: 0.75rem;
+}
+
+/* ==========================================================================
+   Image Placeholders (Evidence-Driven Components)
+   ========================================================================== */
+.cs-media-figure {
+  margin: 3rem 0;
+  width: 100%;
+}
+
+.cs-media-figure.wide {
+  position: relative;
+  left: 50%;
+  right: 50%;
+  margin-left: -min(50vw, calc(var(--max-wide-width) / 2));
+  margin-right: -min(50vw, calc(var(--max-wide-width) / 2));
+  width: min(100vw, var(--max-wide-width));
+  padding: 0 2rem;
+}
+
+.cs-placeholder {
+  border: 1.5px dashed var(--cs-border);
+  border-radius: 6px;
+  background: #fafafc;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 3rem 2rem;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+  box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.015);
+  transition: border-color 0.2s ease;
+}
+
+.cs-placeholder:hover {
+  border-color: #b0b4be;
+}
+
+/* Type variations */
+.cs-placeholder.hero {
+  min-height: 480px;
+  background: #f7f8fa;
+}
+
+.cs-placeholder.process {
+  min-height: 380px;
+}
+
+.cs-placeholder.diagram {
+  min-height: 420px;
+  background-color: #f7f9fa;
+  background-image: linear-gradient(rgba(0, 0, 0, 0.03) 1px, transparent 1px),
+                    linear-gradient(90deg, rgba(0, 0, 0, 0.03) 1px, transparent 1px);
+  background-size: 24px 24px;
+}
+
+.cs-placeholder.outcome {
+  min-height: 460px;
+  background: #f9f9fa;
+}
+
+.cs-placeholder-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  padding: 0.3rem 0.75rem;
+  border-radius: 3px;
+  background: var(--cs-bg);
+  border: 1px solid var(--cs-border);
+  color: var(--cs-text-primary);
+  margin-bottom: 1.25rem;
+}
+
+.cs-placeholder-title {
+  font-family: var(--font-serif);
+  font-size: 1.45rem;
+  font-weight: 600;
+  color: var(--cs-text-primary);
+  margin-bottom: 0.75rem;
+  max-width: 620px;
+}
+
+.cs-placeholder-instruction {
+  font-size: 0.92rem;
+  color: var(--cs-text-secondary);
+  max-width: 600px;
+  line-height: 1.6;
+  margin-bottom: 1.5rem;
+}
+
+.cs-placeholder-instruction strong {
+  color: var(--cs-accent-ink);
+  font-weight: 600;
+}
+
+.cs-placeholder-specs {
+  display: flex;
+  gap: 1.25rem;
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  color: var(--cs-text-muted);
+  border-top: 1px solid var(--cs-border);
+  padding-top: 1rem;
+}
+
+.cs-caption {
+  margin-top: 0.9rem;
+  font-size: 0.88rem;
+  color: var(--cs-text-muted);
+  line-height: 1.5;
+  padding-left: 0.5rem;
+  border-left: 2px solid var(--cs-border);
+}
+
+.cs-caption strong {
+  color: var(--cs-text-secondary);
+  font-weight: 600;
+}
+
+/* Image Grids */
+.cs-placeholder-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1.5rem;
+  margin: 2.5rem 0;
+}
+
+.cs-placeholder-grid.three-col {
+  grid-template-columns: repeat(3, 1fr);
+}
+
+.cs-placeholder-grid .cs-placeholder {
+  min-height: 300px;
+  padding: 2rem 1.25rem;
+}
+
+/* ==========================================================================
+   Data & Specification Tables
+   ========================================================================== */
+.cs-table-wrapper {
+  overflow-x: auto;
+  margin: 2.5rem 0;
+  border: 1px solid var(--cs-border);
+  border-radius: 4px;
+}
+
+.cs-spec-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.92rem;
+  text-align: left;
+}
+
+.cs-spec-table th, .cs-spec-table td {
+  padding: 0.9rem 1.25rem;
+  border-bottom: 1px solid var(--cs-border);
+}
+
+.cs-spec-table th {
+  background: var(--cs-bg-subtle);
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--cs-text-secondary);
+}
+
+.cs-spec-table tr:last-child td {
+  border-bottom: none;
+}
+
+.cs-spec-table td strong {
+  color: var(--cs-text-primary);
+}
+
+/* Code Snippet Box (for Arduino/C++) */
+.cs-code-box {
+  background: #18191d;
+  color: #d1d5db;
+  border-radius: 6px;
+  padding: 1.5rem;
+  margin: 2rem 0;
+  overflow-x: auto;
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+  line-height: 1.6;
+}
+
+.cs-code-header {
+  display: flex;
+  justify-content: space-between;
+  border-bottom: 1px solid #333640;
+  padding-bottom: 0.75rem;
+  margin-bottom: 1rem;
+  font-size: 0.78rem;
+  color: #9ca3af;
+}
+
+/* ==========================================================================
+   Footer & Adjacent Project Navigation
+   ========================================================================== */
+.cs-footer {
+  border-top: 1px solid var(--cs-border);
+  background: var(--cs-bg-subtle);
+  padding: 4.5rem 2rem;
+}
+
+.cs-footer-container {
+  max-width: var(--max-wide-width);
+  margin: 0 auto;
+}
+
+.cs-footer-nav {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 2rem;
+  padding-bottom: 3.5rem;
+  border-bottom: 1px solid var(--cs-border);
+}
+
+.cs-adjacent-link {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  text-decoration: none;
+  max-width: 380px;
+}
+
+.cs-adjacent-dir {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--cs-text-muted);
+}
+
+.cs-adjacent-title {
+  font-family: var(--font-serif);
+  font-size: 1.35rem;
+  font-weight: 600;
+  color: var(--cs-text-primary);
+  transition: color 0.2s ease;
+}
+
+.cs-adjacent-link:hover .cs-adjacent-title {
+  color: var(--cs-accent-amber);
+}
+
+.cs-adjacent-link.right {
+  text-align: right;
+  margin-left: auto;
+}
+
+.cs-footer-bottom {
+  padding-top: 2.5rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-family: var(--font-mono);
+  font-size: 0.82rem;
+  color: var(--cs-text-muted);
+}
+
+.cs-return-top {
+  color: var(--cs-text-primary);
+  text-decoration: none;
+  border-bottom: 1px dotted var(--cs-text-primary);
+}
+
+/* ==========================================================================
+   Responsive Breakpoints
+   ========================================================================== */
+@media (max-width: 1024px) {
+  .cs-meta-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.25rem;
+  }
+
+  .cs-title {
+    font-size: 3rem;
+  }
+
+  .cs-placeholder-grid.three-col {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  html {
+    font-size: 15px;
+  }
+
+  .cs-header-nav {
+    padding: 0.75rem 1.25rem;
+  }
+
+  .cs-header-container {
+    flex-wrap: wrap;
+  }
+
+  .cs-header-meta span:not(.cs-header-badge) {
+    display: none;
+  }
+
+  .cs-hero {
+    padding: 3rem 1.25rem 2rem 1.25rem;
+  }
+
+  .cs-title {
+    font-size: 2.35rem;
+  }
+
+  .cs-subtitle {
+    font-size: 1.15rem;
+    margin-bottom: 2rem;
+  }
+
+  .cs-meta-grid {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+
+  .cs-main-content {
+    padding: 2.5rem 1.25rem 4rem 1.25rem;
+  }
+
+  .cs-section {
+    margin-bottom: 3.5rem;
+  }
+
+  .cs-placeholder-grid,
+  .cs-placeholder-grid.three-col {
+    grid-template-columns: 1fr;
+    gap: 1.25rem;
+  }
+
+  .cs-placeholder.hero,
+  .cs-placeholder.outcome,
+  .cs-placeholder.diagram {
+    min-height: 320px;
+    padding: 2rem 1rem;
+  }
+
+  .cs-media-figure.wide {
+    position: static;
+    margin-left: 0;
+    margin-right: 0;
+    width: 100%;
+    padding: 0;
+  }
+
+  .cs-footer-nav {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1.75rem;
+  }
+
+  .cs-adjacent-link.right {
+    text-align: left;
+    margin-left: 0;
+  }
+
+  .cs-footer-bottom {
+    flex-direction: column;
+    gap: 1rem;
+    align-items: flex-start;
+  }
+}

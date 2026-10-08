@@ -60,6 +60,8 @@ export class UIManager {
     this.drawerModalTitleEl = document.getElementById('drawer-modal-title');
     this.drawerModalContentEl = document.getElementById('drawer-modal-content');
     this.drawerModalCloseBtn = document.getElementById('drawer-modal-close');
+    this.drawerModalLinkEl = document.getElementById('drawer-modal-link');
+    this.modalExternalLink = document.getElementById('modal-external-link');
 
     // 2D Catalogue Overlay
     this.catalogueOverlay = document.getElementById('catalogue-overlay');
@@ -120,8 +122,13 @@ export class UIManager {
     this.drawerCloseBtn?.addEventListener('click', () => this.closePreviewDrawer());
     this.drawerBackBtn?.addEventListener('click', () => this.closePreviewDrawer());
 
-    // Click "Read Full Case Study →" opens the full modal
-    this.drawerCtaBtn?.addEventListener('click', () => {
+    // Click "View Case Study ↗" opens in new tab; fallback to modal if needed
+    this.drawerCtaBtn?.addEventListener('click', (e) => {
+      if (this.currentActiveProject && this.currentActiveProject.caseStudyUrl) {
+        // Allow standard anchor new tab navigation
+        return;
+      }
+      e.preventDefault();
       if (this.currentActiveProject) {
         this.openProjectModal(this.currentActiveProject);
       }
@@ -376,23 +383,83 @@ export class UIManager {
     if (!this.catalogueGrid) return;
     this.catalogueGrid.innerHTML = '';
 
+    // 1. Featured Section Header (4 Main Projects)
+    const featuredGroup = document.createElement('div');
+    featuredGroup.className = 'catalogue-section-group';
+    featuredGroup.innerHTML = `
+      <div class="catalogue-section-header">
+        <span class="catalogue-badge-gold">✦ PRIMARY WORKS · FULL DOCUMENTATION</span>
+        <h3 class="catalogue-section-title">Featured Case Studies</h3>
+        <p class="catalogue-section-desc">Four core investigations with full research rigor, design process, physical computing, and systemic evidence.</p>
+      </div>
+      <div class="catalogue-subgrid featured-grid"></div>
+    `;
+    const featuredGrid = featuredGroup.querySelector('.featured-grid');
+
+    // 2. Secondary & Supporting Systems
+    const supportingGroup = document.createElement('div');
+    supportingGroup.className = 'catalogue-section-group';
+    supportingGroup.innerHTML = `
+      <div class="catalogue-section-header" style="margin-top: 3.5rem;">
+        <span class="catalogue-badge-subtle">SUPPORTING WORKS · SYSTEMS &amp; WRITING</span>
+        <h3 class="catalogue-section-title">Secondary Inquiries &amp; Field Studies</h3>
+        <p class="catalogue-section-desc">Targeted explorations across digital body-doubling, cloud-automated sensory archives, design anthropology, and academic writing.</p>
+      </div>
+      <div class="catalogue-subgrid supporting-grid"></div>
+    `;
+    const supportingGrid = supportingGroup.querySelector('.supporting-grid');
+
+    // 3. Material & Method Explorations
+    const explorationsGroup = document.createElement('div');
+    explorationsGroup.className = 'catalogue-section-group';
+    explorationsGroup.innerHTML = `
+      <div class="catalogue-section-header" style="margin-top: 3.5rem;">
+        <span class="catalogue-badge-subtle">METHOD &amp; MATERIAL EXPERIMENTS</span>
+        <h3 class="catalogue-section-title">Quantitative LCA &amp; Sculptural Studies</h3>
+        <p class="catalogue-section-desc">Hands-on Life Cycle Assessment modeling and Japanese Wabi-Sabi cement casting explorations.</p>
+      </div>
+      <div class="catalogue-subgrid explorations-grid"></div>
+    `;
+    const explorationsGrid = explorationsGroup.querySelector('.explorations-grid');
+
     PROJECTS_DATA.forEach(project => {
       const card = document.createElement('div');
-      card.className = 'catalogue-card';
+      card.className = `catalogue-card ${project.isMain ? 'featured-card' : ''}`;
+      
+      const badgeHtml = project.isMain
+        ? `<span class="card-featured-badge">✦ FEATURED</span>`
+        : `<span class="card-regular-badge">SPECIMEN</span>`;
+
       card.innerHTML = `
-        <div>
-          <span class="card-number">${project.placement.labelNumber}</span>
+        <div class="card-top-content">
+          <div class="card-header-meta">
+            <span class="card-number">${project.placement?.labelNumber || 'N° 01'}</span>
+            ${badgeHtml}
+          </div>
           <h3 class="card-title">${project.title}</h3>
           <p class="card-cat">${project.category} · ${project.year}</p>
+          <p class="card-summary">${project.summary}</p>
         </div>
-        <p class="card-summary">${project.summary}</p>
-        <div class="card-action">
-          <span>Inspect in 3D Cabinet</span>
-          <span>→</span>
+
+        <div class="card-bottom-content">
+          <div class="card-tags-list">
+            ${(project.tags || []).slice(0, 3).map(t => `<span class="card-mini-tag">${t}</span>`).join('')}
+          </div>
+          <div class="card-actions-row">
+            <button type="button" class="card-btn-inspect" title="Inspect specimen bottle in 3D cabinet">
+              Inspect in 3D →
+            </button>
+            <a href="${project.caseStudyUrl}" target="_blank" rel="noopener noreferrer" class="card-btn-casestudy" title="Open complete case study report in a new tab">
+              View Case Study ↗
+            </a>
+          </div>
         </div>
       `;
 
-      card.addEventListener('click', () => {
+      // Clicking "Inspect in 3D" button
+      const inspectBtn = card.querySelector('.card-btn-inspect');
+      inspectBtn?.addEventListener('click', (e) => {
+        e.stopPropagation();
         this.closeCatalogueOverlay();
         this.setActiveNav('cabinet');
         if (this.onSelectProjectFrom2D) {
@@ -400,8 +467,31 @@ export class UIManager {
         }
       });
 
-      this.catalogueGrid.appendChild(card);
+      // Clicking the card body outside the external link also focuses in 3D
+      card.addEventListener('click', (e) => {
+        if (e.target.closest('.card-btn-casestudy')) {
+          // Native link opens in new tab cleanly
+          return;
+        }
+        this.closeCatalogueOverlay();
+        this.setActiveNav('cabinet');
+        if (this.onSelectProjectFrom2D) {
+          this.onSelectProjectFrom2D(project.id);
+        }
+      });
+
+      if (project.isMain) {
+        featuredGrid.appendChild(card);
+      } else if (project.id === 'sand-dunes' || project.id === 'learning-lca') {
+        explorationsGrid.appendChild(card);
+      } else {
+        supportingGrid.appendChild(card);
+      }
     });
+
+    this.catalogueGrid.appendChild(featuredGroup);
+    this.catalogueGrid.appendChild(supportingGroup);
+    this.catalogueGrid.appendChild(explorationsGroup);
   }
 
   openCatalogueOverlay() {
@@ -441,6 +531,12 @@ export class UIManager {
 
     if (this.drawerTagsEl && project.tags) {
       this.drawerTagsEl.innerHTML = project.tags.map(t => `<span class="drawer-tag">${t}</span>`).join('');
+    }
+
+    if (this.drawerCtaBtn && project.caseStudyUrl) {
+      this.drawerCtaBtn.href = project.caseStudyUrl;
+      this.drawerCtaBtn.setAttribute('target', '_blank');
+      this.drawerCtaBtn.setAttribute('rel', 'noopener noreferrer');
     }
 
     this.drawerEl?.classList.add('open');
@@ -494,6 +590,12 @@ export class UIManager {
 
     if (this.modalProjectTags && project.tags) {
       this.modalProjectTags.innerHTML = project.tags.map(t => `<span class="drawer-tag">${t}</span>`).join('');
+    }
+
+    if (this.modalExternalLink && project.caseStudyUrl) {
+      this.modalExternalLink.href = project.caseStudyUrl;
+      this.modalExternalLink.setAttribute('target', '_blank');
+      this.modalExternalLink.setAttribute('rel', 'noopener noreferrer');
     }
 
     this.projectModal?.classList.add('open');
@@ -573,6 +675,18 @@ export class UIManager {
     if (this.drawerModalLabelEl) this.drawerModalLabelEl.innerText = drawerData.label;
     if (this.drawerModalTitleEl) this.drawerModalTitleEl.innerText = drawerData.title;
     if (this.drawerModalContentEl) this.drawerModalContentEl.innerText = drawerData.content;
+
+    if (this.drawerModalLinkEl) {
+      if (drawerData.caseStudyUrl) {
+        this.drawerModalLinkEl.href = drawerData.caseStudyUrl;
+        this.drawerModalLinkEl.innerText = drawerData.caseStudyTitle || 'View Related Case Study ↗';
+        this.drawerModalLinkEl.setAttribute('target', '_blank');
+        this.drawerModalLinkEl.setAttribute('rel', 'noopener noreferrer');
+        this.drawerModalLinkEl.style.display = 'inline-block';
+      } else {
+        this.drawerModalLinkEl.style.display = 'none';
+      }
+    }
 
     this.drawerModalEl.classList.add('open');
     this.drawerModalEl.setAttribute('aria-hidden', 'false');

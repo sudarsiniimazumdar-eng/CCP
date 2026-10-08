@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <title>Curiosity Cabinet — Interactive 3D Portfolio</title>
   <meta name="description" content="An interactive 3D curiosity cabinet presenting a collection of design projects, prototypes, and inquiries." />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🏛️</text></svg>" />
 
   <!-- Google Fonts: Editorial Serif, Antique Cursive & Apothecary Mono -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -102,7 +103,7 @@
       </div>
 
       <div class="drawer-footer">
-        <button id="drawer-cta-btn" class="cta-button">Read Full Case Study →</button>
+        <a id="drawer-cta-btn" href="#" target="_blank" rel="noopener noreferrer" class="cta-button" style="text-decoration: none; text-align: center; display: block;">View Case Study ↗</a>
         <button id="drawer-back-btn" class="back-cabinet-btn">Back to Cabinet</button>
       </div>
     </aside>
@@ -154,7 +155,8 @@
 
         <div class="project-modal-footer">
           <button id="modal-prev-btn" class="nav-arrow-btn">← Previous Project</button>
-          <button id="modal-return-cabinet" class="cta-button">Return to Cabinet 3D</button>
+          <a id="modal-external-link" href="#" target="_blank" rel="noopener noreferrer" class="cta-button" style="text-decoration: none; text-align: center;">Open Case Study in New Tab ↗</a>
+          <button id="modal-return-cabinet" class="back-cabinet-btn">Return to Cabinet 3D</button>
           <button id="modal-next-btn" class="nav-arrow-btn">Next Project →</button>
         </div>
       </div>
@@ -165,7 +167,7 @@
       <div class="catalogue-header">
         <div class="catalogue-header-top">
           <div>
-            <span class="catalogue-subtitle">The Complete Collection</span>
+            <span class="catalogue-subtitle">The Complete Collection · 10 Curated Inquiries</span>
             <h2 class="catalogue-title">Project Catalogue</h2>
           </div>
           <button id="catalogue-close-btn" class="modal-close-btn" aria-label="Close Catalogue">✕</button>
@@ -183,7 +185,10 @@
         <p id="drawer-modal-content" class="info-body">
           Archived documentation, sketches, and process notes from this chamber.
         </p>
-        <button id="drawer-modal-close" class="cta-button">Close Drawer</button>
+        <div id="drawer-modal-actions" style="margin-top: 1.5rem; display: flex; gap: 0.75rem; flex-wrap: wrap;">
+          <a id="drawer-modal-link" href="#" target="_blank" rel="noopener noreferrer" class="cta-button" style="display: none; text-decoration: none;">View Related Case Study ↗</a>
+          <button id="drawer-modal-close" class="back-cabinet-btn">Close Drawer</button>
+        </div>
       </div>
     </div>
 

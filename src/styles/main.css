@@ -573,13 +573,65 @@ html, body {
 }
 
 .catalogue-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-  gap: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
   max-width: 1100px;
   margin: 0 auto;
   width: 100%;
-  padding-bottom: 2rem;
+  padding-bottom: 3.5rem;
+}
+
+.catalogue-section-group {
+  width: 100%;
+}
+
+.catalogue-section-header {
+  margin-bottom: 1.5rem;
+  padding-bottom: 0.85rem;
+  border-bottom: 1px solid var(--color-border-subtle);
+}
+
+.catalogue-badge-gold {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  color: var(--color-amber-glow);
+  letter-spacing: 0.12em;
+  font-weight: 600;
+  display: inline-block;
+  margin-bottom: 0.35rem;
+}
+
+.catalogue-badge-subtle {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  color: var(--color-brass);
+  letter-spacing: 0.1em;
+  display: inline-block;
+  margin-bottom: 0.35rem;
+}
+
+.catalogue-section-title {
+  font-family: var(--font-serif-display);
+  font-size: 1.95rem;
+  font-weight: 600;
+  color: var(--color-parchment);
+  margin: 0.2rem 0 0.4rem 0;
+}
+
+.catalogue-section-desc {
+  font-size: 0.92rem;
+  line-height: 1.6;
+  color: var(--color-parchment-dim);
+  max-width: 720px;
+}
+
+.catalogue-subgrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 1.5rem;
 }
 
 .catalogue-card {
@@ -590,7 +642,7 @@ html, body {
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  gap: 1.25rem;
+  gap: 1.5rem;
   cursor: pointer;
   transition: all var(--transition-fast);
 }
@@ -602,10 +654,49 @@ html, body {
   box-shadow: 0 12px 35px rgba(0, 0, 0, 0.65), 0 0 15px var(--color-amber-subtle);
 }
 
+.catalogue-card.featured-card {
+  border-color: rgba(212, 163, 89, 0.45);
+  background: rgba(28, 20, 16, 0.92);
+  box-shadow: 0 6px 22px rgba(0, 0, 0, 0.45);
+}
+
+.catalogue-card.featured-card:hover {
+  border-color: var(--color-amber-glow);
+  box-shadow: 0 14px 40px rgba(0, 0, 0, 0.75), 0 0 20px var(--color-amber-subtle);
+}
+
+.card-header-meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.75rem;
+}
+
 .card-number {
   font-family: var(--font-mono);
   font-size: 0.75rem;
   color: var(--color-amber-glow);
+}
+
+.card-featured-badge {
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  color: var(--color-amber-glow);
+  padding: 0.15rem 0.5rem;
+  border: 1px solid rgba(212, 163, 89, 0.5);
+  border-radius: 2px;
+  background: rgba(212, 163, 89, 0.1);
+  letter-spacing: 0.06em;
+}
+
+.card-regular-badge {
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  color: var(--color-parchment-decay);
+  padding: 0.15rem 0.45rem;
+  border: 1px solid var(--color-border-subtle);
+  border-radius: 2px;
+  letter-spacing: 0.05em;
 }
 
 .card-title {
@@ -614,29 +705,91 @@ html, body {
   color: var(--color-parchment);
   font-weight: 600;
   margin: 0.25rem 0;
+  line-height: 1.25;
 }
 
 .card-cat {
   font-family: var(--font-cursive);
   font-size: 1.05rem;
   color: var(--color-parchment-decay);
+  margin-bottom: 0.75rem;
 }
 
 .card-summary {
   font-size: 0.9rem;
   line-height: 1.55;
-  color: rgba(244, 235, 217, 0.8);
+  color: rgba(244, 235, 217, 0.82);
 }
 
-.card-action {
-  font-family: var(--font-serif);
-  font-size: 0.85rem;
-  color: var(--color-brass);
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
+.card-tags-list {
   display: flex;
-  align-items: center;
+  flex-wrap: wrap;
   gap: 0.4rem;
+  margin-bottom: 1.25rem;
+}
+
+.card-mini-tag {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  color: var(--color-parchment-decay);
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid var(--color-border-subtle);
+  padding: 0.18rem 0.5rem;
+  border-radius: 2px;
+}
+
+.card-actions-row {
+  display: flex;
+  gap: 0.65rem;
+  align-items: center;
+  padding-top: 1rem;
+  border-top: 1px solid var(--color-border-subtle);
+}
+
+.card-btn-inspect {
+  flex: 1;
+  padding: 0.65rem 0.8rem;
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid var(--color-border);
+  color: var(--color-parchment);
+  border-radius: 2px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-align: center;
+}
+
+.card-btn-inspect:hover {
+  background: rgba(255, 255, 255, 0.12);
+  border-color: var(--color-parchment);
+  color: #ffffff;
+}
+
+.card-btn-casestudy {
+  flex: 1;
+  padding: 0.65rem 0.8rem;
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  background: var(--color-amber-glow);
+  border: 1px solid var(--color-amber-glow);
+  color: #120e0a;
+  font-weight: 600;
+  border-radius: 2px;
+  text-decoration: none;
+  text-align: center;
+  transition: all 0.2s ease;
+}
+
+.card-btn-casestudy:hover {
+  background: #ffffff;
+  border-color: #ffffff;
+  color: #000000;
+  box-shadow: 0 0 15px rgba(255, 255, 255, 0.4);
 }
 
 /* Modals */
@@ -753,6 +906,42 @@ html, body {
   font-family: var(--font-cursive);
   font-size: 1.25rem;
   color: var(--color-amber-glow);
+}
+
+/* ==========================================================================
+   Tablet Responsiveness (Max Width: 1080px, e.g. 1024x768)
+   ========================================================================== */
+@media (max-width: 1080px) {
+  .site-header {
+    padding: 1rem 1.5rem;
+  }
+
+  .brand-title {
+    font-size: 1.35rem;
+  }
+
+  .brand-subtitle {
+    font-size: 1.15rem;
+  }
+
+  .nav-links {
+    gap: 0.45rem;
+  }
+
+  .nav-btn {
+    padding: 0.45rem 0.8rem;
+    font-size: 0.8rem;
+    min-height: 35px;
+  }
+
+  .project-drawer {
+    width: 400px;
+  }
+
+  .catalogue-subgrid {
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 1.25rem;
+  }
 }
 
 /* ==========================================================================
@@ -887,7 +1076,7 @@ html, body {
     font-size: 2rem;
   }
 
-  .catalogue-grid {
+  .catalogue-subgrid {
     grid-template-columns: 1fr;
     gap: 1rem;
   }

@@ -238,12 +238,60 @@ function createStackedDrawerBank(group, { cartY, cartThickness, darkWalnutMateri
 
   // 6 Interactive Drawers with Raised Beveled Panels
   const drawerData = [
-    { id: 'drawer-sketches', label: 'I. SKETCHES', title: 'Early Process Sketches', content: 'Archived physical pencil ideations, ergonomic mockups, and early prototype scribbles.', x: -0.95, y: startY + 1.35, z: 1.12, w: 0.9, h: 0.45, openDist: 0.65 },
-    { id: 'drawer-materials', label: 'II. MATERIALS', title: 'Material Swatches & LCA', content: 'Polymer degradation samples, stamped brass chips, and comparative carbon emission indexes.', x: 0, y: startY + 1.35, z: 1.12, w: 0.9, h: 0.45, openDist: 0.75 },
-    { id: 'drawer-inquiries', label: 'III. INQUIRIES', title: 'Philosophy & Essays', content: 'Notes on architectural absence, negative space psychology, and sensory ritual design.', x: 0.95, y: startY + 1.35, z: 1.12, w: 0.9, h: 0.45, openDist: 0.55 },
-    { id: 'drawer-experiments', label: 'IV. SPECIMENS', title: 'Failed Prototypes', content: 'A cabinet of glorious failures: 3D prints, broken casts, and lessons from physical testing.', x: -0.95, y: startY + 0.75, z: 1.12, w: 0.9, h: 0.45, openDist: 0.7 },
-    { id: 'drawer-blueprints', label: 'V. BLUEPRINTS', title: 'Service Blueprints', content: 'Public transit touchpoint maps, behavioral journey charts, and clinic interaction playbooks.', x: 0, y: startY + 0.75, z: 1.12, w: 0.9, h: 0.45, openDist: 0.6 },
-    { id: 'drawer-ephemera', label: 'VI. ARCHIVE', title: 'Curator Log & Contact', content: 'Personal manifesto, contact channels, resume transcript, and bibliography.', x: 0.95, y: startY + 0.75, z: 1.12, w: 0.9, h: 0.45, openDist: 0.8 }
+    {
+      id: 'drawer-sketches',
+      label: 'I. PROCESS & SKETCHES',
+      title: 'Ergonomic Ideations & Flows',
+      content: 'Archived physical pencil ideations, discarded multi-tool concepts, and low-fidelity user flow diagrams from V. POCKET and Momentum Buddy.',
+      caseStudyUrl: 'case-studies/v-pocket.html',
+      caseStudyTitle: 'View V. POCKET Case Study ↗',
+      x: -0.95, y: startY + 1.35, z: 1.12, w: 0.9, h: 0.45, openDist: 0.65
+    },
+    {
+      id: 'drawer-materials',
+      label: 'II. MATERIALS & LCA',
+      title: 'Quantitative LCA & Material Studies',
+      content: 'Cradle-to-grave carbon accounting workbooks (polypropylene vs. steel hair clip) and Wabi-Sabi cast cement light study specimens.',
+      caseStudyUrl: 'case-studies/learning-lca.html',
+      caseStudyTitle: 'View Quantitative LCA Case Study ↗',
+      x: 0, y: startY + 1.35, z: 1.12, w: 0.9, h: 0.45, openDist: 0.75
+    },
+    {
+      id: 'drawer-inquiries',
+      label: 'III. INQUIRIES & ETHNOGRAPHY',
+      title: 'Design Anthropology & Research Essays',
+      content: 'Field reflections on 100-year-old Vishwakarma zero-nail wooden door joinery in Bidar, alongside creative research translation essays on Zoom fatigue.',
+      caseStudyUrl: 'case-studies/bidar-craft-study.html',
+      caseStudyTitle: 'View Bidar Field Study ↗',
+      x: 0.95, y: startY + 1.35, z: 1.12, w: 0.9, h: 0.45, openDist: 0.55
+    },
+    {
+      id: 'drawer-experiments',
+      label: 'IV. PHYSICAL COMPUTING',
+      title: 'ESP32 & Arduino Hardware Prototypes',
+      content: 'Deconstructed framed interactive consoles, custom soldered PCBs, and the evolution from rotary dials to tactical cognitive push-buttons.',
+      caseStudyUrl: 'case-studies/architect-of-nothing.html',
+      caseStudyTitle: 'View Architect of Nothing Case Study ↗',
+      x: -0.95, y: startY + 0.75, z: 1.12, w: 0.9, h: 0.45, openDist: 0.7
+    },
+    {
+      id: 'drawer-blueprints',
+      label: 'V. SERVICE BLUEPRINTS',
+      title: 'Urban End-of-Life System Architecture',
+      content: 'The 4-phase death care service blueprint, multi-stakeholder ecosystem mapping, Hebbal crematorium ethnography, and crisis logistical buffers.',
+      caseStudyUrl: 'case-studies/urban-death-care.html',
+      caseStudyTitle: 'View Urban Death Care Case Study ↗',
+      x: 0, y: startY + 0.75, z: 1.12, w: 0.9, h: 0.45, openDist: 0.6
+    },
+    {
+      id: 'drawer-ephemera',
+      label: 'VI. SENSORY ARCHIVES',
+      title: 'Multisensory Systems & Audio Cloud',
+      content: 'The Smell Library wooden chest with 36 QR-tagged essential oil vials and Microsoft Power Automate real-time cloud oral history pipeline.',
+      caseStudyUrl: 'case-studies/the-smell-library.html',
+      caseStudyTitle: 'View Smell Library Case Study ↗',
+      x: 0.95, y: startY + 0.75, z: 1.12, w: 0.9, h: 0.45, openDist: 0.8
+    }
   ];
 
   drawerData.forEach((d) => {

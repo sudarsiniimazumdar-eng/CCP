@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
+  <title>The Focus Dial — Zoom Fatigue &amp; Flow State Controller · Case Study</title>
+  <meta name="description" content="Case study on the Focus Dial: A functional physical USB desk controller using tangible buttons and cognitive prompts to combat virtual meeting burnout." />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎛️</text></svg>" />
+
+  <!-- Google Fonts: Editorial Serif, Clean Sans & Specimen Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,400;1,600&family=DM+Mono:wght@400;500&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
+
+  <link rel="stylesheet" href="../src/styles/case-study.css" />
+</head>
+<body>
+
+  <!-- Sticky Editorial Navigation Bar -->
+  <nav class="cs-header-nav" aria-label="Case Study Navigation">
+    <div class="cs-header-container">
+      <a href="../index.html" class="cs-back-btn" title="Return to Curiosity Cabinet">
+        ← Back to Curiosity Cabinet
+      </a>
+      <div class="cs-header-meta">
+        <span class="cs-header-badge">CASE STUDY N° 03</span>
+        <span>MAIN PROJECT · TANGIBLE INTERACTION</span>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Report Header / Hero -->
+  <header class="cs-hero">
+    <div class="cs-hero-pre">
+      <span class="cs-num">SPECIMEN N° 03</span>
+      <span>·</span>
+      <span>Cognitive Ergonomics / Behavioral Hardware</span>
+    </div>
+    <h1 class="cs-title">Focus Dial &amp; Prompt Controller</h1>
+    <p class="cs-subtitle">
+      A physical USB desk interface that interrupts Zoom fatigue by transforming passive, back-to-back virtual meetings into intentional cognitive sessions through physical interaction and psychological nudges.
+    </p>
+
+    <!-- Metadata Grid -->
+    <div class="cs-meta-grid">
+      <div class="cs-meta-item">
+        <span class="cs-meta-label">Role</span>
+        <span class="cs-meta-value">Individual Designer &amp; Hardware Developer</span>
+      </div>
+      <div class="cs-meta-item">
+        <span class="cs-meta-label">Timeline / Duration</span>
+        <span class="cs-meta-value">October 19 – November 12 (~4 Weeks Academic Project)</span>
+      </div>
+      <div class="cs-meta-item">
+        <span class="cs-meta-label">Tools &amp; Technology</span>
+        <span class="cs-meta-value">Arduino Uno, Custom Soldered PCB, Push Buttons, 3D Printing (PLA), C++ Embedded Code, CAD Software</span>
+      </div>
+      <div class="cs-meta-item">
+        <span class="cs-meta-label">Theoretical Frameworks</span>
+        <span class="cs-meta-value">Habit Discontinuity, Flow Theory, Nudge Theory, Hebbian Reinforcement</span>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Editorial Content -->
+  <main class="cs-main-content">
+
+    <!-- HERO IMAGE PLACEHOLDER -->
+    <figure class="cs-media-figure wide">
+      <div class="cs-placeholder hero">
+        <span class="cs-placeholder-tag">HERO PHOTOGRAPH · FINAL ARTIFACT</span>
+        <h3 class="cs-placeholder-title">Focus Dial Physical Hardware &amp; Assembly</h3>
+        <p class="cs-placeholder-instruction">
+          <strong>Replace with:</strong> Physical hardware photography from Page 93 of the documentation. Detailed top and angle shots showing the circular 3D-printed enclosure, dual tactile buttons, custom soldered PCB, and internal Arduino Uno chassis.
+        </p>
+        <div class="cs-placeholder-specs">
+          <span>Target Ratio: 16:9</span>
+          <span>Source: A3 TDR.docx (1).pdf (p. 93)</span>
+          <span>Status: Pending User High-Res File</span>
+        </div>
+      </div>
+      <figcaption class="cs-caption">
+        <strong>Figure 1.0:</strong> Assembled Focus Dial hardware controller featuring removable circular casing and dedicated dual tactile prompt triggers.
+      </figcaption>
+    </figure>
+
+    <!-- SECTION 01: THE COGNITIVE SCIENCE OF ZOOM FATIGUE -->
+    <section class="cs-section">
+      <div class="cs-section-header">
+        <span class="cs-section-num">01</span>
+        <h2 class="cs-section-title">The Cognitive Science of Zoom Fatigue</h2>
+      </div>
+
+      <p>
+        The global shift to distributed remote work and remote education normalized sustained video conferencing, but brought with it a pervasive psychological malady: <strong>"Zoom fatigue"</strong>—a distinct state of cognitive, emotional, and physical exhaustion triggered by prolonged video calls.
+      </p>
+
+      <p>
+        Cognitive psychology and human factors literature reveal that video calls place an unnatural neurological burden on the human brain:
+      </p>
+
+      <ul>
+        <li><strong>Continuous Mirror Anxiety:</strong> Real-time self-view forces users to constantly monitor their own facial expressions and posture, triggering chronic self-presentation evaluation.</li>
+        <li><strong>Artificial Hyper-Gaze:</strong> In physical meeting rooms, people look around naturally. On screen, multiple faces stare continuously at close optical distances, which the human amygdala subconsciously interprets as an intense, confrontational state.</li>
+        <li><strong>Absence of Micro-Kinesics:</strong> Video compression and camera framing eliminate subconscious non-verbal cues (breathing shifts, subtle gestures), forcing the brain to expend continuous conscious effort to decode conversational dynamics.</li>
+      </ul>
+
+      <p>
+        Most contemporary workplace solutions focus strictly on digital policy ergonomics (e.g., "no-meeting Fridays" or "cameras-off mandates"). However, these passive rules fail to address the underlying psychological trap: users experience consecutive online meetings as one indistinguishable, exhausting blur.
+      </p>
+    </section>
+
+    <!-- SECTION 02: THEORETICAL GROUNDING -->
+    <section class="cs-section">
+      <div class="cs-section-header">
+        <span class="cs-section-num">02</span>
+        <h2 class="cs-section-title">Theoretical Grounding: Habit Discontinuity &amp; Flow</h2>
+      </div>
+
+      <p>
+        The project grounded its interaction architecture in two primary psychological frameworks:
+      </p>
+
+      <h3>1. Habit Discontinuity Hypothesis (Verplanken et al.)</h3>
+      <p>
+        Habits are automated behavioral scripts executed with minimal conscious thought. When an individual transitions between calendar calls by simply clicking another link, they remain trapped in habitual passive scrolling. The Habit Discontinuity framework demonstrates that introducing a <em>tangible physical disruption</em> immediately before a routine event fractures automated behavior, forcing conscious cognitive reset and active framing.
+      </p>
+
+      <h3>2. Flow Theory (Mihaly Csikszentmihalyi)</h3>
+      <p>
+        Cognitive engagement occurs when the challenge of an activity is balanced against an individual's available energy. When meetings lack defined interaction parameters, users oscillate between anxiety (overwhelmed by demands) and apathy (zoned out). By consciously pre-committing to either <em>Active Participation</em> or <em>Active Listening</em>, the user sets appropriate cognitive expectations.
+      </p>
+
+      <blockquote class="cs-quote">
+        "A physical, tactile nudge introduced directly before entering a meeting breaks automated habits and forces intentional cognitive preparation."
+        <span class="cs-quote-source">— Behavioral Hardware Hypothesis</span>
+      </blockquote>
+    </section>
+
+    <!-- SECTION 03: MECHANICAL ITERATION & FAILURE -->
+    <section class="cs-section">
+      <div class="cs-section-header">
+        <span class="cs-section-num">03</span>
+        <h2 class="cs-section-title">Mechanical Iterations &amp; The Dial Failure</h2>
+      </div>
+
+      <p>
+        The device underwent three distinct hardware and form-factor iterations over a 4-week build cycle:
+      </p>
+
+      <!-- TWO-COLUMN PLACEHOLDER GRID -->
+      <div class="cs-placeholder-grid">
+        <div class="cs-placeholder process">
+          <span class="cs-placeholder-tag">CAD EVOLUTION · FORM STUDY</span>
+          <h3 class="cs-placeholder-title">CAD Enclosure Iterations (Pages 87–88)</h3>
+          <p class="cs-placeholder-instruction">
+            <strong>Replace with:</strong> 3D orthographic views showing the progression from elongated controller to circular puck casing.
+          </p>
+          <div class="cs-placeholder-specs">
+            <span>Source: A3 TDR.docx (1).pdf (pp. 87–88)</span>
+          </div>
+        </div>
+        <div class="cs-placeholder process">
+          <span class="cs-placeholder-tag">CIRCUITRY · SCHEMATIC</span>
+          <h3 class="cs-placeholder-title">Circuit Schematic &amp; Custom PCB Layout</h3>
+          <p class="cs-placeholder-instruction">
+            <strong>Replace with:</strong> Hardware wiring diagram from Page 89 showing Arduino Uno connection to the custom soldered button board.
+          </p>
+          <div class="cs-placeholder-specs">
+            <span>Source: A3 TDR.docx (1).pdf (p. 89)</span>
+          </div>
+        </div>
+      </div>
+      <figcaption class="cs-caption">
+        <strong>Figure 2.0:</strong> Left: 3D CAD progression from elongated box to puck. Right: Wiring schematic resolving stability issues.
+      </figcaption>
+
+      <div class="cs-callout pivot">
+        <div class="cs-callout-header">Mechanical Failure &amp; Architectural Pivot</div>
+        <p>
+          <strong>Why the Rotating Rotary Dial was Abandoned:</strong> The original concept featured a 3-position mechanical rotary dial (High Challenge, Matched Challenge, Low Challenge). However, rotary potentiometer wiring inside a miniature desktop enclosure proved mechanically fragile. Direct jumper wires to the Arduino repeatedly snapped during assembly, and rotary detents lacked definitive tactile feedback. Lacking space and mechanical tolerance, the rotary mechanism was scrapped in favor of dual tactile mechanical push buttons soldered to a rigid custom PCB.
+        </p>
+      </div>
+    </section>
+
+    <!-- SECTION 04: HARDWARE & CODE ARCHITECTURE -->
+    <section class="cs-section">
+      <div class="cs-section-header">
+        <span class="cs-section-num">04</span>
+        <h2 class="cs-section-title">Arduino Firmware &amp; Interaction Architecture</h2>
+      </div>
+
+      <p>
+        The controller communicates with the host machine via USB Serial. The embedded C++ firmware monitors debounce states and distinguishes between <strong>short presses (&lt; 600ms)</strong> and <strong>long presses (&gt; 1200ms)</strong>:
+      </p>
+
+      <div class="cs-table-wrapper">
+        <table class="cs-spec-table">
+          <thead>
+            <tr>
+              <th>Physical Control</th>
+              <th>Interaction Gesture</th>
+              <th>Cognitive Mode</th>
+              <th>Firmware Output</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Button A</strong></td>
+              <td>Short Press (&lt; 600ms)</td>
+              <td>Active Contribution</td>
+              <td>Sequences through 5 structured participation prompts</td>
+            </tr>
+            <tr>
+              <td><strong>Button A</strong></td>
+              <td>Long Press (&gt; 1200ms)</td>
+              <td>Spontaneous Input</td>
+              <td>Dispatches 1 randomized contribution prompt</td>
+            </tr>
+            <tr>
+              <td><strong>Button B</strong></td>
+              <td>Short Press (&lt; 600ms)</td>
+              <td>Active Listening</td>
+              <td>Sequences through 5 structured synthesis prompts</td>
+            </tr>
+            <tr>
+              <td><strong>Button B</strong></td>
+              <td>Long Press (&gt; 1200ms)</td>
+              <td>Reflective Listening</td>
+              <td>Dispatches 1 randomized synthesis/summary prompt</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>Representative C++ Firmware Implementation</h3>
+      <div class="cs-code-box">
+        <div class="cs-code-header">
+          <span>FocusDial_Controller.ino</span>
+          <span>Target: Arduino Uno / Atmega328P</span>
+        </div>
+        <pre><code>// Dual-Button Cognitive Prompt Controller Logic
+const int PIN_BTN_A = 2; // Active Participation
+const int PIN_BTN_B = 4; // Active Listening
+
+unsigned long pressStartTimeA = 0;
+unsigned long pressStartTimeB = 0;
+const unsigned long LONG_PRESS_THRESHOLD = 1200;
+
+void setup() {
+  pinMode(PIN_BTN_A, INPUT_PULLUP);
+  pinMode(PIN_BTN_B, INPUT_PULLUP);
+  Serial.begin(9600);
+  Serial.println("[FOCUS DIAL READY: USB SERIAL ACTIVE]");
+}
+
+void loop() {
+  // Edge-detection, debouncing, and short vs long press dispatch logic
+  checkButton(PIN_BTN_A, "MODE: ACTIVE PARTICIPATION");
+  checkButton(PIN_BTN_B, "MODE: ACTIVE LISTENING");
+}</code></pre>
+      </div>
+
+      <!-- PROCESS IMAGE PLACEHOLDER -->
+      <figure class="cs-media-figure">
+        <div class="cs-placeholder process">
+          <span class="cs-placeholder-tag">CODE &amp; LOGIC · SERIAL OUTPUT</span>
+          <h3 class="cs-placeholder-title">Arduino Code Logic &amp; Prompt Sets</h3>
+          <p class="cs-placeholder-instruction">
+            <strong>Replace with:</strong> The complete C++ code snippets and Serial Monitor prompt outputs from Pages 89–92 of documentation.
+          </p>
+          <div class="cs-placeholder-specs">
+            <span>Source: A3 TDR.docx (1).pdf (pp. 89–92)</span>
+          </div>
+        </div>
+        <figcaption class="cs-caption">
+          <strong>Figure 3.0:</strong> Embedded firmware execution displaying short/long press detection and Serial Monitor verification.
+        </figcaption>
+      </figure>
+    </section>
+
+    <!-- SECTION 05: TESTING, LIMITATIONS & GAPS -->
+    <section class="cs-section">
+      <div class="cs-section-header">
+        <span class="cs-section-num">05</span>
+        <h2 class="cs-section-title">Evaluation, Limitations &amp; Documentation Gaps</h2>
+      </div>
+
+      <p>
+        The hardware was built and functionally verified in bench testing, confirming reliable electrical debouncing and ergonomic palm-resting geometry.
+      </p>
+
+      <div class="cs-callout gap">
+        <div class="cs-callout-header">Documented Information Gaps &amp; Scope Constraints</div>
+        <ul>
+          <li><strong>Serial Monitor Limitation:</strong> Prompts currently print to the Arduino IDE Serial Monitor window. A fully integrated background desktop application overlay (displaying translucent prompts directly over Zoom/Microsoft Teams) was planned but not coded during this 4-week timeline.</li>
+          <li><strong>Quantitative User Trials:</strong> [QUANTITATIVE TRIAL DATA NOT DOCUMENTED] Empirical metrics measuring longitudinal fatigue reduction across remote workers over multi-week trials are not documented in this submission.</li>
+          <li><strong>Video Demonstration:</strong> The video demonstration link recorded in the source doc requires internal institution Google Drive permissions.</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- SECTION 06: RETROSPECTIVE & PM TAKEAWAYS -->
+    <section class="cs-section">
+      <div class="cs-section-header">
+        <span class="cs-section-num">06</span>
+        <h2 class="cs-section-title">Retrospective &amp; Product Management Signals</h2>
+      </div>
+
+      <p>
+        The Focus Dial highlights key technical and product strategy competencies:
+      </p>
+
+      <ul>
+        <li><strong>Translating Cognitive Theory into Tangible UX:</strong> Grounded hardware design directly in peer-reviewed psychology frameworks rather than aesthetic novelty.</li>
+        <li><strong>Rapid Prototyping &amp; Embedded C++:</strong> Successfully engineered circuits, soldered custom PCBs, and authored firmware.</li>
+        <li><strong>Honest Mechanical Simplification:</strong> Discarded an overcomplicated rotary mechanism to preserve prototype durability and ergonomics.</li>
+      </ul>
+    </section>
+
+  </main>
+
+  <!-- Editorial Footer with Adjacent Navigation -->
+  <footer class="cs-footer">
+    <div class="cs-footer-container">
+      <div class="cs-footer-nav">
+        <a href="urban-death-care.html" class="cs-adjacent-link">
+          <span class="cs-adjacent-dir">← Previous Case Study</span>
+          <span class="cs-adjacent-title">Urban End-of-Life &amp; Death Care Service Design</span>
+        </a>
+        <a href="architect-of-nothing.html" class="cs-adjacent-link right">
+          <span class="cs-adjacent-dir">Next Featured Case Study →</span>
+          <span class="cs-adjacent-title">Architect of Nothing (Critical Computing)</span>
+        </a>
+      </div>
+      <div class="cs-footer-bottom">
+        <span>Curiosity Cabinet Portfolio · Case Study Report</span>
+        <a href="../index.html" class="cs-return-top">Return to Portfolio Overview</a>
+      </div>
+    </div>
+  </footer>
+
+</body>
+</html>
