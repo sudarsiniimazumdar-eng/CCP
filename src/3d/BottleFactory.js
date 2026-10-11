@@ -49,7 +49,7 @@ function createAlchemicalLabelTexture(project) {
   ctx.fillText(`— ${project.placement.labelNumber || 'N° 01'} —`, canvas.width / 2, 58);
 
   ctx.fillStyle = '#5c4838';
-  ctx.font = 'italic 19px "Pinyon Script", "Alex Brush", cursive';
+  ctx.font = 'italic 19px "Cormorant Garamond", Georgia, serif';
   ctx.fillText('Atelier Archive · Preserved Formulation', canvas.width / 2, 88);
 
   // Fine Hairline Divider with Center Diamond
@@ -69,7 +69,7 @@ function createAlchemicalLabelTexture(project) {
 
   // Project Title in Editorial Serif
   ctx.fillStyle = '#1c1510';
-  ctx.font = '600 30px "Playfair Display", "Cormorant Garamond", Georgia, serif';
+  ctx.font = '600 30px "Cormorant Garamond", "Playfair Display", Georgia, serif';
   
   const words = project.title.split(' ');
   if (words.length > 2) {
@@ -86,7 +86,7 @@ function createAlchemicalLabelTexture(project) {
   ctx.fillText(`[ ${project.category.toUpperCase()} ]`, canvas.width / 2, 250);
 
   ctx.fillStyle = '#8a725f';
-  ctx.font = 'italic 17px "Pinyon Script", "Alex Brush", cursive';
+  ctx.font = 'italic 17px "Cormorant Garamond", Georgia, serif';
   ctx.fillText('Permanent Collection · Studio Index', canvas.width / 2, 290);
 
   const texture = new THREE.CanvasTexture(canvas);
@@ -175,84 +175,90 @@ export function createPerfumeBottle(project) {
 
   switch (bottleVariant) {
     case 'apothecary': {
-      const radius = 0.36;
-      const height = 0.86;
-      const bodyGeo = new THREE.CylinderGeometry(radius, radius, height, 36);
+      // Wide, squat apothecary jar — broad shoulders, short stature
+      const radius = 0.42;
+      const height = 0.72;
+      const bodyGeo = new THREE.CylinderGeometry(radius, radius * 0.92, height, 36);
       bodyMesh = new THREE.Mesh(bodyGeo, glassMaterial);
       bodyMesh.position.y = height / 2;
 
-      const liqGeo = new THREE.CylinderGeometry(radius * 0.88, radius * 0.88, height * 0.76, 28);
+      const liqGeo = new THREE.CylinderGeometry(radius * 0.88, radius * 0.82, height * 0.75, 28);
       liquidMesh = new THREE.Mesh(liqGeo, liquidMaterial);
-      liquidMesh.position.y = (height * 0.76) / 2 + 0.04;
+      liquidMesh.position.y = (height * 0.75) / 2 + 0.04;
 
-      const neckGeo = new THREE.CylinderGeometry(0.15, 0.18, 0.22, 24);
+      const neckGeo = new THREE.CylinderGeometry(0.13, 0.20, 0.18, 24);
       neckMesh = new THREE.Mesh(neckGeo, glassMaterial);
-      neckMesh.position.y = height + 0.11;
+      neckMesh.position.y = height + 0.09;
 
-      const cordGeo = new THREE.TorusGeometry(0.165, 0.03, 12, 24);
+      const cordGeo = new THREE.TorusGeometry(0.155, 0.028, 12, 24);
       neckCordMesh = new THREE.Mesh(cordGeo, twineCordMaterial);
       neckCordMesh.rotation.x = Math.PI / 2;
-      neckCordMesh.position.y = height + 0.1;
+      neckCordMesh.position.y = height + 0.09;
 
-      const capGeo = new THREE.CylinderGeometry(0.18, 0.14, 0.28, 24);
+      // Wide flat cork stopper
+      const capGeo = new THREE.CylinderGeometry(0.20, 0.14, 0.22, 24);
       capMesh = new THREE.Mesh(capGeo, agedCorkMaterial);
-      capMesh.position.y = height + 0.24 + 0.11;
+      capMesh.position.y = height + 0.20;
 
-      const labelGeo = new THREE.CylinderGeometry(radius + 0.006, radius + 0.006, 0.48, 32, 1, true, -Math.PI / 2.8, (2 * Math.PI) / 2.8);
+      const labelGeo = new THREE.CylinderGeometry(radius + 0.006, radius + 0.006, 0.42, 32, 1, true, -Math.PI / 2.6, (2 * Math.PI) / 2.6);
       labelMesh = new THREE.Mesh(labelGeo, labelMaterial);
       labelMesh.position.y = height / 2;
       break;
     }
 
     case 'faceted': {
-      const radius = 0.4;
-      const height = 0.94;
-      const bodyGeo = new THREE.CylinderGeometry(radius, radius * 0.84, height, 6);
+      // Angular hexagonal body, strongly tapered — tall spire brass cap
+      const radius = 0.38;
+      const height = 1.08;
+      const bodyGeo = new THREE.CylinderGeometry(radius * 0.72, radius, height, 6);
       bodyMesh = new THREE.Mesh(bodyGeo, glassMaterial);
       bodyMesh.position.y = height / 2;
 
-      const liqGeo = new THREE.CylinderGeometry(radius * 0.86, radius * 0.74, height * 0.78, 6);
+      const liqGeo = new THREE.CylinderGeometry(radius * 0.58, radius * 0.86, height * 0.78, 6);
       liquidMesh = new THREE.Mesh(liqGeo, liquidMaterial);
       liquidMesh.position.y = (height * 0.78) / 2 + 0.04;
 
-      const neckGeo = new THREE.CylinderGeometry(0.16, 0.16, 0.18, 20);
+      const neckGeo = new THREE.CylinderGeometry(0.13, 0.16, 0.16, 20);
       neckMesh = new THREE.Mesh(neckGeo, brushedBrassMaterial);
-      neckMesh.position.y = height + 0.09;
+      neckMesh.position.y = height + 0.08;
 
+      // Tall angular spire cap — very distinctive silhouette
       const capGroup = new THREE.Group();
-      const capBase = new THREE.Mesh(new THREE.CylinderGeometry(0.22, 0.2, 0.16, 8), brushedBrassMaterial);
-      const capSpire = new THREE.Mesh(new THREE.ConeGeometry(0.16, 0.35, 8), brushedBrassMaterial);
-      capSpire.position.y = 0.24;
+      const capBase = new THREE.Mesh(new THREE.CylinderGeometry(0.20, 0.18, 0.12, 6), brushedBrassMaterial);
+      const capSpire = new THREE.Mesh(new THREE.ConeGeometry(0.14, 0.52, 6), brushedBrassMaterial);
+      capSpire.position.y = 0.32;
       capGroup.add(capBase);
       capGroup.add(capSpire);
-      capGroup.position.y = height + 0.18 + 0.08;
+      capGroup.position.y = height + 0.16 + 0.06;
       capMesh = capGroup;
 
-      const labelGeo = new THREE.PlaneGeometry(0.44, 0.4);
+      const labelGeo = new THREE.PlaneGeometry(0.40, 0.38);
       labelMesh = new THREE.Mesh(labelGeo, labelMaterial);
-      labelMesh.position.set(0, height / 2, radius * 0.86 + 0.01);
+      labelMesh.position.set(0, height / 2, radius * 0.72 + 0.01);
       break;
     }
 
     case 'flask': {
-      const w = 0.72, h = 0.88, d = 0.4;
+      // Wide flat rectangular flask — very different aspect ratio
+      const w = 0.88, h = 0.72, d = 0.36;
       const bodyGeo = new THREE.BoxGeometry(w, h, d);
       bodyMesh = new THREE.Mesh(bodyGeo, glassMaterial);
       bodyMesh.position.y = h / 2;
 
-      const liqGeo = new THREE.BoxGeometry(w * 0.86, h * 0.78, d * 0.8);
+      const liqGeo = new THREE.BoxGeometry(w * 0.84, h * 0.76, d * 0.78);
       liquidMesh = new THREE.Mesh(liqGeo, liquidMaterial);
-      liquidMesh.position.y = (h * 0.78) / 2 + 0.04;
+      liquidMesh.position.y = (h * 0.76) / 2 + 0.04;
 
-      const neckGeo = new THREE.CylinderGeometry(0.14, 0.14, 0.18, 20);
+      const neckGeo = new THREE.CylinderGeometry(0.11, 0.13, 0.20, 20);
       neckMesh = new THREE.Mesh(neckGeo, brushedBrassMaterial);
-      neckMesh.position.y = h + 0.09;
+      neckMesh.position.y = h + 0.10;
 
-      const capGeo = new THREE.BoxGeometry(0.3, 0.28, 0.3);
+      // Square ebonized wood cap — distinctive blocky top
+      const capGeo = new THREE.BoxGeometry(0.28, 0.26, 0.28);
       capMesh = new THREE.Mesh(capGeo, charredWoodMaterial);
-      capMesh.position.y = h + 0.16 + 0.13;
+      capMesh.position.y = h + 0.22;
 
-      const labelGeo = new THREE.PlaneGeometry(w * 0.78, h * 0.52);
+      const labelGeo = new THREE.PlaneGeometry(w * 0.80, h * 0.54);
       labelMesh = new THREE.Mesh(labelGeo, labelMaterial);
       labelMesh.position.set(0, h / 2, d / 2 + 0.007);
       break;
@@ -294,31 +300,33 @@ export function createPerfumeBottle(project) {
 
     case 'arch':
     default: {
-      const radius = 0.34;
-      const height = 1.02;
-      const bodyGeo = new THREE.CylinderGeometry(radius, radius * 0.88, height, 36);
+      // Tall slender arch bottle — elegant elongated silhouette
+      const radius = 0.28;
+      const height = 1.18;
+      const bodyGeo = new THREE.CylinderGeometry(radius, radius * 0.84, height, 36);
       bodyMesh = new THREE.Mesh(bodyGeo, glassMaterial);
       bodyMesh.position.y = height / 2;
 
-      const liqGeo = new THREE.CylinderGeometry(radius * 0.86, radius * 0.78, height * 0.8, 28);
+      const liqGeo = new THREE.CylinderGeometry(radius * 0.84, radius * 0.74, height * 0.80, 28);
       liquidMesh = new THREE.Mesh(liqGeo, liquidMaterial);
-      liquidMesh.position.y = (height * 0.8) / 2 + 0.04;
+      liquidMesh.position.y = (height * 0.80) / 2 + 0.04;
 
-      const neckGeo = new THREE.CylinderGeometry(0.14, 0.18, 0.24, 24);
+      const neckGeo = new THREE.CylinderGeometry(0.11, 0.16, 0.26, 24);
       neckMesh = new THREE.Mesh(neckGeo, brushedBrassMaterial);
-      neckMesh.position.y = height + 0.11;
+      neckMesh.position.y = height + 0.13;
 
+      // Glass globe finial cap — unique feature
       const capGroup = new THREE.Group();
-      const capCol = new THREE.Mesh(new THREE.CylinderGeometry(0.15, 0.18, 0.28, 24), brushedBrassMaterial);
-      const capFinial = new THREE.Mesh(new THREE.SphereGeometry(0.15, 20, 20), glassMaterial);
-      capFinial.position.y = 0.25;
-      capFinial.scale.set(0.8, 1.35, 0.8);
+      const capCol = new THREE.Mesh(new THREE.CylinderGeometry(0.12, 0.16, 0.22, 24), brushedBrassMaterial);
+      const capFinial = new THREE.Mesh(new THREE.SphereGeometry(0.14, 20, 20), glassMaterial);
+      capFinial.position.y = 0.22;
+      capFinial.scale.set(0.8, 1.45, 0.8);
       capGroup.add(capCol);
       capGroup.add(capFinial);
-      capGroup.position.y = height + 0.22 + 0.12;
+      capGroup.position.y = height + 0.24 + 0.12;
       capMesh = capGroup;
 
-      const labelGeo = new THREE.CylinderGeometry(radius + 0.006, radius + 0.006, 0.52, 32, 1, true, -Math.PI / 2.8, (2 * Math.PI) / 2.8);
+      const labelGeo = new THREE.CylinderGeometry(radius + 0.006, radius + 0.006, 0.50, 32, 1, true, -Math.PI / 2.6, (2 * Math.PI) / 2.6);
       labelMesh = new THREE.Mesh(labelGeo, labelMaterial);
       labelMesh.position.y = height / 2;
       break;
@@ -351,6 +359,9 @@ export function createPerfumeBottle(project) {
   if (rotation) {
     bottleGroup.rotation.set(rotation.x || 0, rotation.y || 0, rotation.z || 0);
   }
+
+  // Uniform size reduction — all bottles 68% of their full geometry size
+  bottleGroup.scale.setScalar(0.68);
 
   bottleGroup.userData = {
     isInteractive: true,

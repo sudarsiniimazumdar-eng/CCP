@@ -158,8 +158,8 @@ export function createCabinet() {
   cabinetGroup.add(createCasterWheel(-cartWidth / 2 + 0.45, cartDepth / 2 - 0.45));
   cabinetGroup.add(createCasterWheel(cartWidth / 2 - 0.45, cartDepth / 2 - 0.45));
 
-  // 2. LAYER 1: Bank of 6 Raised-Panel Apothecary Drawers
-  const drawerGroups = createStackedDrawerBank(cabinetGroup, {
+  // 2. LAYER 1: Open relic shelves
+  createStackedDrawerBank(cabinetGroup, {
     cartY,
     cartThickness,
     darkWalnutMaterial,
@@ -205,147 +205,298 @@ export function createCabinet() {
     twineCordMaterial
   });
 
-  cabinetGroup.userData = {
-    drawers: drawerGroups
-  };
-
   return cabinetGroup;
 }
 
+function createEngravedProjectsLabel() {
+  const canvas = document.createElement('canvas');
+  canvas.width = 900;
+  canvas.height = 150;
+  const ctx = canvas.getContext('2d');
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.font = '600 74px Georgia, serif';
+  ctx.lineWidth = 4;
+  ctx.strokeStyle = 'rgba(35, 22, 13, 0.9)';
+  ctx.shadowColor = 'rgba(0, 0, 0, 0.85)';
+  ctx.shadowBlur = 3;
+  ctx.shadowOffsetY = 2;
+  ctx.strokeText('PROJECTS', canvas.width / 2, canvas.height / 2);
+  const gold = ctx.createLinearGradient(0, 34, 0, 116);
+  gold.addColorStop(0, '#fff0b0');
+  gold.addColorStop(0.28, '#f0cf78');
+  gold.addColorStop(0.62, '#c7943f');
+  gold.addColorStop(1, '#f6dda0');
+  ctx.fillStyle = gold;
+  ctx.shadowColor = 'rgba(0, 0, 0, 0.72)';
+  ctx.shadowBlur = 2;
+  ctx.shadowOffsetY = 1;
+  ctx.fillText('PROJECTS', canvas.width / 2, canvas.height / 2);
+
+  const texture = new THREE.CanvasTexture(canvas);
+  texture.colorSpace = THREE.SRGBColorSpace;
+  const engraving = new THREE.Mesh(
+    new THREE.PlaneGeometry(1.35, 0.225),
+    new THREE.MeshBasicMaterial({ map: texture, transparent: true, depthWrite: false, toneMapped: false })
+  );
+  engraving.name = 'Engraved_PROJECTS';
+  return engraving;
+}
+
 /**
- * Bank of 6 Raised-Panel Apothecary Drawers with Mitered Mouldings
+ * Open Apothecary Shelf Unit — replaces the closed drawer bank.
+ * Adds specimen jars, skulls and small vials as shelf curiosities.
  */
 function createStackedDrawerBank(group, { cartY, cartThickness, darkWalnutMaterial, antiqueCarvedWoodMaterial, innerCavityMaterial, tarnishedBrassMaterial, ironHardwareMaterial }) {
-  const drawerGroups = [];
   const startY = cartY + cartThickness / 2;
 
-  // Outer Drawer Housing
-  const baseBody = new THREE.Mesh(
-    new THREE.BoxGeometry(3.3, 1.8, 2.2),
+  // --- Open Shelf Housing (same outer footprint as old drawer bank) ---
+  const shelfCaseDepth = 2.0;
+  const shelfCaseWidth = 3.3;
+  const shelfCaseHeight = 1.8;
+
+  // Back panel
+  const backPanel = new THREE.Mesh(
+    new THREE.BoxGeometry(shelfCaseWidth, shelfCaseHeight, 0.1),
     darkWalnutMaterial
   );
-  baseBody.position.set(0, startY + 0.9, 0);
-  baseBody.receiveShadow = true;
-  group.add(baseBody);
+  backPanel.position.set(0, startY + 0.9, -(shelfCaseDepth / 2) + 0.05);
+  group.add(backPanel);
 
-  // Carved Waist Moulding along top of drawer chest
-  const waistMoulding = new THREE.Mesh(
-    new THREE.BoxGeometry(3.5, 0.14, 2.38),
-    antiqueCarvedWoodMaterial
-  );
-  waistMoulding.position.set(0, startY + 1.86, 0);
-  group.add(waistMoulding);
-
-  // 6 Interactive Drawers with Raised Beveled Panels
-  const drawerData = [
-    {
-      id: 'drawer-sketches',
-      label: 'I. PROCESS & SKETCHES',
-      title: 'Ergonomic Ideations & Flows',
-      content: 'Archived physical pencil ideations, discarded multi-tool concepts, and low-fidelity user flow diagrams from V. POCKET and Momentum Buddy.',
-      caseStudyUrl: 'case-studies/v-pocket.html',
-      caseStudyTitle: 'View V. POCKET Case Study ↗',
-      x: -0.95, y: startY + 1.35, z: 1.12, w: 0.9, h: 0.45, openDist: 0.65
-    },
-    {
-      id: 'drawer-materials',
-      label: 'II. MATERIALS & LCA',
-      title: 'Quantitative LCA & Material Studies',
-      content: 'Cradle-to-grave carbon accounting workbooks (polypropylene vs. steel hair clip) and Wabi-Sabi cast cement light study specimens.',
-      caseStudyUrl: 'case-studies/learning-lca.html',
-      caseStudyTitle: 'View Quantitative LCA Case Study ↗',
-      x: 0, y: startY + 1.35, z: 1.12, w: 0.9, h: 0.45, openDist: 0.75
-    },
-    {
-      id: 'drawer-inquiries',
-      label: 'III. INQUIRIES & ETHNOGRAPHY',
-      title: 'Design Anthropology & Research Essays',
-      content: 'Field reflections on 100-year-old Vishwakarma zero-nail wooden door joinery in Bidar, alongside creative research translation essays on Zoom fatigue.',
-      caseStudyUrl: 'case-studies/bidar-craft-study.html',
-      caseStudyTitle: 'View Bidar Field Study ↗',
-      x: 0.95, y: startY + 1.35, z: 1.12, w: 0.9, h: 0.45, openDist: 0.55
-    },
-    {
-      id: 'drawer-experiments',
-      label: 'IV. PHYSICAL COMPUTING',
-      title: 'ESP32 & Arduino Hardware Prototypes',
-      content: 'Deconstructed framed interactive consoles, custom soldered PCBs, and the evolution from rotary dials to tactical cognitive push-buttons.',
-      caseStudyUrl: 'case-studies/architect-of-nothing.html',
-      caseStudyTitle: 'View Architect of Nothing Case Study ↗',
-      x: -0.95, y: startY + 0.75, z: 1.12, w: 0.9, h: 0.45, openDist: 0.7
-    },
-    {
-      id: 'drawer-blueprints',
-      label: 'V. SERVICE BLUEPRINTS',
-      title: 'Urban End-of-Life System Architecture',
-      content: 'The 4-phase death care service blueprint, multi-stakeholder ecosystem mapping, Hebbal crematorium ethnography, and crisis logistical buffers.',
-      caseStudyUrl: 'case-studies/urban-death-care.html',
-      caseStudyTitle: 'View Urban Death Care Case Study ↗',
-      x: 0, y: startY + 0.75, z: 1.12, w: 0.9, h: 0.45, openDist: 0.6
-    },
-    {
-      id: 'drawer-ephemera',
-      label: 'VI. SENSORY ARCHIVES',
-      title: 'Multisensory Systems & Audio Cloud',
-      content: 'The Smell Library wooden chest with 36 QR-tagged essential oil vials and Microsoft Power Automate real-time cloud oral history pipeline.',
-      caseStudyUrl: 'case-studies/the-smell-library.html',
-      caseStudyTitle: 'View Smell Library Case Study ↗',
-      x: 0.95, y: startY + 0.75, z: 1.12, w: 0.9, h: 0.45, openDist: 0.8
-    }
-  ];
-
-  drawerData.forEach((d) => {
-    const dGroup = new THREE.Group();
-    dGroup.name = `Drawer_${d.id}`;
-    dGroup.position.set(d.x, d.y, d.z);
-
-    // Front Face Frame
-    const front = new THREE.Mesh(new THREE.BoxGeometry(d.w - 0.05, d.h - 0.05, 0.08), darkWalnutMaterial);
-    dGroup.add(front);
-
-    // Carved Raised Beveled Field Panel on drawer front
-    const raisedPanel = new THREE.Mesh(new THREE.BoxGeometry(d.w - 0.16, d.h - 0.16, 0.035), antiqueCarvedWoodMaterial);
-    raisedPanel.position.set(0, 0, 0.045);
-    dGroup.add(raisedPanel);
-
-    // Inner sliding box cavity
-    const boxDepth = 1.3;
-    const boxBottom = new THREE.Mesh(new THREE.BoxGeometry(d.w - 0.1, 0.04, boxDepth), innerCavityMaterial);
-    boxBottom.position.set(0, -d.h / 2 + 0.03, -boxDepth / 2);
-    dGroup.add(boxBottom);
-
-    const boxLeft = new THREE.Mesh(new THREE.BoxGeometry(0.03, d.h * 0.7, boxDepth), innerCavityMaterial);
-    boxLeft.position.set(-(d.w - 0.1) / 2, -0.05, -boxDepth / 2);
-    dGroup.add(boxLeft);
-
-    const boxRight = new THREE.Mesh(new THREE.BoxGeometry(0.03, d.h * 0.7, boxDepth), innerCavityMaterial);
-    boxRight.position.set((d.w - 0.1) / 2, -0.05, -boxDepth / 2);
-    dGroup.add(boxRight);
-
-    // Brass Label Frame
-    const frame = new THREE.Mesh(new THREE.BoxGeometry(0.38, 0.18, 0.02), tarnishedBrassMaterial);
-    frame.position.set(0, 0.07, 0.065);
-    dGroup.add(frame);
-
-    // Brass Pull Ring
-    const ring = new THREE.Mesh(new THREE.TorusGeometry(0.07, 0.016, 12, 24), tarnishedBrassMaterial);
-    ring.position.set(0, -0.09, 0.08);
-    dGroup.add(ring);
-
-    dGroup.userData = {
-      isInteractive: true,
-      type: 'drawer',
-      drawerData: d,
-      basePosition: dGroup.position.clone(),
-      isOpen: false,
-      openZOffset: d.openDist
-    };
-
-    group.add(dGroup);
-    drawerGroups.push(dGroup);
+  // Side panels (left & right)
+  [-1, 1].forEach(side => {
+    const sidePanel = new THREE.Mesh(
+      new THREE.BoxGeometry(0.1, shelfCaseHeight, shelfCaseDepth),
+      darkWalnutMaterial
+    );
+    sidePanel.position.set(side * (shelfCaseWidth / 2), startY + 0.9, 0);
+    group.add(sidePanel);
   });
 
-  return drawerGroups;
+  // Top cap moulding
+  const topCap = new THREE.Mesh(
+    new THREE.BoxGeometry(shelfCaseWidth + 0.2, 0.12, shelfCaseDepth + 0.1),
+    antiqueCarvedWoodMaterial
+  );
+  topCap.position.set(0, startY + 1.86, 0);
+  group.add(topCap);
+
+  // Two horizontal shelves dividing the unit into 3 tiers
+  const shelfY1 = startY + 1.05; // upper shelf
+  const shelfY2 = startY + 0.42; // lower shelf
+
+  [shelfY1, shelfY2].forEach(sy => {
+    const shelf = new THREE.Mesh(
+      new THREE.BoxGeometry(shelfCaseWidth - 0.12, 0.08, shelfCaseDepth),
+      antiqueCarvedWoodMaterial
+    );
+    shelf.position.set(0, sy, 0);
+    group.add(shelf);
+  });
+
+  // Floor of the case
+  const caseFloor = new THREE.Mesh(
+    new THREE.BoxGeometry(shelfCaseWidth - 0.12, 0.07, shelfCaseDepth),
+    antiqueCarvedWoodMaterial
+  );
+  caseFloor.position.set(0, startY + 0.035, 0);
+  group.add(caseFloor);
+
+  // --- Curiosities: Specimen Jars, Skulls & Vials ---
+  // Materials
+  const glassMat = new THREE.MeshPhysicalMaterial({
+    color: 0xc8d8c8, transmission: 0.82, roughness: 0.08, ior: 1.48,
+    transparent: true, opacity: 0.92, thickness: 0.3
+  });
+  const herbFillMat = new THREE.MeshStandardMaterial({ color: 0x3a4a2e, roughness: 0.95 });
+  const darkOrganicMat = new THREE.MeshStandardMaterial({ color: 0x2a2218, roughness: 0.92 });
+  const boneWhiteMat = new THREE.MeshStandardMaterial({ color: 0xcfc4a8, roughness: 0.82 });
+  const corkMat = new THREE.MeshStandardMaterial({ color: 0x7a5c3c, roughness: 0.88 });
+
+  // Helper: wide-mouth specimen jar (like apothecary ref image)
+  const addSpecimenJar = (x, y, z, fillMat, jarScale = 1.0) => {
+    const jar = new THREE.Group();
+    // Jar body — wide cylinder
+    const body = new THREE.Mesh(new THREE.CylinderGeometry(0.12 * jarScale, 0.11 * jarScale, 0.28 * jarScale, 20), glassMat);
+    body.position.y = 0.14 * jarScale;
+    jar.add(body);
+    // Fill
+    const fill = new THREE.Mesh(new THREE.CylinderGeometry(0.105 * jarScale, 0.095 * jarScale, 0.20 * jarScale, 16), fillMat);
+    fill.position.y = 0.10 * jarScale;
+    jar.add(fill);
+    // Glass lid
+    const lid = new THREE.Mesh(new THREE.CylinderGeometry(0.125 * jarScale, 0.125 * jarScale, 0.045 * jarScale, 20), glassMat);
+    lid.position.y = 0.295 * jarScale;
+    jar.add(lid);
+    const lidKnob = new THREE.Mesh(new THREE.SphereGeometry(0.03 * jarScale, 12, 8), glassMat);
+    lidKnob.position.y = 0.33 * jarScale;
+    jar.add(lidKnob);
+    jar.position.set(x, y, z);
+    group.add(jar);
+  };
+
+  // Helper: small corked vial
+  const addCorkedVial = (x, y, z, liquidColor) => {
+    const vial = new THREE.Group();
+    const body = new THREE.Mesh(new THREE.CylinderGeometry(0.045, 0.04, 0.22, 14), glassMat);
+    body.position.y = 0.11;
+    vial.add(body);
+    const liquid = new THREE.Mesh(new THREE.CylinderGeometry(0.032, 0.028, 0.15, 12),
+      new THREE.MeshStandardMaterial({ color: liquidColor, roughness: 0.4 }));
+    liquid.position.y = 0.08;
+    vial.add(liquid);
+    const cork = new THREE.Mesh(new THREE.CylinderGeometry(0.048, 0.042, 0.06, 12), corkMat);
+    cork.position.y = 0.25;
+    vial.add(cork);
+    vial.position.set(x, y, z);
+    group.add(vial);
+  };
+
+  // Helper: anatomically realistic skull
+  const addSkull = (x, y, z, rotY = 0) => {
+    const skull = new THREE.Group();
+    skull.scale.setScalar(0.82);
+
+    const boneMat = new THREE.MeshStandardMaterial({ color: 0xc8bd9e, roughness: 0.78, metalness: 0.0 });
+    const darkBoneMat = new THREE.MeshStandardMaterial({ color: 0x9e9278, roughness: 0.85, metalness: 0.0 });
+    const voidMat = new THREE.MeshStandardMaterial({ color: 0x080604, roughness: 1.0 });
+    const toothMat = new THREE.MeshStandardMaterial({ color: 0xd8d0b8, roughness: 0.65, metalness: 0.0 });
+
+    // --- Cranium (braincase) ---
+    // Main oval dome
+    const cranium = new THREE.Mesh(new THREE.SphereGeometry(0.115, 20, 16), boneMat);
+    cranium.scale.set(1.0, 1.12, 1.22);
+    cranium.position.y = 0.185;
+    skull.add(cranium);
+
+    // Temporal bulge (sides of cranium, slightly wider)
+    [-1, 1].forEach(side => {
+      const temporal = new THREE.Mesh(new THREE.SphereGeometry(0.068, 12, 10), boneMat);
+      temporal.scale.set(0.6, 0.72, 0.9);
+      temporal.position.set(side * 0.108, 0.175, 0.01);
+      skull.add(temporal);
+    });
+
+    // Occipital protuberance (back of skull)
+    const occipital = new THREE.Mesh(new THREE.SphereGeometry(0.072, 12, 10), boneMat);
+    occipital.scale.set(0.95, 0.7, 0.55);
+    occipital.position.set(0, 0.145, -0.11);
+    skull.add(occipital);
+
+    // Frontal bone (forehead, slightly flatter)
+    const frontal = new THREE.Mesh(new THREE.SphereGeometry(0.085, 14, 10), boneMat);
+    frontal.scale.set(0.9, 0.65, 0.55);
+    frontal.position.set(0, 0.255, 0.075);
+    skull.add(frontal);
+
+    // --- Zygomatic arches (cheekbones) ---
+    [-1, 1].forEach(side => {
+      const zygo = new THREE.Mesh(new THREE.CapsuleGeometry(0.012, 0.06, 6, 12), boneMat);
+      zygo.rotation.z = Math.PI / 2;
+      zygo.position.set(side * 0.112, 0.138, 0.065);
+      skull.add(zygo);
+    });
+
+    // --- Eye sockets (supraorbital ridge + socket void) ---
+    [-1, 1].forEach(side => {
+      // Socket void — black hollow
+      const socket = new THREE.Mesh(new THREE.SphereGeometry(0.033, 10, 8), voidMat);
+      socket.scale.set(1.15, 0.88, 0.55);
+      socket.position.set(side * 0.058, 0.195, 0.098);
+      skull.add(socket);
+
+      // Supraorbital ridge (brow ridge above socket)
+      const brow = new THREE.Mesh(new THREE.CapsuleGeometry(0.012, 0.045, 6, 10), darkBoneMat);
+      brow.rotation.z = Math.PI / 2;
+      brow.position.set(side * 0.058, 0.222, 0.094);
+      skull.add(brow);
+    });
+
+    // --- Nasal cavity ---
+    const nasalVoid = new THREE.Mesh(new THREE.SphereGeometry(0.024, 10, 8), voidMat);
+    nasalVoid.scale.set(0.72, 1.0, 0.45);
+    nasalVoid.position.set(0, 0.162, 0.108);
+    skull.add(nasalVoid);
+
+    // Nasal bone bridge
+    const nasalBone = new THREE.Mesh(new THREE.BoxGeometry(0.026, 0.032, 0.028), darkBoneMat);
+    nasalBone.position.set(0, 0.182, 0.102);
+    skull.add(nasalBone);
+
+    // --- Maxilla (upper jaw) ---
+    const maxilla = new THREE.Mesh(new THREE.BoxGeometry(0.13, 0.042, 0.088), boneMat);
+    maxilla.position.set(0, 0.105, 0.072);
+    skull.add(maxilla);
+
+    // Upper teeth row (6 simplified rectangular teeth)
+    for (let t = -2; t <= 2; t++) {
+      const tooth = new THREE.Mesh(new THREE.BoxGeometry(0.016, 0.022, 0.014), toothMat);
+      tooth.position.set(t * 0.019, 0.088, 0.108);
+      skull.add(tooth);
+    }
+
+    // --- Mandible (lower jaw, slightly angled open) ---
+    const mandible = new THREE.Mesh(new THREE.BoxGeometry(0.128, 0.038, 0.082), darkBoneMat);
+    mandible.position.set(0, 0.052, 0.068);
+    mandible.rotation.x = 0.18; // slightly open
+    skull.add(mandible);
+
+    // Lower teeth row
+    for (let t = -2; t <= 2; t++) {
+      const tooth = new THREE.Mesh(new THREE.BoxGeometry(0.015, 0.018, 0.013), toothMat);
+      tooth.position.set(t * 0.018, 0.040, 0.095);
+      skull.add(tooth);
+    }
+
+    // Mandible rami (vertical sides of jaw)
+    [-1, 1].forEach(side => {
+      const ramus = new THREE.Mesh(new THREE.BoxGeometry(0.025, 0.065, 0.018), darkBoneMat);
+      ramus.position.set(side * 0.055, 0.082, 0.022);
+      skull.add(ramus);
+    });
+
+    skull.position.set(x, y, z);
+    skull.rotation.y = rotY;
+    group.add(skull);
+  };
+
+  // --- Upper shelf tier (shelfY1 surface) ---
+  const upperSurface = shelfY1 + 0.04;
+  // Left: tall apothecary jar with dried herbs
+  addSpecimenJar(-1.1, upperSurface, 0.1, herbFillMat, 1.0);
+  // Left-centre: small skull
+  addSkull(-0.52, upperSurface, 0.15, 0.3);
+  // Centre-left: medium jar with dark organic matter
+  addSpecimenJar(-0.08, upperSurface, 0.2, darkOrganicMat, 0.85);
+  // Centre: cluster of 3 small vials
+  addCorkedVial(0.45, upperSurface, 0.25, 0x4a3820);
+  addCorkedVial(0.58, upperSurface, 0.18, 0x2e3a28);
+  addCorkedVial(0.52, upperSurface, 0.05, 0x5a3015);
+  // Right: jar with herbs
+  addSpecimenJar(1.1, upperSurface, 0.12, herbFillMat, 0.95);
+
+  // --- Lower shelf tier (shelfY2 surface) ---
+  const lowerSurface = shelfY2 + 0.04;
+  // Left: skull leaning slightly
+  addSkull(-1.1, lowerSurface, 0.2, -0.4);
+  // Left-centre: wide jar
+  addSpecimenJar(-0.55, lowerSurface, 0.25, darkOrganicMat, 1.1);
+  // Centre: small jar with seeds
+  addSpecimenJar(0.05, lowerSurface, 0.3, new THREE.MeshStandardMaterial({ color: 0x4a3a22, roughness: 0.9 }), 0.78);
+  // Right-centre: 2 vials
+  addCorkedVial(0.62, lowerSurface, 0.22, 0x3a5040);
+  addCorkedVial(0.75, lowerSurface, 0.08, 0x6a3820);
+  // Right: skull
+  addSkull(1.1, lowerSurface, 0.18, 0.5);
+
+  // --- Bottom floor (case floor surface) ---
+  const floorSurface = startY + 0.07;
+  addSpecimenJar(-0.9, floorSurface, 0.3, herbFillMat, 1.2);
+  addSpecimenJar(0.8, floorSurface, 0.35, darkOrganicMat, 0.9);
+  addCorkedVial(-0.2, floorSurface, 0.4, 0x2e4030);
+  addCorkedVial(0.1, floorSurface, 0.3, 0x4a2e18);
+
 }
 
 /**
@@ -639,6 +790,11 @@ function createUpperShowcaseTier(group, { darkWalnutMaterial, antiqueCarvedWoodM
   const crownHeader = new THREE.Mesh(new THREE.BoxGeometry(3.45, 0.22, 1.7), antiqueCarvedWoodMaterial);
   crownHeader.position.set(0, startY + 1.8, -0.05);
   group.add(crownHeader);
+
+  // Engraved title centered high on the front cornice, above its carved dentils.
+  const projectsEngraving = createEngravedProjectsLabel();
+  projectsEngraving.position.set(0, startY + 1.83, 0.9);
+  group.add(projectsEngraving);
 
   // Row of Carved Dentil Teeth Blocks along Cornice
   for (let dx = -1.6; dx <= 1.6; dx += 0.16) {

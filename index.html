@@ -2,8 +2,8 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <title>Curiosity Cabinet — Interactive 3D Portfolio</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Curiosity Cabinet — Experience Design Portfolio</title>
   <meta name="description" content="An interactive 3D curiosity cabinet presenting a collection of design projects, prototypes, and inquiries." />
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🏛️</text></svg>" />
 
@@ -15,22 +15,41 @@
   <!-- Stylesheet -->
   <link rel="stylesheet" href="./src/styles/main.css" />
 
-  <!-- GSAP Core & Plugins CDN -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
-
-  <!-- Native Browser Import Map for Three.js & GSAP -->
+  <!-- Native browser import map for Three.js -->
   <script type="importmap">
   {
     "imports": {
       "three": "https://cdn.jsdelivr.net/npm/three@0.169.0/build/three.module.js",
-      "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.169.0/examples/jsm/",
-      "gsap": "https://cdn.jsdelivr.net/npm/gsap@3.12.5/+esm"
+      "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.169.0/examples/jsm/"
     }
   }
   </script>
 </head>
 <body>
   <div id="app">
+    <main id="mode-landing" class="mode-landing" aria-labelledby="landing-title">
+      <div class="landing-inner">
+        <p class="landing-kicker">A portfolio in two ways</p>
+        <h1 id="landing-title" class="landing-title">Curiosity Cabinet</h1>
+        <p class="landing-intro">A collection of projects shaped by research, systems thinking, and making. Choose how you’d like to explore.</p>
+        <div class="mode-cards">
+          <a class="mode-card mode-card-immersive" href="?mode=gamified">
+            <span class="mode-card-index">01 / EXPLORE</span>
+            <span class="mode-card-title">Gamified Mode</span>
+            <span class="mode-card-copy">Enter the cabinet. Explore the objects, turn the bottles, and discover the work at your own pace.</span>
+            <span class="mode-card-action">Enter the cabinet <span aria-hidden="true">↗</span></span>
+          </a>
+          <a class="mode-card mode-card-direct" href="?mode=recruiter">
+            <span class="mode-card-index">02 / BROWSE</span>
+            <span class="mode-card-title">Recruiter Mode</span>
+            <span class="mode-card-copy">Go straight to the projects, with clear summaries and direct links to each case study.</span>
+            <span class="mode-card-action">View projects <span aria-hidden="true">↗</span></span>
+          </a>
+        </div>
+        <p class="landing-footnote">Same work. Two ways in.</p>
+      </div>
+    </main>
+
     <!-- 3D WebGL Canvas Layer -->
     <div id="webgl-container"></div>
 
@@ -56,12 +75,12 @@
         <nav aria-label="Primary Navigation">
           <ul class="nav-links">
             <li><button id="nav-cabinet" class="nav-btn active" aria-label="View 3D Cabinet">Cabinet 3D</button></li>
-            <li><button id="nav-catalogue" class="nav-btn" aria-label="View Project Catalogue">Catalogue</button></li>
+            <li><button id="nav-catalogue" class="nav-btn" aria-label="View Projects">Projects</button></li>
             <li><button id="nav-skills" class="nav-btn" aria-label="View Skills">Skills</button></li>
-            <li><button id="nav-process" class="nav-btn" aria-label="View Process">Process</button></li>
-            <li><button id="nav-ideas" class="nav-btn" aria-label="View Ideas & Inquiries">Ideas</button></li>
             <li><button id="nav-about" class="nav-btn" aria-label="View About Section">About</button></li>
             <li><button id="nav-contact" class="nav-btn" aria-label="View Contact Information">Contact</button></li>
+            <li class="recruiter-cv-item"><span class="nav-btn recruiter-cv-placeholder" aria-disabled="true" title="CV link coming soon">CV · Coming soon</span></li>
+            <li><a class="nav-btn mode-return-link" href="./" aria-label="Choose portfolio mode">Choose mode</a></li>
           </ul>
         </nav>
       </header>
@@ -69,7 +88,7 @@
       <!-- Bottom Center Interaction Cue -->
       <div id="interaction-hint" class="interaction-hint">
         <div class="hint-dot"></div>
-        <span>Drag to orbit 360° · Select bottles or pull drawers</span>
+        <span>Drag or use arrow keys to orbit · Press 1–8 to inspect projects · Select bottles to preview projects</span>
       </div>
 
       <!-- Floating Drag-to-Rotate Inspection Cue Badge -->
@@ -80,7 +99,7 @@
     </div>
 
     <!-- Slide-In / Bottom-Sheet Project Preview Drawer -->
-    <aside id="project-drawer" class="project-drawer" aria-hidden="true" role="dialog" aria-labelledby="drawer-title">
+    <aside id="project-drawer" class="project-drawer" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="drawer-title">
       <div class="drawer-drag-pill" aria-hidden="true"></div>
       <div class="drawer-header">
         <div>
@@ -163,34 +182,18 @@
     </section>
 
     <!-- 2D Conventional Catalogue Overlay -->
-    <section id="catalogue-overlay" class="catalogue-overlay" aria-hidden="true" role="region" aria-label="Project Catalogue">
+    <section id="catalogue-overlay" class="catalogue-overlay" aria-hidden="true" role="region" aria-label="Projects">
       <div class="catalogue-header">
         <div class="catalogue-header-top">
           <div>
             <span class="catalogue-subtitle">The Complete Collection · 10 Curated Inquiries</span>
-            <h2 class="catalogue-title">Project Catalogue</h2>
+            <h2 class="catalogue-title">Projects</h2>
           </div>
-          <button id="catalogue-close-btn" class="modal-close-btn" aria-label="Close Catalogue">✕</button>
+          <button id="catalogue-close-btn" class="modal-close-btn" aria-label="Close Projects">✕</button>
         </div>
       </div>
       <div id="catalogue-grid" class="catalogue-grid"></div>
     </section>
-
-    <!-- Apothecary Drawer Archive Modal -->
-    <div id="drawer-modal" class="info-modal" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="drawer-modal-title">
-      <div class="info-card drawer-archive-card">
-        <span id="drawer-modal-label" class="drawer-meta-badge">I. SKETCHES</span>
-        <h2 id="drawer-modal-title" class="info-title">Drawer Archive</h2>
-        <p class="drawer-category">Preserved Physical Artifacts &amp; Documentation</p>
-        <p id="drawer-modal-content" class="info-body">
-          Archived documentation, sketches, and process notes from this chamber.
-        </p>
-        <div id="drawer-modal-actions" style="margin-top: 1.5rem; display: flex; gap: 0.75rem; flex-wrap: wrap;">
-          <a id="drawer-modal-link" href="#" target="_blank" rel="noopener noreferrer" class="cta-button" style="display: none; text-decoration: none;">View Related Case Study ↗</a>
-          <button id="drawer-modal-close" class="back-cabinet-btn">Close Drawer</button>
-        </div>
-      </div>
-    </div>
 
     <!-- Skills Section Modal -->
     <div id="skills-modal" class="info-modal" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="skills-title">
@@ -243,7 +246,7 @@
         <div class="modal-header-row">
           <div>
             <span class="drawer-meta-badge">Ethos &amp; Manifesto</span>
-            <h2 id="about-title" class="info-title">About the Curator</h2>
+            <h2 id="about-title" class="info-title">About Me</h2>
           </div>
           <button id="info-modal-close" class="modal-close-btn" aria-label="Close About">✕</button>
         </div>

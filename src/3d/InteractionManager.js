@@ -1,24 +1,31 @@
 import * as THREE from 'three';
-import gsapModule from 'gsap';
+import { gsap } from 'gsap';
 
-const gsap = (typeof window !== 'undefined' && window.gsap) ? window.gsap : (gsapModule?.gsap || gsapModule);
+const prefersReducedMotion = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches || false;
+const animateTo = (target, properties) => {
+  if (!prefersReducedMotion) return gsap.to(target, properties);
+  gsap.killTweensOf(target);
+  Object.entries(properties).forEach(([key, value]) => {
+    if (typeof value === 'number') target[key] = value;
+  });
+  properties.onUpdate?.();
+};
 
 /**
  * Advanced 3D Interaction Engine
  * Handles:
  * 1. Overview Mode: 360° Drag-to-Orbit around the entire assemblage cabinet sculpture.
  * 2. Inspection Mode: 360° Drag-to-Rotate on the active focused bottle.
- * 3. Raycasting: Hover elevation, tooltips, click selection on bottles & drawers.
+ * 3. Raycasting: Bottle hover previews and click selection.
  */
 export class InteractionManager {
-  constructor(camera, scene, domElement, cameraController, onSelectBottle, onHoverObject, onOpenDrawer) {
+  constructor(camera, scene, domElement, cameraController, onSelectBottle, onHoverObject) {
     this.camera = camera;
     this.scene = scene;
     this.domElement = domElement;
     this.cameraController = cameraController;
     this.onSelectBottle = onSelectBottle;
     this.onHoverObject = onHoverObject;
-    this.onOpenDrawer = onOpenDrawer;
 
     this.raycaster = new THREE.Raycaster();
     this.pointer = new THREE.Vector2(-999, -999);
@@ -44,34 +51,51 @@ export class InteractionManager {
   }
 
   initEvents() {
-    // Mouse
+    // Pointer Events cover mouse, pen, and touch without duplicate legacy touch handlers.
     this.domElement.addEventListener('pointerdown', (e) => this.onPointerDown(e));
     this.domElement.addEventListener('pointermove', (e) => this.onPointerMove(e));
+    this.domElement.addEventListener('pointercancel', (e) => this.onPointerUp(e));
+    this.domElement.addEventListener('keydown', (e) => this.onCanvasKeyDown(e));
     window.addEventListener('pointerup', (e) => this.onPointerUp(e));
+  }
 
-    // Touch Support
-    this.domElement.addEventListener('touchstart', (e) => {
-      if (e.touches.length > 0) {
-        const touch = e.touches[0];
-        this.onPointerDown({ clientX: touch.clientX, clientY: touch.clientY, pointerType: 'touch' });
-      }
-    }, { passive: true });
+  onCanvasKeyDown(event) {
+    if (!this.isEnabled || event.altKey || event.ctrlKey || event.metaKey) return;
+    const orbitStep = 32;
+    const orbit = {
+      ArrowLeft: [-orbitStep, 0],
+      ArrowRight: [orbitStep, 0],
+      ArrowUp: [0, -orbitStep],
+      ArrowDown: [0, orbitStep]
+    }[event.key];
 
-    this.domElement.addEventListener('touchmove', (e) => {
-      if (e.touches.length > 0) {
-        const touch = e.touches[0];
-        this.onPointerMove({ clientX: touch.clientX, clientY: touch.clientY, pointerType: 'touch' });
-      }
-    }, { passive: true });
+    if (orbit) {
+      event.preventDefault();
+      this.cameraController?.addOrbitDelta(...orbit);
+      this.cameraController?.endOrbitDrag();
+      return;
+    }
 
-    this.domElement.addEventListener('touchend', (e) => {
-      const touch = e.changedTouches[0] || { clientX: this.previousPointerPos.x, clientY: this.previousPointerPos.y };
-      this.onPointerUp({ clientX: touch.clientX, clientY: touch.clientY, pointerType: 'touch' });
-    }, { passive: true });
+    if (event.key === 'Home') {
+      event.preventDefault();
+      this.deselectCurrentObject();
+      this.cameraController?.resetToOverview();
+      return;
+    }
+
+    const bottleGroups = this.interactiveObjects.filter(group => group.userData?.type === 'bottle');
+    const projectIndex = event.key === '0' ? 9 : Number(event.key) - 1;
+    if (Number.isInteger(projectIndex) && projectIndex >= 0 && projectIndex < bottleGroups.length) {
+      event.preventDefault();
+      this.selectBottle(bottleGroups[projectIndex]);
+    }
   }
 
   onPointerDown(event) {
     if (!this.isEnabled) return;
+
+    this.domElement.focus({ preventScroll: true });
+    if (event.pointerId !== undefined) this.domElement.setPointerCapture?.(event.pointerId);
 
     this.isPointerDown = true;
     this.isDragging = false;
@@ -135,13 +159,17 @@ export class InteractionManager {
     );
 
     this.isPointerDown = false;
+    if (prefersReducedMotion) {
+      this.bottleRotationVelocity.x = 0;
+      this.bottleRotationVelocity.y = 0;
+    }
 
     if (this.cameraController) {
       this.cameraController.endOrbitDrag();
     }
 
     // If it was a click/tap (not a long drag), perform raycast selection
-    if (!this.isDragging && elapsed < 350 && moveDist < 12) {
+    if (event.type !== 'pointercancel' && !this.isDragging && elapsed < 350 && moveDist < 12) {
       this.performRaycastClick();
     }
 
@@ -200,20 +228,13 @@ export class InteractionManager {
       gsap.killTweensOf(objectGroup.rotation);
 
       // Lift bottle off shelf
-      gsap.to(objectGroup.position, {
+      animateTo(objectGroup.position, {
         y: basePos.y + 0.15,
         duration: 0.35,
         ease: 'power2.out'
       });
-    } else if (type === 'drawer') {
-      if (!objectGroup.userData.isOpen) {
-        gsap.to(objectGroup.position, {
-          z: objectGroup.userData.basePosition.z + 0.08,
-          duration: 0.3,
-          ease: 'power2.out'
-        });
-      }
     }
+    // wallframe — cursor already set to pointer above, no 3D animation needed
 
     if (this.onHoverObject) {
       this.onHoverObject(objectGroup.userData, screenX, screenY, true);
@@ -236,7 +257,7 @@ export class InteractionManager {
         gsap.killTweensOf(obj.position);
         gsap.killTweensOf(obj.rotation);
 
-        gsap.to(obj.position, {
+        animateTo(obj.position, {
           x: basePos.x,
           y: basePos.y,
           z: basePos.z,
@@ -244,21 +265,13 @@ export class InteractionManager {
           ease: 'power2.inOut'
         });
 
-        gsap.to(obj.rotation, {
+        animateTo(obj.rotation, {
           x: baseRot.x,
           y: baseRot.y,
           z: baseRot.z,
           duration: 0.45,
           ease: 'power2.inOut'
         });
-      } else if (type === 'drawer') {
-        if (!obj.userData.isOpen) {
-          gsap.to(obj.position, {
-            z: basePos.z,
-            duration: 0.3,
-            ease: 'power2.inOut'
-          });
-        }
       }
     }
 
@@ -286,8 +299,6 @@ export class InteractionManager {
       
       if (hitGroup.userData.type === 'bottle') {
         this.selectBottle(hitGroup);
-      } else if (hitGroup.userData.type === 'drawer') {
-        this.toggleDrawer(hitGroup);
       }
     }
   }
@@ -302,7 +313,7 @@ export class InteractionManager {
     gsap.killTweensOf(bottleGroup.rotation);
 
     // Lift and bring slightly forward for inspection
-    gsap.to(bottleGroup.position, {
+    animateTo(bottleGroup.position, {
       y: basePos.y + 0.18,
       duration: 0.9,
       ease: 'power3.out'
@@ -311,37 +322,6 @@ export class InteractionManager {
     if (this.onSelectBottle) {
       this.onSelectBottle(bottleGroup.userData.projectData, bottleGroup);
     }
-  }
-
-  toggleDrawer(drawerGroup) {
-    const dData = drawerGroup.userData;
-    dData.isOpen = !dData.isOpen;
-
-    const targetZ = dData.isOpen ? dData.basePosition.z + dData.openZOffset : dData.basePosition.z;
-
-    gsap.killTweensOf(drawerGroup.position);
-    gsap.to(drawerGroup.position, {
-      z: targetZ,
-      duration: 0.7,
-      ease: 'power2.inOut'
-    });
-
-    if (this.onOpenDrawer) {
-      this.onOpenDrawer(dData.drawerData, dData.isOpen);
-    }
-  }
-
-  closeAllDrawers() {
-    this.interactiveObjects.forEach(group => {
-      if (group.userData.type === 'drawer' && group.userData.isOpen) {
-        group.userData.isOpen = false;
-        gsap.to(group.position, {
-          z: group.userData.basePosition.z,
-          duration: 0.6,
-          ease: 'power2.inOut'
-        });
-      }
-    });
   }
 
   deselectCurrentObject() {
@@ -353,7 +333,7 @@ export class InteractionManager {
       gsap.killTweensOf(obj.position);
       gsap.killTweensOf(obj.rotation);
 
-      gsap.to(obj.position, {
+      animateTo(obj.position, {
         x: basePos.x,
         y: basePos.y,
         z: basePos.z,
@@ -361,7 +341,7 @@ export class InteractionManager {
         ease: 'power3.inOut'
       });
 
-      gsap.to(obj.rotation, {
+      animateTo(obj.rotation, {
         x: baseRot.x,
         y: baseRot.y,
         z: baseRot.z,

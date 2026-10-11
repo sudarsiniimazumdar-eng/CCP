@@ -1,4 +1,15 @@
 import * as THREE from 'three';
+import frame01 from '../assets/photowall/frame-01.png';
+import frame02 from '../assets/photowall/frame-02.png';
+import frame03 from '../assets/photowall/frame-03.png';
+import frame04 from '../assets/photowall/frame-04.png';
+import frame05 from '../assets/photowall/frame-05.png';
+import frame06 from '../assets/photowall/frame-06.png';
+import frame07 from '../assets/photowall/frame-07.png';
+import frame08 from '../assets/photowall/frame-08.png';
+import frame09 from '../assets/photowall/frame-09.png';
+import frame10 from '../assets/photowall/frame-10.png';
+import frame11 from '../assets/photowall/frame-11.png';
 
 /**
  * Procedural Antique Persian Carpet Generator
@@ -188,7 +199,7 @@ function createStainedGlassTexture() {
     '#d84315', '#00838f', '#e65100', '#283593', '#4e342e'
   ];
 
-  ctx.fillStyle = '#0a0605';
+  ctx.fillStyle = '#100b10';
   ctx.fillRect(0, 0, canvas.width, canvas.height);
 
   const cols = 6;
@@ -198,21 +209,51 @@ function createStainedGlassTexture() {
 
   for (let r = 0; r < rows; r++) {
     for (let c = 0; c < cols; c++) {
-      const color = colors[(r * cols + c * 3) % colors.length];
+      const color = colors[(r * cols + c * 3 + (r % 2)) % colors.length];
       ctx.fillStyle = color;
       ctx.fillRect(c * pw + 4, r * ph + 4, pw - 8, ph - 8);
 
       const grad = ctx.createLinearGradient(c * pw, r * ph, (c + 1) * pw, (r + 1) * ph);
-      grad.addColorStop(0, 'rgba(255, 255, 255, 0.4)');
-      grad.addColorStop(0.5, 'transparent');
-      grad.addColorStop(1, 'rgba(0, 0, 0, 0.5)');
+      grad.addColorStop(0, 'rgba(255, 248, 220, 0.3)');
+      grad.addColorStop(0.38, 'rgba(255, 255, 255, 0.03)');
+      grad.addColorStop(1, 'rgba(0, 0, 0, 0.42)');
       ctx.fillStyle = grad;
       ctx.fillRect(c * pw + 4, r * ph + 4, pw - 8, ph - 8);
+
+      ctx.strokeStyle = 'rgba(238, 219, 174, 0.24)';
+      ctx.lineWidth = 1.5;
+      ctx.strokeRect(c * pw + 7, r * ph + 7, pw - 14, ph - 14);
     }
   }
 
-  ctx.strokeStyle = '#120d09';
-  ctx.lineWidth = 8;
+  // Rose window tracery and lead cames add a hand-assembled stained-glass look.
+  const roseX = canvas.width / 2;
+  const roseY = canvas.height * 0.22;
+  const roseRadius = 116;
+  ctx.strokeStyle = '#171215';
+  ctx.lineWidth = 13;
+  ctx.beginPath();
+  ctx.arc(roseX, roseY, roseRadius, 0, Math.PI * 2);
+  ctx.stroke();
+  ctx.lineWidth = 5;
+  ctx.beginPath();
+  ctx.arc(roseX, roseY, roseRadius * 0.57, 0, Math.PI * 2);
+  ctx.stroke();
+  for (let i = 0; i < 12; i++) {
+    const angle = (i / 12) * Math.PI * 2;
+    ctx.beginPath();
+    ctx.moveTo(roseX + Math.cos(angle) * roseRadius * 0.18, roseY + Math.sin(angle) * roseRadius * 0.18);
+    ctx.lineTo(roseX + Math.cos(angle) * roseRadius * 0.94, roseY + Math.sin(angle) * roseRadius * 0.94);
+    ctx.stroke();
+  }
+  ctx.strokeStyle = 'rgba(196, 160, 91, 0.82)';
+  ctx.lineWidth = 2;
+  ctx.beginPath();
+  ctx.arc(roseX, roseY, roseRadius * 0.52, 0, Math.PI * 2);
+  ctx.stroke();
+
+  ctx.strokeStyle = '#171215';
+  ctx.lineWidth = 11;
   for (let c = 0; c <= cols; c++) {
     ctx.beginPath();
     ctx.moveTo(c * pw, 0);
@@ -266,9 +307,9 @@ export function createApothecaryRoom() {
 
   const wallWoodMat = new THREE.MeshStandardMaterial({
     map: materialTex,
-    color: 0x3d281a,
-    roughness: 0.85,
-    metalness: 0.04
+    color: 0x1a0c06,
+    roughness: 0.88,
+    metalness: 0.03
   });
 
   const shelfWoodMat = new THREE.MeshStandardMaterial({
@@ -374,37 +415,20 @@ export function createApothecaryRoom() {
   backWall.receiveShadow = true;
   roomGroup.add(backWall);
 
-  // Large Antique Gilded Frame with environment.jpg Oil Painting
-  const largeOilFrame = new THREE.Mesh(new THREE.BoxGeometry(3.6, 2.8, 0.12), brassTrimMat);
-  largeOilFrame.position.set(0, 5.2, -6.3);
-  roomGroup.add(largeOilFrame);
+  // === INTERACTIVE PHOTO WALL ===
+  // Salon-style gallery wall matching the supplied reference image.
+  // 40 evenly spaced wall panels repeat the 11 supplied frames across the back wall.
+  const photoWallFrames = createPhotoWall(
+    roomGroup,
+    brassTrimMat,
+    environmentPaintingMat,
+    typographyArtMat,
+    perfumeArtMat,
+    parchmentMat
+  );
 
-  const largeOilCanvas = new THREE.Mesh(new THREE.PlaneGeometry(3.3, 2.5), environmentPaintingMat);
-  largeOilCanvas.position.set(0, 5.2, -6.23);
-  roomGroup.add(largeOilCanvas);
+  // The back wall is kept clear for the continuous photo gallery behind the cabinet.
 
-  // Framed Typography Manuscript Prints flanking the painting
-  const createFramedPrint = (x, y, w, h, mat) => {
-    const frame = new THREE.Mesh(new THREE.BoxGeometry(w + 0.18, h + 0.18, 0.08), brassTrimMat);
-    frame.position.set(x, y, -6.32);
-    roomGroup.add(frame);
-
-    const art = new THREE.Mesh(new THREE.PlaneGeometry(w, h), mat);
-    art.position.set(x, y, -6.27);
-    roomGroup.add(art);
-  };
-  createFramedPrint(-2.8, 5.2, 1.4, 2.0, typographyArtMat);
-  createFramedPrint(2.8, 5.2, 1.4, 2.0, perfumeArtMat);
-
-  // Background Bookshelves packed to the brim
-  createBackgroundShelves(roomGroup, { shelfWoodMat, x: -4.2, y: -1.0, z: -6.1, w: 5.5, h: 5.8 });
-  createBackgroundShelves(roomGroup, { shelfWoodMat, x: 4.2, y: -1.0, z: -6.1, w: 5.5, h: 5.8 });
-
-  // 4. LIBRARY WOODEN ROLLING LADDER (Against Bookshelf)
-  const ladderGroup = createLibraryLadder(shelfWoodMat, brassTrimMat);
-  ladderGroup.position.set(-5.6, -3.85, -5.2);
-  ladderGroup.rotation.x = 0.18; // Leaning against bookshelf
-  roomGroup.add(ladderGroup);
 
   // 5. LEFT WALL & STAINED GLASS WINDOW
   const leftWall = new THREE.Mesh(new THREE.BoxGeometry(0.4, 14, 18), wallWoodMat);
@@ -412,26 +436,59 @@ export function createApothecaryRoom() {
   leftWall.receiveShadow = true;
   roomGroup.add(leftWall);
 
-  // Stained Glass Frame
-  const windowFrame = new THREE.Mesh(new THREE.BoxGeometry(0.3, 5.5, 3.2), shelfWoodMat);
-  windowFrame.position.set(-8.2, 0.2, -1.8);
-  roomGroup.add(windowFrame);
+  // Deep timber casing leaves a real opening for the glass to sit inside.
+  const windowCenter = new THREE.Vector3(-8.2, 0.2, -1.8);
+  const frameRails = [
+    { size: [0.32, 5.55, 0.2], offset: [0, 0, -1.5] },
+    { size: [0.32, 5.55, 0.2], offset: [0, 0, 1.5] },
+    { size: [0.32, 0.24, 3.2], offset: [0, 2.66, 0] },
+    { size: [0.36, 0.3, 3.35], offset: [0, -2.66, 0] }
+  ];
+  frameRails.forEach(({ size, offset }) => {
+    const rail = new THREE.Mesh(new THREE.BoxGeometry(...size), shelfWoodMat);
+    rail.position.copy(windowCenter).add(new THREE.Vector3(...offset));
+    rail.castShadow = true;
+    rail.receiveShadow = true;
+    roomGroup.add(rail);
+  });
 
   const stainedGlassPane = new THREE.Mesh(
     new THREE.PlaneGeometry(3.0, 5.2),
-    new THREE.MeshStandardMaterial({
+    new THREE.MeshPhysicalMaterial({
       map: stainedGlassTex,
-      emissive: 0xffeedd,
+      color: 0xe8e1d0,
+      emissive: 0x382d38,
       emissiveMap: stainedGlassTex,
-      emissiveIntensity: 0.45,
-      roughness: 0.2,
-      metalness: 0.1,
+      emissiveIntensity: 0.18,
+      roughness: 0.16,
+      metalness: 0.02,
+      transmission: 0.08,
+      thickness: 0.08,
+      clearcoat: 0.75,
+      clearcoatRoughness: 0.12,
       side: THREE.DoubleSide
     })
   );
   stainedGlassPane.rotation.y = Math.PI / 2;
-  stainedGlassPane.position.set(-8.04, 0.2, -1.8);
+  stainedGlassPane.position.set(-8.015, 0.2, -1.8);
   roomGroup.add(stainedGlassPane);
+
+  // Lead cames divide the glass into individual pieces.
+  const leadMat = new THREE.MeshStandardMaterial({ color: 0x211d22, roughness: 0.5, metalness: 0.45 });
+  const addLead = (width, height, depth, x, y, z) => {
+    const came = new THREE.Mesh(new THREE.BoxGeometry(width, height, depth), leadMat);
+    came.position.set(x, y, z);
+    roomGroup.add(came);
+  };
+  const leadX = -7.98;
+  [-2.75, -1.8, -0.85].forEach(z => addLead(0.045, 5.05, 0.045, leadX, 0.2, z));
+  [-1.5, -0.15, 1.25].forEach(y => addLead(0.045, 0.045, 2.9, leadX, y, -1.8));
+
+  // A slim pointed arch completes the window framing.
+  const arch = new THREE.Mesh(new THREE.TorusGeometry(1.32, 0.045, 8, 40, Math.PI), leadMat);
+  arch.rotation.y = Math.PI / 2;
+  arch.position.set(-7.965, 1.48, -1.8);
+  roomGroup.add(arch);
 
   // Gallery Wall of Framed Herbarium & Typography Prints on Left Wall
   const createWallFrame = (z, y, w, h, mat) => {
@@ -502,108 +559,8 @@ export function createApothecaryRoom() {
 
   roomGroup.add(deskGroup);
 
-  // 6. RIGHT SIDE CURVED WOODEN STAIRCASE WITH BOOK OVERFLOW
-  const stairGroup = new THREE.Group();
-  stairGroup.position.set(6.2, -3.85, -2.5);
-  
-  const stepCount = 11;
-  for (let i = 0; i < stepCount; i++) {
-    const step = new THREE.Mesh(new THREE.BoxGeometry(2.4, 0.32, 0.7), shelfWoodMat);
-    step.position.set(0, (i + 0.5) * 0.32, -i * 0.45);
-    step.castShadow = true;
-    step.receiveShadow = true;
-    stairGroup.add(step);
 
-    // Turned balusters
-    if (i % 2 === 0) {
-      const baluster = new THREE.Mesh(new THREE.CylinderGeometry(0.04, 0.04, 1.2, 12), shelfWoodMat);
-      baluster.position.set(-1.05, (i + 0.5) * 0.32 + 0.6, -i * 0.45);
-      stairGroup.add(baluster);
-    }
-  }
-
-  // Cascading book stacks and parchment on stairs
-  const stairBook1 = new THREE.Mesh(new THREE.BoxGeometry(0.45, 0.08, 0.35), new THREE.MeshStandardMaterial({ color: 0x5c1d1d, roughness: 0.8 }));
-  stairBook1.position.set(0.4, 0.38, 0);
-  stairBook1.rotation.y = 0.25;
-  stairGroup.add(stairBook1);
-
-  const stairBook2 = new THREE.Mesh(new THREE.BoxGeometry(0.4, 0.07, 0.3), new THREE.MeshStandardMaterial({ color: 0x1d3c2a, roughness: 0.8 }));
-  stairBook2.position.set(0.38, 0.45, 0);
-  stairBook2.rotation.y = -0.15;
-  stairGroup.add(stairBook2);
-
-  const stairBook3 = new THREE.Mesh(new THREE.BoxGeometry(0.5, 0.09, 0.38), new THREE.MeshStandardMaterial({ color: 0x4a3622, roughness: 0.8 }));
-  stairBook3.position.set(0.35, 1.05, -0.9);
-  stairBook3.rotation.y = 0.1;
-  stairGroup.add(stairBook3);
-
-  // Ornate Main Newel Post
-  const newelPost = new THREE.Mesh(new THREE.CylinderGeometry(0.14, 0.16, 2.2, 16), shelfWoodMat);
-  newelPost.position.set(-1.05, 1.1, 0.2);
-  const newelCap = new THREE.Mesh(new THREE.SphereGeometry(0.18, 16, 16), shelfWoodMat);
-  newelCap.position.set(-1.05, 2.25, 0.2);
-  stairGroup.add(newelPost);
-  stairGroup.add(newelCap);
-
-  // Handrail
-  const railGeo = new THREE.BoxGeometry(0.12, 0.08, 5.5);
-  const railMesh = new THREE.Mesh(railGeo, shelfWoodMat);
-  railMesh.position.set(-1.05, 2.3, -2.2);
-  railMesh.rotation.x = Math.atan2(stepCount * 0.32, stepCount * 0.45);
-  stairGroup.add(railMesh);
-
-  roomGroup.add(stairGroup);
-
-  // 7. UPPER MEZZANINE / LOFT BALCONY (Deep projecting cantilever with dedicated contrast lighting)
-  // Walkway floor extending forward from back wall (-6.5 to -3.0)
-  const mezzanineWalkway = new THREE.Mesh(
-    new THREE.BoxGeometry(22, 0.24, 3.5),
-    shelfWoodMat
-  );
-  mezzanineWalkway.position.set(0, 4.4, -4.75);
-  mezzanineWalkway.receiveShadow = true;
-  roomGroup.add(mezzanineWalkway);
-
-  // Heavy Front Fascia Beam on Balcony
-  const mezzanineFascia = new THREE.Mesh(
-    new THREE.BoxGeometry(22, 0.48, 0.32),
-    wallWoodMat
-  );
-  mezzanineFascia.position.set(0, 4.28, -3.0);
-  mezzanineFascia.castShadow = true;
-  roomGroup.add(mezzanineFascia);
-
-  // Carved Bracket Corbels supporting balcony from below (casting rich shadows)
-  for (let cx = -9; cx <= 9; cx += 2.25) {
-    const corbel = new THREE.Mesh(new THREE.BoxGeometry(0.18, 0.65, 0.4), wallWoodMat);
-    corbel.position.set(cx, 3.85, -3.1);
-    roomGroup.add(corbel);
-  }
-
-  // Polished Tarnished Brass Top Handrail
-  const balustradeRail = new THREE.Mesh(new THREE.BoxGeometry(22, 0.12, 0.12), brassTrimMat);
-  balustradeRail.position.set(0, 5.45, -3.0);
-  roomGroup.add(balustradeRail);
-
-  // Turned Spindles / Balusters
-  for (let bx = -9.5; bx <= 9.5; bx += 0.65) {
-    const bal = new THREE.Mesh(new THREE.CylinderGeometry(0.04, 0.04, 0.95, 12), shelfWoodMat);
-    bal.position.set(bx, 4.95, -3.0);
-    bal.castShadow = true;
-    roomGroup.add(bal);
-  }
-
-  // DEDICATED BALCONY CONTRAST LIGHTING
-  // A. Under-Mezzanine Golden Downlight (illuminates lower library shelves, deepens under-balcony shadow)
-  const underMezzanineLight = new THREE.PointLight(0xffa843, 1.4, 8.0, 1.8);
-  underMezzanineLight.position.set(0, 3.8, -4.5);
-  roomGroup.add(underMezzanineLight);
-
-  // B. Upper Loft Backlight (casts forward through the balustrade, silhouetting balusters cleanly)
-  const loftBacklight = new THREE.PointLight(0xffd180, 1.5, 9.0, 1.8);
-  loftBacklight.position.set(0, 6.2, -5.8);
-  roomGroup.add(loftBacklight);
+  // 7. CEILING RAFTERS & HANGING HERB BOUQUETS
 
   // Ceiling rafters & Abundant Hanging Dried Herb Bouquets
   for (let rz = -5.5; rz <= 4.5; rz += 2.2) {
@@ -669,8 +626,79 @@ export function createApothecaryRoom() {
     lanternPoints.push(pLight);
   });
 
-  roomGroup.userData = { lanternLights: lanternPoints };
+  roomGroup.userData = { lanternLights: lanternPoints, photoWallFrames };
   return roomGroup;
+}
+
+/**
+ * Creates the interactive salon-style photo wall matching the supplied reference.
+ * Frames repositioned into y = -0.5 to 4.2 — the actual camera-visible band.
+ * Gold frames use emissive material so they read against the dark wall.
+ */
+
+function createPhotoWall(roomGroup) {
+  const sources = [
+    { image: frame01, width: 269, height: 272, label: 'Owl portrait' },
+    { image: frame02, width: 382, height: 288, label: 'Glasshouse study' },
+    { image: frame03, width: 267, height: 294, label: 'Botanical study' },
+    { image: frame04, width: 168, height: 143, label: 'Misty landscape' },
+    { image: frame05, width: 181, height: 120, label: 'Oval landscape' },
+    { image: frame06, width: 211, height: 277, label: 'Dusk architecture' },
+    { image: frame07, width: 259, height: 315, label: 'Tortoise portrait' },
+    { image: frame08, width: 183, height: 246, label: 'Mountain study' },
+    { image: frame09, width: 197, height: 199, label: 'Skull portrait' },
+    { image: frame10, width: 375, height: 263, label: 'Cloud study' },
+    { image: frame11, width: 269, height: 268, label: 'Woodland study' }
+  ];
+  const columns = 5;
+  const rows = 4;
+  const cellWidth = 1.8;
+  const cellHeight = 1.55;
+  const frameMaxWidth = 1.55;
+  const frameMaxHeight = 1.28;
+  const firstX = -((columns - 1) * cellWidth) / 2;
+  const wallCenterY = 2.5;
+  const firstY = wallCenterY + ((rows - 1) * cellHeight) / 2;
+  const wallZ = -6.22;
+  const loader = new THREE.TextureLoader();
+  const frames = [];
+
+  for (let row = 0; row < rows; row++) {
+    for (let column = 0; column < columns; column++) {
+      const sourceIndex = (row * 3 + column * 7) % sources.length;
+      const source = sources[sourceIndex];
+      const aspect = source.width / source.height;
+      const height = Math.min(frameMaxHeight, frameMaxWidth / aspect);
+      const width = height * aspect;
+      const texture = loader.load(source.image);
+      texture.colorSpace = THREE.SRGBColorSpace;
+      texture.anisotropy = 4;
+      const material = new THREE.MeshBasicMaterial({
+        map: texture,
+        transparent: true,
+        alphaTest: 0.025,
+        side: THREE.DoubleSide,
+        toneMapped: false,
+        depthWrite: false,
+        fog: false
+      });
+      const frame = new THREE.Mesh(new THREE.PlaneGeometry(width, height), material);
+      frame.name = 'PhotoFrame_' + String(row + 1).padStart(2, '0') + '_' + String(column + 1).padStart(2, '0');
+      frame.position.set(firstX + column * cellWidth, firstY - row * cellHeight, wallZ);
+      frame.renderOrder = 2;
+      frame.userData = {
+        isInteractive: false,
+        type: 'wallframe',
+        frameIndex: sourceIndex,
+        label: source.label,
+        title: source.label
+      };
+      roomGroup.add(frame);
+      frames.push(frame);
+    }
+  }
+
+  return frames;
 }
 
 /**

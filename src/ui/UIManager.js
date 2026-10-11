@@ -54,13 +54,6 @@ export class UIManager {
     // Drag-to-Rotate Inspection Cue Badge
     this.rotateCueEl = document.getElementById('rotate-cue');
 
-    // Apothecary Drawer Specimen Modal
-    this.drawerModalEl = document.getElementById('drawer-modal');
-    this.drawerModalLabelEl = document.getElementById('drawer-modal-label');
-    this.drawerModalTitleEl = document.getElementById('drawer-modal-title');
-    this.drawerModalContentEl = document.getElementById('drawer-modal-content');
-    this.drawerModalCloseBtn = document.getElementById('drawer-modal-close');
-    this.drawerModalLinkEl = document.getElementById('drawer-modal-link');
     this.modalExternalLink = document.getElementById('modal-external-link');
 
     // 2D Catalogue Overlay
@@ -107,6 +100,11 @@ export class UIManager {
     this.loadingScreen = document.getElementById('loading-screen');
 
     this.currentActiveProject = null;
+    this.dialogReturnFocus = new WeakMap();
+    if (document.body.classList.contains('mode-recruiter')) {
+      if (this.aboutReturnBtn) this.aboutReturnBtn.textContent = 'Return to Projects';
+      if (this.contactReturnBtn) this.contactReturnBtn.textContent = 'Return to Projects';
+    }
 
     this.init();
   }
@@ -143,9 +141,6 @@ export class UIManager {
 
     this.modalPrevBtn?.addEventListener('click', () => this.navigateAdjacentProject(-1));
     this.modalNextBtn?.addEventListener('click', () => this.navigateAdjacentProject(1));
-
-    // Drawer Modal Controls
-    this.drawerModalCloseBtn?.addEventListener('click', () => this.closeDrawerModal());
 
     // Navigation Buttons
     this.navCabinetBtn?.addEventListener('click', () => {
@@ -209,17 +204,15 @@ export class UIManager {
       { btn: this.contactReturnBtn, modal: this.contactModal }
     ].forEach(({ btn, modal }) => {
       btn?.addEventListener('click', () => {
-        this.closeModal(modal);
-        this.setActiveNav('cabinet');
+        this.returnFromSectionModal(modal);
       });
     });
 
     // Backdrop Click handlers
-    [this.infoModal, this.skillsModal, this.processModal, this.ideasModal, this.contactModal, this.drawerModalEl].forEach(modal => {
+    [this.infoModal, this.skillsModal, this.processModal, this.ideasModal, this.contactModal].forEach(modal => {
       modal?.addEventListener('click', (e) => {
         if (e.target === modal) {
-          this.closeModal(modal);
-          this.setActiveNav('cabinet');
+          this.returnFromSectionModal(modal);
         }
       });
     });
@@ -229,23 +222,16 @@ export class UIManager {
       if (e.key === 'Escape') {
         if (this.projectModal?.classList.contains('open')) {
           this.closeProjectModal();
-        } else if (this.drawerModalEl?.classList.contains('open')) {
-          this.closeDrawerModal();
         } else if (this.skillsModal?.classList.contains('open')) {
-          this.closeModal(this.skillsModal);
-          this.setActiveNav('cabinet');
+          this.returnFromSectionModal(this.skillsModal);
         } else if (this.processModal?.classList.contains('open')) {
-          this.closeModal(this.processModal);
-          this.setActiveNav('cabinet');
+          this.returnFromSectionModal(this.processModal);
         } else if (this.ideasModal?.classList.contains('open')) {
-          this.closeModal(this.ideasModal);
-          this.setActiveNav('cabinet');
+          this.returnFromSectionModal(this.ideasModal);
         } else if (this.infoModal?.classList.contains('open')) {
-          this.closeModal(this.infoModal);
-          this.setActiveNav('cabinet');
+          this.returnFromSectionModal(this.infoModal);
         } else if (this.contactModal?.classList.contains('open')) {
-          this.closeModal(this.contactModal);
-          this.setActiveNav('cabinet');
+          this.returnFromSectionModal(this.contactModal);
         } else if (this.catalogueOverlay?.classList.contains('open')) {
           this.closeCatalogueOverlay();
           this.setActiveNav('cabinet');
@@ -253,6 +239,8 @@ export class UIManager {
           this.closePreviewDrawer();
         }
       }
+
+      if (e.key === 'Tab') this.trapDialogFocus(e);
     });
   }
 
@@ -267,28 +255,85 @@ export class UIManager {
   }
 
   openModal(modalEl) {
-    if (!modalEl) return;
-    modalEl.classList.add('open');
-    modalEl.setAttribute('aria-hidden', 'false');
+    this.openDialog(modalEl);
   }
 
-  closeModal(modalEl) {
+  openDialog(modalEl, opener = document.activeElement) {
+    if (!modalEl) return;
+    this.dialogReturnFocus.set(modalEl, opener instanceof HTMLElement ? opener : null);
+    modalEl.classList.add('open');
+    modalEl.setAttribute('aria-hidden', 'false');
+    const focusable = this.getDialogFocusableElements(modalEl);
+    (focusable[0] || modalEl).focus();
+  }
+
+  closeDialog(modalEl, restoreFocus = true) {
     if (!modalEl) return;
     modalEl.classList.remove('open');
     modalEl.setAttribute('aria-hidden', 'true');
+    const opener = this.dialogReturnFocus.get(modalEl);
+    this.dialogReturnFocus.delete(modalEl);
+    if (restoreFocus && opener?.isConnected && opener.getClientRects().length > 0 && !opener.closest('[aria-hidden="true"]')) {
+      opener.focus();
+    } else if (restoreFocus) {
+      const canvas = document.querySelector('#webgl-container canvas');
+      (canvas?.getClientRects().length ? canvas : this.navCatalogueBtn)?.focus();
+    }
+  }
+
+  closeModal(modalEl, restoreFocus = true) {
+    this.closeDialog(modalEl, restoreFocus);
+  }
+
+  returnFromSectionModal(modalEl) {
+    if (document.body.classList.contains('mode-recruiter')) {
+      this.closeModal(modalEl, false);
+      this.openCatalogueOverlay();
+      this.setActiveNav('catalogue');
+      this.navCatalogueBtn?.focus();
+      return;
+    }
+
+    this.closeModal(modalEl);
+    this.setActiveNav('cabinet');
+  }
+
+  getDialogFocusableElements(dialogEl) {
+    return [...dialogEl.querySelectorAll('a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])')]
+      .filter(element => element.getClientRects().length > 0);
+  }
+
+  trapDialogFocus(event) {
+    const openDialogs = [...document.querySelectorAll('[role="dialog"].open')];
+    const dialogEl = openDialogs[openDialogs.length - 1];
+    if (!dialogEl) return;
+    const focusable = this.getDialogFocusableElements(dialogEl);
+    if (!focusable.length) {
+      event.preventDefault();
+      dialogEl.focus();
+      return;
+    }
+    const first = focusable[0];
+    const last = focusable[focusable.length - 1];
+    if (event.shiftKey && (document.activeElement === first || !dialogEl.contains(document.activeElement))) {
+      event.preventDefault();
+      last.focus();
+    } else if (!event.shiftKey && (document.activeElement === last || !dialogEl.contains(document.activeElement))) {
+      event.preventDefault();
+      first.focus();
+    }
   }
 
   closeAllModals() {
     [
       this.projectModal,
       this.catalogueOverlay,
-      this.drawerModalEl,
       this.skillsModal,
       this.processModal,
       this.ideasModal,
       this.infoModal,
       this.contactModal
-    ].forEach(m => this.closeModal(m));
+    ].forEach(m => this.closeDialog(m, false));
   }
 
   populateSectionContents() {
@@ -352,10 +397,11 @@ export class UIManager {
       this.aboutContent.innerHTML = `
         <p class="section-intro">${about.subtitle}</p>
         <p class="info-body-text">${about.bio}</p>
-        <div class="manifesto-box">
-          <span class="manifesto-label">Curator Manifesto</span>
-          <p class="manifesto-text">"${about.manifesto}"</p>
+        <div class="about-focus-block">
+          <h3 class="about-focus-title">Areas I’m interested in</h3>
+          <ul class="about-focus-list">${about.interests.map(item => `<li>${item}</li>`).join('')}</ul>
         </div>
+        <p class="info-body-text about-direction">${about.direction}</p>
       `;
     }
 
@@ -390,7 +436,7 @@ export class UIManager {
       <div class="catalogue-section-header">
         <span class="catalogue-badge-gold">✦ PRIMARY WORKS · FULL DOCUMENTATION</span>
         <h3 class="catalogue-section-title">Featured Case Studies</h3>
-        <p class="catalogue-section-desc">Four core investigations with full research rigor, design process, physical computing, and systemic evidence.</p>
+        <p class="catalogue-section-desc">Selected projects spanning research, product design, physical computing, and service systems.</p>
       </div>
       <div class="catalogue-subgrid featured-grid"></div>
     `;
@@ -473,6 +519,7 @@ export class UIManager {
           // Native link opens in new tab cleanly
           return;
         }
+        if (document.body.classList.contains('mode-recruiter')) return;
         this.closeCatalogueOverlay();
         this.setActiveNav('cabinet');
         if (this.onSelectProjectFrom2D) {
@@ -497,11 +544,14 @@ export class UIManager {
   openCatalogueOverlay() {
     this.catalogueOverlay?.classList.add('open');
     this.catalogueOverlay?.setAttribute('aria-hidden', 'false');
+    const firstControl = this.getDialogFocusableElements(this.catalogueOverlay)[0];
+    firstControl?.focus();
   }
 
   closeCatalogueOverlay() {
     this.catalogueOverlay?.classList.remove('open');
     this.catalogueOverlay?.setAttribute('aria-hidden', 'true');
+    if (this.navCatalogueBtn?.getClientRects().length) this.navCatalogueBtn.focus();
   }
 
   /**
@@ -539,16 +589,14 @@ export class UIManager {
       this.drawerCtaBtn.setAttribute('rel', 'noopener noreferrer');
     }
 
-    this.drawerEl?.classList.add('open');
-    this.drawerEl?.setAttribute('aria-hidden', 'false');
+    this.openDialog(this.drawerEl);
 
     if (this.rotateCueEl) this.rotateCueEl.classList.add('visible');
     if (this.interactionHint) this.interactionHint.style.opacity = '0';
   }
 
   closePreviewDrawer() {
-    this.drawerEl?.classList.remove('open');
-    this.drawerEl?.setAttribute('aria-hidden', 'true');
+    this.closeDialog(this.drawerEl);
 
     if (this.rotateCueEl) this.rotateCueEl.classList.remove('visible');
     if (this.interactionHint) this.interactionHint.style.opacity = '1';
@@ -598,13 +646,11 @@ export class UIManager {
       this.modalExternalLink.setAttribute('rel', 'noopener noreferrer');
     }
 
-    this.projectModal?.classList.add('open');
-    this.projectModal?.setAttribute('aria-hidden', 'false');
+    this.openDialog(this.projectModal);
   }
 
   closeProjectModal() {
-    this.projectModal?.classList.remove('open');
-    this.projectModal?.setAttribute('aria-hidden', 'true');
+    this.closeDialog(this.projectModal);
   }
 
   navigateAdjacentProject(direction) {
@@ -637,16 +683,9 @@ export class UIManager {
 
     if (userData.type === 'bottle' && userData.project) {
       const p = userData.project;
-      if (this.tooltipNumberEl) this.tooltipNumberEl.innerText = p.placement.labelNumber || 'N° 01';
+      if (this.tooltipNumberEl) this.tooltipNumberEl.innerText = p.category;
       if (this.tooltipTitleEl) this.tooltipTitleEl.innerText = p.title;
       if (this.tooltipCategoryEl) this.tooltipCategoryEl.innerText = `${p.category} · ${p.year}`;
-      this.tooltipEl.classList.add('visible');
-      this.tooltipEl.setAttribute('aria-hidden', 'false');
-    } else if (userData.type === 'drawer' && userData.drawerData) {
-      const d = userData.drawerData;
-      if (this.tooltipNumberEl) this.tooltipNumberEl.innerText = d.label;
-      if (this.tooltipTitleEl) this.tooltipTitleEl.innerText = d.title;
-      if (this.tooltipCategoryEl) this.tooltipCategoryEl.innerText = 'Apothecary Archive';
       this.tooltipEl.classList.add('visible');
       this.tooltipEl.setAttribute('aria-hidden', 'false');
     } else {
@@ -655,49 +694,22 @@ export class UIManager {
       return;
     }
 
-    const padding = 18;
-    let posX = clientX + padding;
-    let posY = clientY + padding;
+    if (this.tooltipCategoryEl) this.tooltipCategoryEl.innerText = 'Apothecary Archive';
 
-    if (posX + 240 > window.innerWidth) posX = clientX - 240;
-    if (posY + 120 > window.innerHeight) posY = clientY - 120;
+    const padding = 14;
+    const tooltipRect = this.tooltipEl.getBoundingClientRect();
+    const tooltipWidth = tooltipRect.width || 336;
+    const tooltipHeight = tooltipRect.height || 96;
+    let posX = clientX + padding;
+    let posY = clientY - tooltipHeight - padding;
+
+    if (posX + tooltipWidth > window.innerWidth - 8) posX = clientX - tooltipWidth - padding;
+    if (posY < 8) posY = clientY + padding;
+    posX = Math.max(8, Math.min(posX, window.innerWidth - tooltipWidth - 8));
+    posY = Math.max(8, Math.min(posY, window.innerHeight - tooltipHeight - 8));
 
     this.tooltipEl.style.left = `${posX}px`;
     this.tooltipEl.style.top = `${posY}px`;
-  }
-
-  /**
-   * Apothecary Drawer Archive Modal
-   */
-  openDrawerModal(drawerData) {
-    if (!this.drawerModalEl || !drawerData) return;
-
-    if (this.drawerModalLabelEl) this.drawerModalLabelEl.innerText = drawerData.label;
-    if (this.drawerModalTitleEl) this.drawerModalTitleEl.innerText = drawerData.title;
-    if (this.drawerModalContentEl) this.drawerModalContentEl.innerText = drawerData.content;
-
-    if (this.drawerModalLinkEl) {
-      if (drawerData.caseStudyUrl) {
-        this.drawerModalLinkEl.href = drawerData.caseStudyUrl;
-        this.drawerModalLinkEl.innerText = drawerData.caseStudyTitle || 'View Related Case Study ↗';
-        this.drawerModalLinkEl.setAttribute('target', '_blank');
-        this.drawerModalLinkEl.setAttribute('rel', 'noopener noreferrer');
-        this.drawerModalLinkEl.style.display = 'inline-block';
-      } else {
-        this.drawerModalLinkEl.style.display = 'none';
-      }
-    }
-
-    this.drawerModalEl.classList.add('open');
-    this.drawerModalEl.setAttribute('aria-hidden', 'false');
-  }
-
-  closeDrawerModal() {
-    this.drawerModalEl?.classList.remove('open');
-    this.drawerModalEl?.setAttribute('aria-hidden', 'true');
-    if (this.onResetCabinet) {
-      this.onResetCabinet();
-    }
   }
 
   hideLoadingScreen() {

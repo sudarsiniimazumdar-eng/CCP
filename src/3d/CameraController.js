@@ -1,7 +1,5 @@
 import * as THREE from 'three';
-import gsapModule from 'gsap';
-
-const gsap = (typeof window !== 'undefined' && window.gsap) ? window.gsap : (gsapModule?.gsap || gsapModule);
+import { gsap } from 'gsap';
 
 /**
  * Advanced 360° Spherical Orbit & Inspection Camera Controller
@@ -29,13 +27,14 @@ export class CameraController {
     this.isInspecting = false;
     this.isOrbiting = false;
     this.currentTimeline = null;
+    this.prefersReducedMotion = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches || false;
 
     this.initListeners();
   }
 
   initListeners() {
     window.addEventListener('mousemove', (e) => {
-      if (this.isInspecting || this.isOrbiting) return;
+      if (this.prefersReducedMotion || this.isInspecting || this.isOrbiting) return;
       this.mouseParallax.targetX = (e.clientX / window.innerWidth - 0.5) * 0.4;
       this.mouseParallax.targetY = -(e.clientY / window.innerHeight - 0.5) * 0.25;
     });
@@ -43,7 +42,7 @@ export class CameraController {
     // Mobile gyroscope
     if (window.DeviceOrientationEvent && typeof window.DeviceOrientationEvent.requestPermission !== 'function') {
       window.addEventListener('deviceorientation', (e) => {
-        if (this.isInspecting || this.isOrbiting || e.gamma === null) return;
+        if (this.prefersReducedMotion || this.isInspecting || this.isOrbiting || e.gamma === null) return;
         const gamma = Math.max(-25, Math.min(25, e.gamma));
         const beta = Math.max(15, Math.min(65, e.beta));
         this.mouseParallax.targetX = (gamma / 25) * 0.3;
@@ -57,6 +56,14 @@ export class CameraController {
    */
   addOrbitDelta(deltaX, deltaY) {
     if (this.isInspecting) return;
+    if (this.prefersReducedMotion) {
+      this.spherical.theta -= deltaX * 0.006;
+      this.spherical.phi = Math.max(0.35, Math.min(1.35, this.spherical.phi - deltaY * 0.005));
+      this.orbitVelocity.theta = 0;
+      this.orbitVelocity.phi = 0;
+      this.isOrbiting = false;
+      return;
+    }
     this.isOrbiting = true;
 
     // Horizontal 360° spin
@@ -108,6 +115,13 @@ export class CameraController {
         .add(new THREE.Vector3(0, 0.5, 0));
     }
 
+    if (this.prefersReducedMotion) {
+      this.camera.position.copy(targetCameraPos);
+      this.currentLookAt.copy(targetFocus);
+      this.camera.lookAt(this.currentLookAt);
+      return;
+    }
+
     this.currentTimeline = gsap.timeline({ defaults: { duration: 1.35, ease: 'power3.inOut' } });
 
     this.currentTimeline.to(this.camera.position, {
@@ -139,6 +153,13 @@ export class CameraController {
     const targetY = this.spherical.radius * Math.cos(this.spherical.phi);
     const targetZ = this.spherical.radius * Math.sin(this.spherical.phi) * Math.cos(this.spherical.theta);
 
+    if (this.prefersReducedMotion) {
+      this.camera.position.set(targetX, targetY, targetZ);
+      this.currentLookAt.copy(this.targetLookAt);
+      this.camera.lookAt(this.currentLookAt);
+      return;
+    }
+
     this.currentTimeline = gsap.timeline({ defaults: { duration, ease: 'power3.inOut' } });
 
     this.currentTimeline.to(this.camera.position, {
@@ -162,6 +183,14 @@ export class CameraController {
    */
   update() {
     if (!this.isInspecting) {
+      if (this.prefersReducedMotion) {
+        this.orbitVelocity.theta = 0;
+        this.orbitVelocity.phi = 0;
+        this.mouseParallax.x = 0;
+        this.mouseParallax.y = 0;
+        this.mouseParallax.targetX = 0;
+        this.mouseParallax.targetY = 0;
+      }
       // Damping on orbit velocity
       if (!this.isOrbiting) {
         this.orbitVelocity.theta *= 0.92;

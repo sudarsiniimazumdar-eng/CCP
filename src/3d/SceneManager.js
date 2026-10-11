@@ -15,11 +15,11 @@ import { PROJECTS_DATA } from '../data/projects.js';
  * - 360° interactive orbit & bottle inspection
  */
 export class SceneManager {
-  constructor(containerElement, onSelectCallback, onHoverCallback, onDrawerCallback) {
+  constructor(containerElement, onSelectCallback, onHoverCallback, onWebGLUnavailable) {
     this.container = containerElement;
     this.onSelect = onSelectCallback;
     this.onHover = onHoverCallback;
-    this.onDrawer = onDrawerCallback;
+    this.onWebGLUnavailable = onWebGLUnavailable;
 
     this.scene = null;
     this.camera = null;
@@ -33,6 +33,18 @@ export class SceneManager {
 
     this.clock = new THREE.Clock();
     this.animationFrameId = null;
+    this.lastFrameTime = 0;
+    this.handleResize = () => this.onResize();
+    this.handleVisibilityChange = () => {
+      if (document.hidden) {
+        if (this.animationFrameId) cancelAnimationFrame(this.animationFrameId);
+        this.animationFrameId = null;
+      } else if (!this.animationFrameId) {
+        this.lastFrameTime = 0;
+        this.clock.start();
+        this.animate();
+      }
+    };
 
     this.init();
   }
@@ -47,8 +59,11 @@ export class SceneManager {
     this.scene.fog = new THREE.FogExp2(0x0d0907, 0.032);
 
     // 2. Camera
-    const isMobile = width < 768;
-    const initialFov = isMobile ? 56 : 48;
+    this.isMobile = width < 768;
+    this.isLowPower = this.isMobile || (navigator.hardwareConcurrency || 8) <= 4;
+    this.maxPixelRatio = this.isLowPower ? 1.25 : 1.75;
+    this.prefersReducedMotion = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches || false;
+    const initialFov = this.isMobile ? 56 : 48;
     this.camera = new THREE.PerspectiveCamera(initialFov, width / height, 0.1, 65);
 
     // 3. WebGL Renderer
@@ -64,13 +79,20 @@ export class SceneManager {
     }
 
     this.renderer.setSize(width, height);
-    this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.75));
+    this.renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, this.maxPixelRatio));
     this.renderer.toneMapping = THREE.ACESFilmicToneMapping;
     this.renderer.toneMappingExposure = 1.08;
     this.renderer.shadowMap.enabled = true;
     this.renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 
     this.container.appendChild(this.renderer.domElement);
+    this.renderer.domElement.tabIndex = 0;
+    this.renderer.domElement.setAttribute('role', 'group');
+    this.renderer.domElement.setAttribute('aria-label', 'Interactive cabinet. Use arrow keys to orbit, Home to reset, or 1 through 8 to inspect a project.');
+    this.renderer.domElement.addEventListener('webglcontextlost', event => {
+      event.preventDefault();
+      this.onWebGLUnavailable?.();
+    });
 
     // 4. Victorian Apothecary Room Background
     this.room = createApothecaryRoom();
@@ -95,15 +117,7 @@ export class SceneManager {
       this.cameraController,
       (project, bottleObj) => this.handleBottleSelected(project, bottleObj),
       (userData, x, y, visible) => this.onHover(userData, x, y, visible),
-      (drawerData, isOpen) => this.onDrawer(drawerData, isOpen)
     );
-
-    // Register Drawers with Raycaster
-    if (this.cabinet.userData.drawers) {
-      this.cabinet.userData.drawers.forEach(dGroup => {
-        this.interactionManager.registerInteractiveObject(dGroup);
-      });
-    }
 
     // 9. Populate Cleanly Organized Perfume Bottles on Open Shelves
     this.populateBottles();
@@ -112,7 +126,8 @@ export class SceneManager {
     this.setupDustParticles();
 
     // 11. Event Listeners
-    window.addEventListener('resize', () => this.onResize());
+    window.addEventListener('resize', this.handleResize);
+    document.addEventListener('visibilitychange', this.handleVisibilityChange);
 
     // 12. Start Loop
     this.animate();
@@ -124,11 +139,12 @@ export class SceneManager {
     this.scene.add(ambientLight);
 
     // B. Warm Directional Sunlight Beam (3500K warm loft ray with soft shadows)
-    const sunbeamLight = new THREE.DirectionalLight(0xf2b574, 1.85);
+    const sunbeamLight = new THREE.DirectionalLight(0xf2b574, 1.5);
     sunbeamLight.position.set(-5.5, 9.5, 4.0);
     sunbeamLight.castShadow = true;
-    sunbeamLight.shadow.mapSize.width = 2048;
-    sunbeamLight.shadow.mapSize.height = 2048;
+    const shadowMapSize = this.isLowPower ? 1024 : 2048;
+    sunbeamLight.shadow.mapSize.width = shadowMapSize;
+    sunbeamLight.shadow.mapSize.height = shadowMapSize;
     sunbeamLight.shadow.camera.near = 0.5;
     sunbeamLight.shadow.camera.far = 32;
     sunbeamLight.shadow.bias = -0.0006;
@@ -160,7 +176,7 @@ export class SceneManager {
   }
 
   setupDustParticles() {
-    const particleCount = 160;
+    const particleCount = this.isLowPower ? 72 : 160;
     const geometry = new THREE.BufferGeometry();
     const positions = new Float32Array(particleCount * 3);
     const speeds = new Float32Array(particleCount);
@@ -190,6 +206,8 @@ export class SceneManager {
 
   populateBottles() {
     PROJECTS_DATA.forEach(project => {
+      // Remove the two uppermost bottles (Sand Dunes & Learning LCA at y=2.85)
+      if (project.id === 'sand-dunes' || project.id === 'learning-lca') return;
       const bottleGroup = createPerfumeBottle(project);
       this.scene.add(bottleGroup);
       this.bottles.push(bottleGroup);
@@ -207,7 +225,6 @@ export class SceneManager {
 
   resetView() {
     this.interactionManager.deselectCurrentObject();
-    this.interactionManager.closeAllDrawers();
     this.cameraController.resetToOverview();
   }
 
@@ -221,20 +238,24 @@ export class SceneManager {
 
     this.cameraController.onResize(width, height);
     this.renderer.setSize(width, height);
-    this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.75));
+    this.renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, this.maxPixelRatio));
   }
 
-  animate() {
-    this.animationFrameId = requestAnimationFrame(() => this.animate());
+  animate(timestamp) {
+    if (document.hidden) return;
+    this.animationFrameId = requestAnimationFrame(time => this.animate(time));
+    const frameTime = timestamp ?? performance.now();
+    if (this.isLowPower && this.lastFrameTime && frameTime - this.lastFrameTime < 1000 / 30) return;
+    this.lastFrameTime = frameTime;
 
-    const delta = this.clock.getDelta();
+    this.clock.getDelta();
     const elapsedTime = this.clock.getElapsedTime();
 
     this.cameraController.update();
     this.interactionManager.update();
 
     // Drift golden dust particles
-    if (this.dustParticles) {
+    if (!this.prefersReducedMotion && this.dustParticles) {
       const positions = this.dustParticles.geometry.attributes.position.array;
       const speeds = this.dustParticles.userData.speeds;
       const count = positions.length / 3;
@@ -251,19 +272,19 @@ export class SceneManager {
     }
 
     // Dynamic cozy candle flame & lantern light flickering
-    if (this.room && this.room.userData.lanternLights) {
+    if (!this.prefersReducedMotion && this.room && this.room.userData.lanternLights) {
       this.room.userData.lanternLights.forEach((light, i) => {
         light.intensity = 1.3 + Math.sin(elapsedTime * 4.0 + i * 1.7) * 0.15 + (Math.random() - 0.5) * 0.05;
       });
     }
 
     const candleLight = this.cabinet.getObjectByName('Candle_Light');
-    if (candleLight) {
+    if (!this.prefersReducedMotion && candleLight) {
       candleLight.intensity = 0.85 + Math.sin(elapsedTime * 8.0) * 0.12 + (Math.random() - 0.5) * 0.08;
     }
 
     const candleFlame = this.cabinet.getObjectByName('Candle_Flame');
-    if (candleFlame) {
+    if (!this.prefersReducedMotion && candleFlame) {
       candleFlame.scale.y = 1.0 + Math.sin(elapsedTime * 9.0) * 0.15;
       candleFlame.scale.x = 1.0 + Math.cos(elapsedTime * 7.0) * 0.1;
     }
@@ -273,7 +294,8 @@ export class SceneManager {
 
   dispose() {
     if (this.animationFrameId) cancelAnimationFrame(this.animationFrameId);
-    window.removeEventListener('resize', () => this.onResize());
+    window.removeEventListener('resize', this.handleResize);
+    document.removeEventListener('visibilitychange', this.handleVisibilityChange);
     if (this.renderer && this.renderer.domElement) {
       this.container.removeChild(this.renderer.domElement);
       this.renderer.dispose();

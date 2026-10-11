@@ -1,13 +1,42 @@
-import { SceneManager } from './3d/SceneManager.js';
 import { UIManager } from './ui/UIManager.js';
 
 /**
  * Main Application Bootstrap
  */
-window.addEventListener('DOMContentLoaded', () => {
+window.addEventListener('DOMContentLoaded', async () => {
   const container = document.getElementById('webgl-container');
+  const requestedMode = new URLSearchParams(window.location.search).get('mode');
+  const mode = ['gamified', 'recruiter'].includes(requestedMode) ? requestedMode : null;
+  if (mode) document.body.classList.add(`mode-${mode}`);
+  if (!mode) return;
+
   let sceneManager = null;
   let uiManager = null;
+
+  const showProjectsFallback = (message) => {
+    const loader = document.getElementById('loading-screen');
+    const loaderStatus = document.querySelector('.loader-status');
+    if (loader) {
+      loader.style.display = 'flex';
+      loader.classList.remove('fade-out');
+    }
+    if (!loaderStatus) return;
+
+    const messageEl = document.createElement('span');
+    messageEl.textContent = message;
+    const button = document.createElement('button');
+    button.id = 'fallback-catalogue-btn';
+    button.className = 'cta-button';
+    button.textContent = 'Open Projects →';
+    button.style.marginTop = '1rem';
+    button.style.maxWidth = '280px';
+    button.addEventListener('click', () => {
+      uiManager.hideLoadingScreen();
+      uiManager.openCatalogueOverlay();
+    });
+    loaderStatus.replaceChildren(messageEl, document.createElement('br'), document.createElement('br'), button);
+    button.focus();
+  };
 
   // Initialize UI Manager
   uiManager = new UIManager({
@@ -19,8 +48,16 @@ window.addEventListener('DOMContentLoaded', () => {
     }
   });
 
-  // Initialize 3D Scene Manager
+  if (mode === 'recruiter') {
+    uiManager.openCatalogueOverlay();
+    uiManager.setActiveNav('catalogue');
+    uiManager.hideLoadingScreen();
+    return;
+  }
+
+  // Initialize 3D Scene Manager only for the immersive portfolio mode.
   try {
+    const { SceneManager } = await import('./3d/SceneManager.js');
     sceneManager = new SceneManager(
       container,
       // onSelect Bottle Callback
@@ -31,9 +68,10 @@ window.addEventListener('DOMContentLoaded', () => {
       (userData, screenX, screenY, visible) => {
         uiManager.updateTooltip(userData, screenX, screenY, visible);
       },
-      // onOpen Drawer Callback
-      (drawerData, isOpen) => {
-        uiManager.openDrawerModal(drawerData, isOpen);
+      () => {
+        sceneManager?.dispose();
+        sceneManager = null;
+        showProjectsFallback('The 3D view is unavailable. You can still browse all projects and case studies.');
       }
     );
 
@@ -44,17 +82,6 @@ window.addEventListener('DOMContentLoaded', () => {
 
   } catch (error) {
     console.error('Failed to initialize 3D Scene:', error);
-    const loaderStatus = document.querySelector('.loader-status');
-    if (loaderStatus) {
-      loaderStatus.innerHTML = `
-        <span>Initialization error: ${error.message || error}</span>
-        <br/><br/>
-        <button id="fallback-catalogue-btn" class="cta-button" style="margin-top: 1rem; max-width: 280px;">Open Catalogue View →</button>
-      `;
-      document.getElementById('fallback-catalogue-btn')?.addEventListener('click', () => {
-        uiManager.hideLoadingScreen();
-        uiManager.openCatalogueOverlay();
-      });
-    }
+    showProjectsFallback('The 3D view could not start. You can still browse all projects and case studies.');
   }
 });
