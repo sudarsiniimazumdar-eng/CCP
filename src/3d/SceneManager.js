@@ -206,8 +206,6 @@ export class SceneManager {
 
   populateBottles() {
     PROJECTS_DATA.forEach(project => {
-      // Remove the two uppermost bottles (Sand Dunes & Learning LCA at y=2.85)
-      if (project.id === 'sand-dunes' || project.id === 'learning-lca') return;
       const bottleGroup = createPerfumeBottle(project);
       this.scene.add(bottleGroup);
       this.bottles.push(bottleGroup);

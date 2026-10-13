@@ -78,9 +78,8 @@ Initial projects will include:
 
 1. Architect of Nothing
 2. Prosthetics / BMVSS
-3. LCA — Plastic vs Metal Hair Clips
-4. Service Design / Positive Experience
-5. Additional projects to be decided
+3. Service Design / Positive Experience
+4. Additional projects to be decided
 
 ## Important
 

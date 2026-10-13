@@ -457,6 +457,21 @@ body {
   font-weight: 600;
 }
 
+.cs-image-frame {
+  width: 100%;
+  overflow: hidden;
+  border: 1px solid var(--cs-border);
+  border-radius: 6px;
+  background: #f5f3ef;
+}
+.cs-image-frame img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+.cs-placeholder-grid > .cs-image-frame {
+  align-self: stretch;
+}
 /* Image Grids */
 .cs-placeholder-grid {
   display: grid;

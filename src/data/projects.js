@@ -8,13 +8,11 @@
  * 3. Focus Dial — Zoom Fatigue / Tangible Interaction
  * 4. Architect of Nothing — Critical Design / Physical Computing
  * 
- * 6 SECONDARY & SUPPORTING WORKS:
+ * 4 SECONDARY & SUPPORTING WORKS:
  * 5. Momentum Buddy — Productivity & Body-Doubling Application
  * 6. Research Translation — "Am I really here or just my silhouette...?"
  * 7. The Smell Library — Multisensory Memory Installation
  * 8. Bidar Vishwakarma Wooden Door Technology Field Study
- * 9. Sand Dunes — Material Form & Light/Shadow Study
- * 10. Learning-by-Making LCA — Polypropylene vs. Steel Hair Clip
  */
 
 export const PROJECTS_DATA = [
@@ -334,80 +332,6 @@ export const PROJECTS_DATA = [
   },
 
   // =========================================================================
-  // 9. EXPLORATION: SAND DUNES
-  // =========================================================================
-  {
-    id: 'sand-dunes',
-    isMain: false,
-    title: 'Sand Dunes: Material & Light Study',
-    shortTitle: 'Sand Dunes',
-    category: 'Material Exploration / Form & Light Study',
-    type: 'Conceptual Sculpture / Form Exploration',
-    year: 'Exploration',
-    role: 'Individual Maker',
-    team: 'Individual Project',
-    tagline: 'Abstract cement forms that capture the shifting movement of natural erosion through light and shadow.',
-    summary: 'Sculpted abstract cement terrain exploring Japanese aesthetic principles (Wabi-Sabi, Ma) through the dynamic interaction of surface geometry and directional light.',
-    caseStudyUrl: 'case-studies/sand-dunes.html',
-
-    problem: 'How can simple, static material forms evoke changing sensory experiences through the interaction of light, shadow, and negative space without literal imitation?',
-    whatIDid: 'Studied Japanese concepts of Wabi-Sabi and Ma (negative space). Pivoted away from realistic sand ripples to minimal undulating planes that allow raking light to simulate fluid movement.',
-    whatIMade: 'Hand-sculpted and cast Portland cement terrain specimens with varied surface textures, evaluated under shifting directional light angles.',
-    whyItMatters: 'Exhibits acute tactile aesthetic sensitivity, spatial composition, and foundational form studies for architectural wall systems.',
-
-    tags: ['Material Study', 'Wabi-Sabi', 'Form Exploration', 'Cement Casting', 'Sculpture'],
-    stats: [
-      { label: 'Role', value: 'Individual Maker' },
-      { label: 'Medium', value: 'Cast Concrete / Cement' },
-      { label: 'Philosophy', value: 'Wabi-Sabi & Ma' },
-      { label: 'Status', value: 'Material Study' }
-    ],
-    placement: {
-      position: { x: -0.5, y: 2.85, z: 0.12 },
-      rotation: { x: 0, y: 0.08, z: 0 },
-      bottleVariant: 'faceted',
-      liquidColor: '#7a7265',
-      labelNumber: 'N° 09'
-    }
-  },
-
-  // =========================================================================
-  // 10. EXPLORATION: QUANTITATIVE LCA
-  // =========================================================================
-  {
-    id: 'learning-lca',
-    isMain: false,
-    title: 'Quantitative LCA: Plastic vs. Steel Hair Clip',
-    shortTitle: 'Learning LCA',
-    category: 'Sustainable Design / Environmental Assessment',
-    type: 'Quantitative LCA / Hands-on Modeling',
-    year: 'Exploration',
-    role: 'Individual Researcher / Analyst',
-    team: 'Individual Project',
-    tagline: 'Building a hands-on Life Cycle Assessment from scratch to calculate the true carbon footprint of daily objects.',
-    summary: 'A self-built comparative LCA model comparing polypropylene and steel hair clips (119.0 g vs. 29.8 g CO₂e) to learn carbon hotspot modeling, boundary setting, and sensitivity analysis.',
-    caseStudyUrl: 'case-studies/learning-lca.html',
-
-    problem: 'Sustainable consumer claims often make simplistic material substitutions without understanding embodied smelting energy, finishing chemistry, or real-world replacement rates.',
-    whatIDid: 'Defined functional units per ISO 14040/44, mapped cradle-to-grave system boundaries, collected emission factors, built a spreadsheet calculation workbook, and executed sensitivity testing on lifespan and electroplating.',
-    whatIMade: 'Completed comparative Life Cycle Inventory (LCI) workbook model calculating 119.0 g CO₂e (plastic) vs. 29.8 g CO₂e (steel) and authored a sensitivity analysis report demonstrating how durability assumptions can invert conclusions.',
-    whyItMatters: 'Demonstrates quantitative analytical capability, rigorous sustainability literacy, and the ability to evaluate material trade-offs for physical hardware.',
-
-    tags: ['Life Cycle Assessment', 'Circularity', 'Carbon Accounting', 'Sensitivity Analysis', 'Material Strategy'],
-    stats: [
-      { label: 'Role', value: 'LCA Analyst' },
-      { label: 'Baseline', value: '119.0g vs 29.8g CO₂e' },
-      { label: 'Standard', value: 'ISO 14040/44 Framework' },
-      { label: 'Status', value: 'Quantitative Study' }
-    ],
-    placement: {
-      position: { x: 0.5, y: 2.85, z: 0.12 },
-      rotation: { x: 0, y: -0.08, z: 0 },
-      bottleVariant: 'sphere',
-      liquidColor: '#3d5248',
-      labelNumber: 'N° 10'
-    }
-  }
 ];
 
 export const PORTFOLIO_SECTIONS = {
@@ -438,7 +362,6 @@ export const PORTFOLIO_SECTIONS = {
       {
         name: 'Research, Sustainability & Systemic Analysis',
         items: [
-          'Quantitative Life Cycle Assessment (ISO 14040/44)',
           'Ecosystem & Multi-Stakeholder Mapping',
           'Design Anthropology & Ethnographic Fieldwork',
           'No-Code Cloud Logic (Power Automate / MS Forms)',

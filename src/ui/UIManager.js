@@ -455,18 +455,6 @@ export class UIManager {
     `;
     const supportingGrid = supportingGroup.querySelector('.supporting-grid');
 
-    // 3. Material & Method Explorations
-    const explorationsGroup = document.createElement('div');
-    explorationsGroup.className = 'catalogue-section-group';
-    explorationsGroup.innerHTML = `
-      <div class="catalogue-section-header" style="margin-top: 3.5rem;">
-        <span class="catalogue-badge-subtle">METHOD &amp; MATERIAL EXPERIMENTS</span>
-        <h3 class="catalogue-section-title">Quantitative LCA &amp; Sculptural Studies</h3>
-        <p class="catalogue-section-desc">Hands-on Life Cycle Assessment modeling and Japanese Wabi-Sabi cement casting explorations.</p>
-      </div>
-      <div class="catalogue-subgrid explorations-grid"></div>
-    `;
-    const explorationsGrid = explorationsGroup.querySelector('.explorations-grid');
 
     PROJECTS_DATA.forEach(project => {
       const card = document.createElement('div');
@@ -529,8 +517,6 @@ export class UIManager {
 
       if (project.isMain) {
         featuredGrid.appendChild(card);
-      } else if (project.id === 'sand-dunes' || project.id === 'learning-lca') {
-        explorationsGrid.appendChild(card);
       } else {
         supportingGrid.appendChild(card);
       }
@@ -538,7 +524,6 @@ export class UIManager {
 
     this.catalogueGrid.appendChild(featuredGroup);
     this.catalogueGrid.appendChild(supportingGroup);
-    this.catalogueGrid.appendChild(explorationsGroup);
   }
 
   openCatalogueOverlay() {
