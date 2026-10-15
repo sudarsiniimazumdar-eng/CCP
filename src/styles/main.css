@@ -1338,19 +1338,33 @@ html, body {
   }
 
   .nav-links {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
     gap: 0.4rem;
     width: 100%;
-    justify-content: flex-start;
-    overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
-    padding-bottom: 0.2rem;
+    justify-content: stretch;
+    overflow: visible;
+    padding-bottom: 0;
+  }
+
+  .site-header nav {
+    width: 100%;
+    min-width: 0;
+  }
+
+  .nav-links li {
+    min-width: 0;
   }
 
   .nav-btn {
-    padding: 0.35rem 0.75rem;
-    font-size: 0.76rem;
-    min-height: 34px;
-    white-space: nowrap;
+    width: 100%;
+    min-width: 0;
+    min-height: 42px;
+    padding: 0.4rem 0.3rem;
+    font-size: 0.7rem;
+    line-height: 1.2;
+    letter-spacing: 0.04em;
+    text-align: center;
   }
 
   /* Bottom-Sheet Project Drawer */
