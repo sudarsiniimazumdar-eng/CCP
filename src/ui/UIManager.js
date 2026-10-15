@@ -95,6 +95,9 @@ export class UIManager {
     this.navIdeasBtn = document.getElementById('nav-ideas');
     this.navAboutBtn = document.getElementById('nav-about');
     this.navContactBtn = document.getElementById('nav-contact');
+    this.primaryNavigation = document.getElementById('primary-navigation');
+    this.mobileNavToggle = document.getElementById('mobile-nav-toggle');
+    this.primaryNavigationLinks = document.getElementById('primary-navigation-links');
 
     this.interactionHint = document.getElementById('interaction-hint');
     this.loadingScreen = document.getElementById('loading-screen');
@@ -116,11 +119,22 @@ export class UIManager {
   }
 
   setupListeners() {
+    this.mobileNavToggle?.addEventListener('click', () => {
+      const isOpen = this.mobileNavToggle.getAttribute('aria-expanded') === 'true';
+      this.setMobileNavigationOpen(!isOpen);
+    });
+    this.primaryNavigationLinks?.addEventListener('click', (event) => {
+      const control = event.target.closest('button, a');
+      if (!control) return;
+      this.setMobileNavigationOpen(false);
+      if (control instanceof HTMLButtonElement) this.mobileNavToggle?.focus();
+    });
+
     // Project Preview Drawer Controls
     this.drawerCloseBtn?.addEventListener('click', () => this.closePreviewDrawer());
     this.drawerBackBtn?.addEventListener('click', () => this.closePreviewDrawer());
 
-    // Click "View Case Study ↗" opens in new tab; fallback to modal if needed
+    // Case-study links open in a new tab; fall back to the modal if no link exists.
     this.drawerCtaBtn?.addEventListener('click', (e) => {
       if (this.currentActiveProject && this.currentActiveProject.caseStudyUrl) {
         // Allow standard anchor new tab navigation
@@ -179,12 +193,14 @@ export class UIManager {
     });
 
     this.navAboutBtn?.addEventListener('click', () => {
+      this.setMobileNavigationOpen(false);
       this.closeAllModals();
       this.openModal(this.infoModal);
       this.setActiveNav('about');
     });
 
     this.navContactBtn?.addEventListener('click', () => {
+      this.setMobileNavigationOpen(false);
       this.closeAllModals();
       this.openModal(this.contactModal);
       this.setActiveNav('contact');
@@ -220,7 +236,10 @@ export class UIManager {
     // Global ESC Key Handler
     window.addEventListener('keydown', (e) => {
       if (e.key === 'Escape') {
-        if (this.projectModal?.classList.contains('open')) {
+        if (this.mobileNavToggle?.getAttribute('aria-expanded') === 'true') {
+          this.setMobileNavigationOpen(false);
+          this.mobileNavToggle.focus();
+        } else if (this.projectModal?.classList.contains('open')) {
           this.closeProjectModal();
         } else if (this.skillsModal?.classList.contains('open')) {
           this.returnFromSectionModal(this.skillsModal);
@@ -252,6 +271,13 @@ export class UIManager {
     this.navIdeasBtn?.classList.toggle('active', viewName === 'ideas');
     this.navAboutBtn?.classList.toggle('active', viewName === 'about');
     this.navContactBtn?.classList.toggle('active', viewName === 'contact');
+  }
+
+  setMobileNavigationOpen(open) {
+    if (!this.primaryNavigation || !this.mobileNavToggle) return;
+    this.primaryNavigation.classList.toggle('mobile-menu-open', open);
+    this.mobileNavToggle.setAttribute('aria-expanded', String(open));
+    this.mobileNavToggle.setAttribute('aria-label', open ? 'Close navigation menu' : 'Open navigation menu');
   }
 
   openModal(modalEl) {
@@ -347,7 +373,7 @@ export class UIManager {
             <div class="skills-category-card">
               <h4 class="category-heading">${cat.name}</h4>
               <ul class="skills-list">
-                ${cat.items.map(item => `<li>✦ ${item}</li>`).join('')}
+                ${cat.items.map(item => `<li><svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12 4 4L19 6"/></svg>${item}</li>`).join('')}
               </ul>
             </div>
           `).join('')}
@@ -411,12 +437,12 @@ export class UIManager {
       this.contactContent.innerHTML = `
         <p class="section-intro">${contact.subtitle}</p>
         <div class="contact-card-box">
-          <p class="contact-location">🏛️ ${contact.location}</p>
+          <p class="contact-location"><svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 10c0 5-8 11-8 11S4 15 4 10a8 8 0 1 1 16 0Z"/><circle cx="12" cy="10" r="2.5"/></svg>${contact.location}</p>
           <div class="contact-links-list">
             ${contact.channels.map(ch => `
               <a href="${ch.href}" target="_blank" rel="noopener noreferrer" class="contact-link-row">
                 <span class="ch-label">${ch.label}</span>
-                <span class="ch-val">${ch.value} →</span>
+                <span class="ch-val">${ch.value}<svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M14 3h7v7M10 14 21 3"/><path d="M19 13v7H4V5h7"/></svg></span>
               </a>
             `).join('')}
           </div>
@@ -434,7 +460,7 @@ export class UIManager {
     featuredGroup.className = 'catalogue-section-group';
     featuredGroup.innerHTML = `
       <div class="catalogue-section-header">
-        <span class="catalogue-badge-gold">✦ PRIMARY WORKS · FULL DOCUMENTATION</span>
+        <span class="catalogue-badge-gold"><svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m12 3 2.7 5.5 6.1.9-4.4 4.3 1 6.1-5.4-2.9-5.4 2.9 1-6.1-4.4-4.3 6.1-.9L12 3Z"/></svg>PRIMARY WORKS · FULL DOCUMENTATION</span>
         <h3 class="catalogue-section-title">Featured Case Studies</h3>
         <p class="catalogue-section-desc">Selected projects spanning research, product design, physical computing, and service systems.</p>
       </div>
@@ -461,7 +487,7 @@ export class UIManager {
       card.className = `catalogue-card ${project.isMain ? 'featured-card' : ''}`;
       
       const badgeHtml = project.isMain
-        ? `<span class="card-featured-badge">✦ FEATURED</span>`
+        ? `<span class="card-featured-badge"><svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m12 3 2.7 5.5 6.1.9-4.4 4.3 1 6.1-5.4-2.9-5.4 2.9 1-6.1-4.4-4.3 6.1-.9L12 3Z"/></svg>FEATURED</span>`
         : `<span class="card-regular-badge">SPECIMEN</span>`;
 
       card.innerHTML = `
@@ -481,10 +507,10 @@ export class UIManager {
           </div>
           <div class="card-actions-row">
             <button type="button" class="card-btn-inspect" title="Inspect specimen bottle in 3D cabinet">
-              Inspect in 3D →
+              Inspect in 3D
             </button>
             <a href="${project.caseStudyUrl}" target="_blank" rel="noopener noreferrer" class="card-btn-casestudy" title="Open complete case study report in a new tab">
-              View Case Study ↗
+              View Case Study <svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M14 3h7v7M10 14 21 3"/><path d="M19 13v7H4V5h7"/></svg>
             </a>
           </div>
         </div>

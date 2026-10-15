@@ -27,7 +27,7 @@ window.addEventListener('DOMContentLoaded', async () => {
     const button = document.createElement('button');
     button.id = 'fallback-catalogue-btn';
     button.className = 'cta-button';
-    button.textContent = 'Open Projects →';
+    button.innerHTML = 'Open Projects <svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 6h7l2 2h9v12H3z"/><path d="M3 10h18"/></svg>';
     button.style.marginTop = '1rem';
     button.style.maxWidth = '280px';
     button.addEventListener('click', () => {

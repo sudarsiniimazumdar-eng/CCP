@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Curiosity Cabinet — Experience Design Portfolio</title>
+  <title>Curiosity Cabinet | Experience Design Portfolio</title>
   <meta name="description" content="An interactive 3D curiosity cabinet presenting a collection of design projects, prototypes, and inquiries." />
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🏛️</text></svg>" />
 
@@ -20,21 +20,23 @@
   <div id="app">
     <main id="mode-landing" class="mode-landing" aria-labelledby="landing-title">
       <div class="landing-inner">
-        <p class="landing-kicker">A portfolio in two ways</p>
+        <p class="landing-kicker">Choose how you’d like to explore</p>
         <h1 id="landing-title" class="landing-title">Curiosity Cabinet</h1>
-        <p class="landing-intro">A collection of projects shaped by research, systems thinking, and making. Choose how you’d like to explore.</p>
+        <p class="landing-intro">Explore the same collection of work in a 3D cabinet or a simple project list. Start wherever feels right.</p>
         <div class="mode-cards">
           <a class="mode-card mode-card-immersive" href="?mode=gamified">
-            <span class="mode-card-index">01 / EXPLORE</span>
-            <span class="mode-card-title">Gamified Mode</span>
-            <span class="mode-card-copy">Enter the cabinet. Explore the objects, turn the bottles, and discover the work at your own pace.</span>
-            <span class="mode-card-action">Enter the cabinet <span aria-hidden="true">↗</span></span>
+            <span class="mode-card-index">INTERACTIVE VIEW</span>
+            <svg class="ui-icon mode-card-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 7h18v13H3z"/><path d="M3 7l2-4h14l2 4M8 11h8"/></svg>
+            <span class="mode-card-title">Explore the cabinet</span>
+            <span class="mode-card-copy">Move around the 3D room and tap a bottle to preview a project.</span>
+            <span class="mode-card-action">Enter interactive view</span>
           </a>
           <a class="mode-card mode-card-direct" href="?mode=recruiter">
-            <span class="mode-card-index">02 / BROWSE</span>
-            <span class="mode-card-title">Recruiter Mode</span>
-            <span class="mode-card-copy">Go straight to the projects, with clear summaries and direct links to each case study.</span>
-            <span class="mode-card-action">View projects <span aria-hidden="true">↗</span></span>
+            <span class="mode-card-index">DIRECT VIEW</span>
+            <svg class="ui-icon mode-card-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 6h7l2 2h9v12H3z"/><path d="M3 10h18"/></svg>
+            <span class="mode-card-title">Browse projects</span>
+            <span class="mode-card-copy">Scan project summaries and open a case study directly.</span>
+            <span class="mode-card-action">View project list</span>
           </a>
         </div>
         <p class="landing-footnote">Same work. Two ways in.</p>
@@ -63,28 +65,36 @@
           <span class="brand-subtitle">Curated Works · Archive</span>
         </div>
 
-        <nav aria-label="Primary Navigation">
-          <ul class="nav-links">
-            <li><button id="nav-cabinet" class="nav-btn active" aria-label="View 3D Cabinet">Cabinet 3D</button></li>
+        <nav class="primary-navigation" id="primary-navigation" aria-label="Primary navigation">
+          <ul class="nav-links" id="primary-navigation-links">
+            <li class="nav-gamified-only"><button id="nav-cabinet" class="nav-btn active" aria-label="View 3D Cabinet">Cabinet 3D</button></li>
             <li><button id="nav-catalogue" class="nav-btn" aria-label="View Projects">Projects</button></li>
-            <li><button id="nav-skills" class="nav-btn" aria-label="View Skills">Skills</button></li>
-            <li><button id="nav-about" class="nav-btn" aria-label="View About Section">About</button></li>
-            <li><button id="nav-contact" class="nav-btn" aria-label="View Contact Information">Contact</button></li>
+            <li class="nav-gamified-only"><button id="nav-skills" class="nav-btn" aria-label="View Skills">Skills</button></li>
             <li class="recruiter-cv-item"><span class="nav-btn recruiter-cv-placeholder" aria-disabled="true" title="CV link coming soon">CV · Coming soon</span></li>
             <li><a class="nav-btn mode-return-link" href="./" aria-label="Choose portfolio mode">Choose mode</a></li>
           </ul>
+          <div class="nav-quick-actions">
+            <button id="nav-about" class="nav-btn nav-prominent-btn" aria-label="View About section">About</button>
+            <button id="nav-contact" class="nav-btn nav-prominent-btn" aria-label="View Contact information">Contact</button>
+            <button id="mobile-nav-toggle" class="nav-btn mobile-nav-toggle" type="button" aria-controls="primary-navigation-links" aria-expanded="false" aria-label="Open navigation menu">
+              <svg class="ui-icon menu-open-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
+              <svg class="ui-icon menu-close-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m18 6-12 12M6 6l12 12"/></svg>
+              <span class="menu-open-label">Menu</span><span class="menu-close-label">Close</span>
+            </button>
+          </div>
         </nav>
       </header>
 
       <!-- Bottom Center Interaction Cue -->
       <div id="interaction-hint" class="interaction-hint">
         <div class="hint-dot"></div>
-        <span>Drag or use arrow keys to orbit · Press 1–8 to inspect projects · Select bottles to preview projects</span>
+        <span class="hint-desktop">Drag or use arrow keys to look around. Press 1–8 to select a project.</span>
+        <span class="hint-mobile">Swipe to look around. Tap a bottle to preview a project.</span>
       </div>
 
       <!-- Floating Drag-to-Rotate Inspection Cue Badge -->
       <div id="rotate-cue" class="rotate-cue">
-        <span class="rotate-icon">↺</span>
+        <svg class="ui-icon rotate-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 7v5h-5"/><path d="M20 12a8 8 0 1 0 2 5"/></svg>
         <span>Drag bottle to rotate in 360°</span>
       </div>
     </div>
@@ -113,7 +123,7 @@
       </div>
 
       <div class="drawer-footer">
-        <a id="drawer-cta-btn" href="#" target="_blank" rel="noopener noreferrer" class="cta-button" style="text-decoration: none; text-align: center; display: block;">View Case Study ↗</a>
+        <a id="drawer-cta-btn" href="#" target="_blank" rel="noopener noreferrer" class="cta-button" style="text-decoration: none; text-align: center; display: block;">View Case Study <svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M14 3h7v7M10 14 21 3"/><path d="M19 13v7H4V5h7"/></svg></a>
         <button id="drawer-back-btn" class="back-cabinet-btn">Back to Cabinet</button>
       </div>
     </aside>
@@ -135,7 +145,7 @@
 
           <div id="modal-project-stats" class="project-modal-stats-grid"></div>
 
-          <!-- 4-Part Structure: Problem → What I did → What I made → Why it matters -->
+          <!-- 4-Part Structure: Problem, What I did, What I made, and Why it matters -->
           <div class="case-study-section">
             <h3 class="case-study-heading">I. The Problem</h3>
             <p id="modal-project-problem" class="case-study-text"></p>
@@ -164,10 +174,10 @@
         </div>
 
         <div class="project-modal-footer">
-          <button id="modal-prev-btn" class="nav-arrow-btn">← Previous Project</button>
-          <a id="modal-external-link" href="#" target="_blank" rel="noopener noreferrer" class="cta-button" style="text-decoration: none; text-align: center;">Open Case Study in New Tab ↗</a>
+          <button id="modal-prev-btn" class="nav-arrow-btn"><svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m15 18-6-6 6-6"/></svg>Previous Project</button>
+          <a id="modal-external-link" href="#" target="_blank" rel="noopener noreferrer" class="cta-button" style="text-decoration: none; text-align: center;">Open Case Study in New Tab <svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M14 3h7v7M10 14 21 3"/><path d="M19 13v7H4V5h7"/></svg></a>
           <button id="modal-return-cabinet" class="back-cabinet-btn">Return to Cabinet 3D</button>
-          <button id="modal-next-btn" class="nav-arrow-btn">Next Project →</button>
+          <button id="modal-next-btn" class="nav-arrow-btn">Next Project<svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></button>
         </div>
       </div>
     </section>

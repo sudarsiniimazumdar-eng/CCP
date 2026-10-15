@@ -71,7 +71,7 @@ export const PROJECTS_DATA = [
     role: 'Co-Lead Service Designer & Researcher',
     team: 'Collaborative with Moulik Nanda',
     tagline: 'Reimagining the heavy logistics of urban Indian grief through an invisible, multi-stage end-of-life service ecosystem.',
-    summary: 'A 4-phase service architecture addressing the chaotic "Golden Hour" of bereavement in urban India—combining crisis coordination, standardized ritual kits, eco-disposition, and automated death certification.',
+    summary: 'A 4-phase service architecture addressing the chaotic "Golden Hour" of bereavement in urban India, combining crisis coordination, standardized ritual kits, eco-disposition, and automated death certification.',
     caseStudyUrl: 'case-studies/urban-death-care.html',
 
     problem: '8.66 million annual deaths occur in urban India, where nuclear families lack traditional community safety nets. Bereaved families endure 50+ chaotic phone calls, predatory tipping (₹1,000–₹3,000) at crematoriums, and opaque registration during acute grief. Organized services capture under 1% of the market.',
@@ -232,7 +232,7 @@ export const PROJECTS_DATA = [
     summary: 'A physical wooden chest housing 36 QR-tagged essential oil vials backed by an automated Microsoft Power Automate cloud pipeline archiving crowd-sourced oral memories in real time.',
     caseStudyUrl: 'case-studies/the-smell-library.html',
 
-    problem: 'Digital and social media focus exclusively on sight and sound, neglecting olfactory perception—the sense most intimately connected to deep emotional memory recall.',
+    problem: 'Digital and social media focus exclusively on sight and sound, neglecting olfactory perception, the sense most intimately connected to deep emotional memory recall.',
     whatIDid: 'Curated 36 scents across 8 emotional families. When manual audio file management failed during live gallery trials, engineered an automated backend pipeline connecting QR codes, MS Forms, Power Automate JSON parsing, and OneDrive folder routing.',
     whatIMade: 'Designed a physical crafted wooden chest with 36 QR-tagged scent bottles, a 4x2 ft infographic process poster, and an active gallery listening station tested live at MAHE-SMI gallery.',
     whyItMatters: 'Connects tactile, non-visual sensory touchpoints directly to cloud automation workflows, proving technical system architecture in public installations.',
