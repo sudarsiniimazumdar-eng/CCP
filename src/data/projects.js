@@ -434,6 +434,7 @@ export const PORTFOLIO_SECTIONS = {
     location: 'Bengaluru / Remote',
     channels: [
       { label: 'Email Inquiry', value: 'sudarsiniimazumdar@gmail.com', href: 'mailto:sudarsiniimazumdar@gmail.com' },
+      { label: 'LinkedIn', value: 'linkedin.com/in/sudarsinii-mazumdar', href: 'https://www.linkedin.com/in/sudarsinii-mazumdar' },
       { label: 'GitHub Repository', value: 'github.com/sudarsiniimazumdar-eng', href: 'https://github.com/sudarsiniimazumdar-eng' },
       { label: 'Curiosity Cabinet Archive', value: 'Interactive 3D Portfolio', href: '#' }
     ]

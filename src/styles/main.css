@@ -1635,6 +1635,30 @@ html, body {
   }
 }
 
+/* Tablets and laptops retain the visible navigation. The hamburger is a
+   small-screen control only; this override also prevents stale menu state
+   from hiding links when the viewport grows. */
+@media (min-width: 641px) {
+  .mobile-nav-toggle {
+    display: none !important;
+  }
+
+  .primary-navigation .nav-links {
+    display: flex !important;
+    grid-template-columns: none;
+    width: auto;
+    flex-wrap: wrap;
+  }
+
+  .primary-navigation .nav-links .nav-btn {
+    width: auto;
+  }
+
+  .primary-navigation .nav-quick-actions {
+    width: auto;
+  }
+}
+
 /* ==========================================================================
    Phase 2: Full Project Case Study Modal & Section Overlays
    ========================================================================== */

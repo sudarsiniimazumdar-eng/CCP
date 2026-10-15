@@ -357,13 +357,10 @@ body {
 }
 
 .cs-media-figure.wide {
-  position: relative;
-  left: 50%;
-  right: 50%;
-  margin-left: -min(50vw, calc(var(--max-wide-width) / 2));
-  margin-right: -min(50vw, calc(var(--max-wide-width) / 2));
-  width: min(100vw, var(--max-wide-width));
-  padding: 0 2rem;
+  position: static;
+  width: min(100%, var(--max-wide-width));
+  margin: 3rem auto;
+  padding: 0;
 }
 
 .cs-placeholder {
@@ -488,7 +485,6 @@ body {
   height: auto;
   max-height: min(72vh, 760px);
   object-fit: contain;
-  filter: saturate(0.97) contrast(1.02);
 }
 .cs-placeholder-grid > .cs-image-frame {
   align-self: stretch;
